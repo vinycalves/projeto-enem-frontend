@@ -37,6 +37,7 @@ interface Floater {
 interface Callout {
   id: string;
   button: HTMLButtonElement;
+  markerObject: THREE.Object3D;
   localCenter: THREE.Vector3;
 }
 
@@ -884,6 +885,28 @@ export class CellLab implements AfterViewInit, OnDestroy {
     return organelle.color;
   }
 
+  private representativeChild(group: THREE.Object3D): THREE.Object3D {
+    if (!(group instanceof THREE.Group) || group.children.length === 0) {
+      return group;
+    }
+
+    // Pick the most peripheral instance. It is usually the one that is most
+    // visible, while the group's geometric center tends to fall on the
+    // nucleus/vacuole.
+    let best = group.children[0];
+    let bestDistance = -1;
+    for (const child of group.children) {
+      child.updateWorldMatrix(true, false);
+      const center = new THREE.Box3().setFromObject(child).getCenter(new THREE.Vector3());
+      const distance = center.lengthSq();
+      if (distance > bestDistance) {
+        bestDistance = distance;
+        best = child;
+      }
+    }
+    return best;
+  }
+
   private buildCallouts(): void {
     if (!this.calloutLayer) {
       return;
@@ -897,22 +920,30 @@ export class CellLab implements AfterViewInit, OnDestroy {
     const selected = organelles.filter((organelle) => visibleIds.has(organelle.id));
 
     selected.forEach((organelle) => {
-      const object = this.meshes.get(organelle.id);
-      if (!object) {
+      const group = this.meshes.get(organelle.id);
+      if (!group) {
         return;
       }
-      object.updateWorldMatrix(true, false);
-      const box = new THREE.Box3().setFromObject(object);
-      const worldCenter = box.getCenter(new THREE.Vector3());
-      const localCenter = object.worldToLocal(worldCenter.clone());
 
-      // Large shells would otherwise place their marker in the middle of the
-      // cell, on top of the nucleus. Put these markers on the visible rim.
-      if (organelle.id === 'membrane') {
-        localCenter.set(1.55, 1.7, 0);
-      } else if (organelle.id === 'cellwall') {
-        localCenter.set(-1.15, 1.72, 1.12);
+      let markerObject: THREE.Object3D;
+      let localCenter: THREE.Vector3;
+      if (organelle.id === 'membrane' || organelle.id === 'cellwall') {
+        markerObject = group;
+        localCenter =
+          organelle.id === 'membrane'
+            ? new THREE.Vector3(1.55, 1.7, 0)
+            : new THREE.Vector3(-1.15, 1.72, 1.12);
+      } else {
+        // Mitochondria, lysosomes and chloroplasts are groups of several
+        // instances. Using the whole group's bounding-box center would put the
+        // marker in the middle of the cell; anchor it on a real instance.
+        markerObject = this.representativeChild(group);
+        markerObject.updateWorldMatrix(true, false);
+        const box = new THREE.Box3().setFromObject(markerObject);
+        const worldCenter = box.getCenter(new THREE.Vector3());
+        localCenter = markerObject.worldToLocal(worldCenter.clone());
       }
+      markerObject.updateWorldMatrix(true, false);
 
       const overallIndex = organelles.findIndex((item) => item.id === organelle.id) + 1;
       const color = this.organelleColor(organelle);
@@ -929,7 +960,7 @@ export class CellLab implements AfterViewInit, OnDestroy {
       });
       this.calloutLayer?.appendChild(button);
 
-      this.callouts.push({ id: organelle.id, button, localCenter });
+      this.callouts.push({ id: organelle.id, button, markerObject, localCenter });
     });
 
     this.updateCallouts();
@@ -947,12 +978,12 @@ export class CellLab implements AfterViewInit, OnDestroy {
     const candidates: Array<{ callout: Callout; x: number; y: number }> = [];
     for (const callout of this.callouts) {
       const object = this.meshes.get(callout.id);
-      if (!object || !object.visible) {
+      if (!object || !object.visible || !callout.markerObject.visible) {
         callout.button.classList.add('is-hidden');
         continue;
       }
-      object.updateWorldMatrix(true, false);
-      const world = callout.localCenter.clone().applyMatrix4(object.matrixWorld);
+      callout.markerObject.updateWorldMatrix(true, false);
+      const world = callout.localCenter.clone().applyMatrix4(callout.markerObject.matrixWorld);
       const projected = world.project(this.camera);
 
       if (projected.z < -1 || projected.z > 1) {
@@ -1135,12 +1166,9 @@ export class CellLab implements AfterViewInit, OnDestroy {
       return;
     }
     // Groups such as mitochondria/lysosomes contain several instances. Center
-    // on the first visible instance instead of the group's overall center,
-    // otherwise the camera lands on the nucleus in the middle of the cell.
-    const focusObject =
-      object instanceof THREE.Group && object.children.length > 0
-        ? object.children[0]
-        : object;
+    // on a visible instance instead of the group's overall center, otherwise
+    // the camera lands on the nucleus in the middle of the cell.
+    const focusObject = this.representativeChild(object);
     focusObject.updateWorldMatrix(true, false);
     const box = new THREE.Box3().setFromObject(focusObject);
     const center = box.getCenter(new THREE.Vector3());
