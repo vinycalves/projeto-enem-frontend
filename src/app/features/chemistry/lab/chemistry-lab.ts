@@ -1,5 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Api } from '../../../core/api/api';
 import { getElements } from '../../../core/api/fn/crate-chemistry/get-elements';
 import { ElementSeed } from '../../../core/api/models/element-seed';
@@ -55,6 +64,8 @@ type LabProcess = 'reaction' | 'solution' | 'gas' | 'ph';
 })
 export class ChemistryLab implements OnInit {
   private readonly api = inject(Api);
+  private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   private nextId = 1;
 
   protected readonly elements = signal<ElementSeed[]>([]);
@@ -318,6 +329,12 @@ export class ChemistryLab implements OnInit {
   });
 
   ngOnInit(): void {
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const process = params.get('process');
+      if (process === 'reaction' || process === 'solution' || process === 'gas' || process === 'ph') {
+        this.activeProcess.set(process);
+      }
+    });
     void this.loadElements();
   }
 

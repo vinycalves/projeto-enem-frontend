@@ -44,10 +44,10 @@ export const routes: Routes = [
   },
   {
     path: 'quimica',
-    title: 'Laboratório de Química · ENEM Aberto',
+    title: 'Química · ENEM Aberto',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/chemistry/lab/chemistry-lab').then((module) => module.ChemistryLab),
+      import('./features/chemistry/guide/chemistry-guide').then((module) => module.ChemistryGuide),
   },
   {
     path: 'quimica/laboratorio',
@@ -55,6 +55,15 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/chemistry/lab/chemistry-lab').then((module) => module.ChemistryLab),
+  },
+  {
+    path: 'quimica/tabela-periodica',
+    title: 'Tabela periódica · ENEM Aberto',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/chemistry/periodic-table/periodic-table-page').then(
+        (module) => module.PeriodicTablePage,
+      ),
   },
   {
     path: 'biologia',

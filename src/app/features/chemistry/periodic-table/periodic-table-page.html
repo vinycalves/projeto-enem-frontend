@@ -1,0 +1,118 @@
+<div class="page periodic-page">
+  <div class="container">
+    <header class="periodic-head">
+      <div>
+        <p class="eyebrow">Química · tabela periódica</p>
+        <h1>Propriedades em contexto.</h1>
+        <p class="lede">
+          Selecione um elemento para ver massa, configuração, grupo, período, eletronegatividade e
+          raio. Use a busca para localizar símbolos, nomes ou números atômicos.
+        </p>
+      </div>
+      <div class="periodic-actions">
+        <a class="btn btn--outline btn--small" routerLink="/quimica">Voltar ao guia</a>
+        <a class="btn btn--primary btn--small" routerLink="/quimica/laboratorio">
+          Abrir laboratório
+        </a>
+      </div>
+    </header>
+
+    @if (loading()) {
+      <div class="periodic-message" role="status">Carregando os 118 elementos…</div>
+    } @else if (error()) {
+      <div class="alert alert--error" role="alert">{{ error() }}</div>
+    } @else {
+      <section class="periodic-tools" aria-label="Filtros da tabela">
+        <label class="periodic-search">
+          <span>Buscar elemento</span>
+          <input
+            type="search"
+            placeholder="H, Ferro, 26…"
+            [value]="search()"
+            (input)="setSearch($any($event.target).value)"
+          />
+        </label>
+        <label class="periodic-category">
+          <span>Categoria</span>
+          <select [value]="category()" (change)="setCategory($any($event.target).value)">
+            <option value="">Todas</option>
+            @for (item of categories(); track item) {
+              <option [value]="item">{{ item }}</option>
+            }
+          </select>
+        </label>
+        <button class="periodic-clear" type="button" (click)="clearFilters()">Limpar</button>
+        <span class="periodic-count">{{ resultCount() }} elementos</span>
+      </section>
+
+      <div class="periodic-scroll" role="region" aria-label="Tabela periódica interativa" tabindex="0">
+        <div class="periodic-grid">
+          @for (cell of visibleCells(); track cell.element.atomicNumber) {
+            <button
+              type="button"
+              class="element-cell"
+              [class.is-f-block]="cell.block !== 'main'"
+              [class.is-selected]="selected()?.atomicNumber === cell.element.atomicNumber"
+              [style.grid-row]="cell.row"
+              [style.grid-column]="cell.column"
+              [style.background]="categoryColor(cell.element.category)"
+              [attr.aria-label]="cell.element.atomicNumber + ' ' + cell.element.namePt"
+              (click)="select(cell.element)"
+            >
+              <span class="element-number">{{ cell.element.atomicNumber }}</span>
+              <strong>{{ cell.element.symbol }}</strong>
+              <span class="element-name">{{ cell.element.namePt }}</span>
+            </button>
+          }
+          <div class="f-block-label f-block-label--lanthanide" style="grid-row: 8; grid-column: 1 / 4">
+            Lantanídeos
+          </div>
+          <div class="f-block-label f-block-label--actinide" style="grid-row: 9; grid-column: 1 / 4">
+            Actinídeos
+          </div>
+        </div>
+      </div>
+
+      <div class="periodic-bottom">
+        <section class="element-detail" aria-live="polite" aria-labelledby="element-detail-title">
+          @if (selected(); as element) {
+            <div class="element-symbol" [style.background]="categoryColor(element.category)">
+              <span>{{ element.atomicNumber }}</span>
+              <strong>{{ element.symbol }}</strong>
+              <small>{{ mass(element) }}</small>
+            </div>
+            <div class="element-copy">
+              <p class="eyebrow">{{ element.category }}</p>
+              <h2 id="element-detail-title">{{ element.namePt }}</h2>
+              <dl>
+                <div><dt>Massa atômica</dt><dd>{{ mass(element) }} u</dd></div>
+                <div><dt>Grupo · período</dt><dd>{{ element.groupNumber ?? '—' }} · {{ element.period }}</dd></div>
+                <div><dt>Eletronegatividade</dt><dd>{{ electronegativity(element) }}</dd></div>
+                <div><dt>Raio atômico</dt><dd>{{ radius(element) }}</dd></div>
+                <div><dt>Estado padrão</dt><dd>{{ element.standardState ?? '—' }}</dd></div>
+                <div class="wide"><dt>Configuração</dt><dd>{{ element.electronConfiguration }}</dd></div>
+              </dl>
+              <p class="element-source">
+                Fonte: {{ element.sources[0] ?? 'base periódica versionada' }}
+              </p>
+            </div>
+          }
+        </section>
+
+        <aside class="periodic-legend" aria-label="Legenda de categorias">
+          <p class="eyebrow">Legenda</p>
+          @for (item of categories(); track item) {
+            <span>
+              <span class="legend-dot" [style.background]="categoryColor(item)"></span>
+              {{ item }}
+            </span>
+          }
+          <p class="periodic-note">
+            Categorias previstas estão marcadas como tal. A posição dos lantanídeos e actinídeos
+            segue a forma longa usual, separada para leitura.
+          </p>
+        </aside>
+      </div>
+    }
+  </div>
+</div>
