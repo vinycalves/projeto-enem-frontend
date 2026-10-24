@@ -1,0 +1,210 @@
+<div class="page math-guide-page">
+  <div class="container">
+    <header class="guide-head">
+      <div>
+        <p class="eyebrow">Matemática · guia completo</p>
+        <h1>Matemática para ler o mundo.</h1>
+        <p class="lede">
+          Os 16 blocos da área de Matemática e suas Tecnologias, com prioridades, fórmulas,
+          armadilhas e ferramentas interativas. A prova cobra modelagem e interpretação: o guia
+          conecta conceito, conta e contexto.
+        </p>
+      </div>
+      <div class="guide-head-actions">
+        <a class="btn btn--primary btn--small" routerLink="/matematica/laboratorio">
+          Abrir laboratório
+        </a>
+        <a class="btn btn--outline btn--small" routerLink="/guias/matematica">
+          Guia completo em markdown
+        </a>
+        <a class="btn btn--outline btn--small" routerLink="/estudar">Plano de estudos</a>
+      </div>
+    </header>
+
+    <div class="guide-stats" aria-label="Cobertura do guia">
+      <div><strong>{{ blocks.length }}</strong><span>blocos</span></div>
+      <div><strong>{{ totalTopics() }}</strong><span>subtemas</span></div>
+      <div><strong>{{ interactiveTopics() }}</strong><span>com ferramenta interativa</span></div>
+      <div><strong>{{ highTopics() }}</strong><span>em prioridade alta</span></div>
+    </div>
+
+    <div class="guide-controls">
+      <label class="guide-search">
+        <span>Buscar no guia</span>
+        <input
+          type="search"
+          placeholder="Ex.: porcentagem, área, probabilidade, função"
+          [value]="search()"
+          (input)="setSearch($any($event.target).value)"
+        />
+      </label>
+      <div class="priority-filter" role="group" aria-label="Filtrar por prioridade">
+        <span>Prioridade</span>
+        <button type="button" [class.is-active]="priority() === 'todas'" (click)="setPriority('todas')">Todas</button>
+        <button type="button" [class.is-active]="priority() === 'alta'" (click)="setPriority('alta')">Alta</button>
+        <button type="button" [class.is-active]="priority() === 'media'" (click)="setPriority('media')">Média</button>
+        <button type="button" [class.is-active]="priority() === 'baixa'" (click)="setPriority('baixa')">Baixa</button>
+        @if (activeFilters()) {
+          <button class="clear-filter" type="button" (click)="clearFilters()">Limpar</button>
+        }
+      </div>
+    </div>
+
+    <div class="guide-layout">
+      <nav class="guide-toc" aria-label="Blocos do guia">
+        <p class="eyebrow">Mapa do guia</p>
+        @for (block of blocks; track block.id) {
+          <a [href]="'#' + block.id">
+            <span class="toc-number">{{ block.number.toString().padStart(2, '0') }}</span>
+            <span>{{ block.title }}</span>
+            <span
+              class="toc-priority"
+              [class.is-alta]="block.priority === 'alta'"
+              [class.is-media]="block.priority === 'media'"
+              [class.is-baixa]="block.priority === 'baixa'"
+            >
+              {{ priorityLabel(block.priority) }}
+            </span>
+          </a>
+        }
+      </nav>
+
+      <main class="guide-content">
+        @if (filteredBlocks().length === 0) {
+          <div class="guide-empty">
+            <p class="eyebrow">Nada encontrado</p>
+            <h2>Nenhum subtema corresponde aos filtros.</h2>
+            <button class="btn btn--outline btn--small" type="button" (click)="clearFilters()">
+              Limpar filtros
+            </button>
+          </div>
+        } @else {
+          @for (block of filteredBlocks(); track block.id) {
+            <section class="guide-block" [id]="block.id" [attr.aria-labelledby]="block.id + '-title'">
+              <header class="guide-block-head">
+                <span class="block-number">{{ block.number.toString().padStart(2, '0') }}</span>
+                <div>
+                  <div class="block-title-row">
+                    <h2 [id]="block.id + '-title'">{{ block.title }}</h2>
+                    <span
+                      class="priority-badge"
+                      [class.is-alta]="block.priority === 'alta'"
+                      [class.is-media]="block.priority === 'media'"
+                      [class.is-baixa]="block.priority === 'baixa'"
+                    >
+                      Prioridade {{ priorityLabel(block.priority) }}
+                    </span>
+                  </div>
+                  <p>{{ block.intro }}</p>
+                </div>
+              </header>
+
+              <div class="topic-list">
+                @for (topic of block.topics; track topic.id) {
+                  <article class="topic-card">
+                    <div class="topic-head">
+                      <h3>{{ topic.title }}</h3>
+                      <span
+                        class="topic-priority"
+                        [class.is-alta]="topic.priority === 'alta'"
+                        [class.is-media]="topic.priority === 'media'"
+                        [class.is-baixa]="topic.priority === 'baixa'"
+                      >
+                        {{ priorityLabel(topic.priority) }}
+                      </span>
+                    </div>
+                    <ul>
+                      @for (bullet of topic.bullets; track $index) {
+                        <li>{{ bullet }}</li>
+                      }
+                    </ul>
+                    @if (topic.formulas?.length) {
+                      <div class="formula-line">
+                        @for (formula of topic.formulas; track formula) {
+                          <code>{{ formula }}</code>
+                        }
+                      </div>
+                    }
+                    <div class="topic-foot">
+                      @if (topic.tool; as tool) {
+                        <a class="tool-link" [routerLink]="tool.route" [queryParams]="toolParams(tool)">
+                          {{ tool.label }} <span aria-hidden="true">→</span>
+                        </a>
+                      } @else {
+                        <span class="guided-label">Guia de estudo</span>
+                      }
+                    </div>
+                  </article>
+                }
+              </div>
+            </section>
+          }
+        }
+
+        <section class="formula-section" aria-labelledby="math-formulas-title">
+          <div class="guide-block-head">
+            <span class="block-number">∑</span>
+            <div>
+              <h2 id="math-formulas-title">Fórmulas e relações que valem decorar</h2>
+              <p>Entenda os símbolos, as unidades e as condições de validade antes de usar.</p>
+            </div>
+          </div>
+          <div class="formula-grid">
+            @for (group of formulas; track group.title) {
+              <article class="formula-card">
+                <h3>{{ group.title }}</h3>
+                @for (item of group.items; track item) {
+                  <code>{{ item }}</code>
+                }
+              </article>
+            }
+          </div>
+        </section>
+
+        <section class="mistake-section" aria-labelledby="math-mistakes-title">
+          <p class="eyebrow">Armadilhas</p>
+          <h2 id="math-mistakes-title">Erros comuns</h2>
+          <ul class="mistake-list">
+            @for (item of commonMistakes; track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        </section>
+
+        <section class="study-section" aria-labelledby="math-study-title">
+          <p class="eyebrow">Método</p>
+          <h2 id="math-study-title">Como estudar Matemática</h2>
+          <ol>
+            @for (item of studyMethod; track item) {
+              <li>{{ item }}</li>
+            }
+          </ol>
+        </section>
+
+        <section class="sequence-section" aria-labelledby="math-sequence-title">
+          <p class="eyebrow">Sequência sugerida</p>
+          <h2 id="math-sequence-title">Ordem pedagógica, não oficial</h2>
+          <ol class="sequence-list">
+            @for (item of sequence; track item) {
+              <li>{{ item }}</li>
+            }
+          </ol>
+        </section>
+
+        <section class="checklist-section" aria-labelledby="math-checklist-title">
+          <p class="eyebrow">Checklist</p>
+          <h2 id="math-checklist-title">Considere um bloco consolidado quando conseguir:</h2>
+          <ul class="checklist">
+            @for (item of checklist; track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+          <p class="study-note">
+            Prioridades são estimativas pedagógicas; confirme com questões oficiais e registre os
+            critérios de classificação. Consulte o edital de 2026 e retificações antes da prova.
+          </p>
+        </section>
+      </main>
+    </div>
+  </div>
+</div>

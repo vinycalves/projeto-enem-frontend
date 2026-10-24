@@ -1,0 +1,83 @@
+<div class="page guide-library-page">
+  <div class="container">
+    <header class="library-head">
+      <div>
+        <p class="eyebrow">Guia completo do ENEM</p>
+        <h1>Todas as matérias. Um mapa só.</h1>
+        <p class="lede">
+          Os 15 guias de matéria do pacote oficial do projeto, com prioridades, conteúdo,
+          armadilhas, fontes e conexões. A leitura é completa; os laboratórios interativos
+          complementam os assuntos que já têm ferramenta.
+        </p>
+      </div>
+      <div class="library-stats" aria-label="Cobertura dos guias">
+        <strong>{{ subjectGuides().length }}</strong>
+        <span>guias de matéria</span>
+        <strong>4</strong>
+        <span>áreas + redação</span>
+      </div>
+    </header>
+
+    <div class="library-controls">
+      <label class="library-search">
+        <span>Buscar matéria ou assunto</span>
+        <input
+          type="search"
+          placeholder="Ex.: genética, eletricidade, Modernismo, redação"
+          [value]="search()"
+          (input)="setSearch($any($event.target).value)"
+        />
+      </label>
+      <div class="area-filter" role="group" aria-label="Filtrar por área">
+        @for (item of areas; track item.id) {
+          <button
+            type="button"
+            [class.is-active]="area() === item.id"
+            (click)="setArea(item.id)"
+          >
+            {{ item.label }}
+          </button>
+        }
+        @if (search() || area() !== 'todas') {
+          <button class="clear-filter" type="button" (click)="clear()">Limpar</button>
+        }
+      </div>
+    </div>
+
+    @if (filtered().length === 0) {
+      <div class="guide-empty">
+        <p class="eyebrow">Nada encontrado</p>
+        <h2>Nenhum guia corresponde à busca.</h2>
+        <button class="btn btn--outline btn--small" type="button" (click)="clear()">
+          Limpar filtros
+        </button>
+      </div>
+    } @else {
+      <div class="library-grid">
+        @for (guide of filtered(); track guide.slug) {
+          <article class="library-card" [class.is-index]="guide.slug === 'indice'">
+            <div class="library-card-top">
+              <span class="guide-mark" aria-hidden="true">{{ guide.mark }}</span>
+              <span class="guide-area">{{ guide.areaLabel }}</span>
+            </div>
+            <h2><a [routerLink]="['/guias', guide.slug]">{{ guide.shortTitle }}</a></h2>
+            <p>{{ guide.description }}</p>
+            <p class="guide-priority"><strong>Prioridade:</strong> {{ guide.priority }}</p>
+            <div class="library-card-actions">
+              <a class="primary-link" [routerLink]="['/guias', guide.slug]">Ler guia completo →</a>
+              @if (guide.interactiveRoute) {
+                <a class="secondary-link" [routerLink]="guide.interactiveRoute">Laboratório interativo</a>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+
+    <section class="library-note">
+      <strong>Como usar:</strong> leia o guia da matéria, marque os blocos de prioridade alta e
+      resolva questões oficiais. As prioridades do pacote são estimativas pedagógicas, não uma
+      contagem estatística; confirme o edital e as retificações de 2026.
+    </section>
+  </div>
+</div>

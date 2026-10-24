@@ -1,0 +1,63 @@
+<div class="page guide-reader-page">
+  <div class="reader-progress" aria-hidden="true">
+    <span [style.width.%]="readingProgress() * 100"></span>
+  </div>
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Você está aqui">
+      <a routerLink="/guias">Guias</a>
+      <span class="sep" aria-hidden="true">/</span>
+      <span>{{ guide()?.shortTitle ?? 'Guia' }}</span>
+    </nav>
+
+    @if (loading()) {
+      <div class="reader-message" role="status">Carregando guia completo…</div>
+    } @else if (error()) {
+      <div class="alert alert--error" role="alert">{{ error() }}</div>
+      <a class="btn btn--outline btn--small" routerLink="/guias">Voltar aos guias</a>
+    } @else if (guide(); as meta) {
+      <header class="reader-head">
+        <div>
+          <p class="eyebrow">{{ meta.areaLabel }} · guia completo</p>
+          <h1>{{ meta.title }}</h1>
+          <p class="lede">{{ meta.description }}</p>
+          <p class="reader-priority"><strong>Prioridade estimada:</strong> {{ meta.priority }}</p>
+        </div>
+        <div class="reader-actions">
+          @if (meta.interactiveRoute) {
+            <a class="btn btn--primary btn--small" [routerLink]="meta.interactiveRoute">
+              Abrir laboratório
+            </a>
+          }
+          <a class="btn btn--outline btn--small" routerLink="/guias">Todos os guias</a>
+        </div>
+      </header>
+
+      <div class="reader-layout" [class.is-toc-hidden]="!showToc()">
+        <aside class="reader-toc" [class.is-hidden]="!showToc()" aria-label="Neste guia">
+          <div class="toc-head">
+            <p class="eyebrow">Neste guia</p>
+            <button type="button" class="toc-toggle" (click)="toggleToc()">Ocultar</button>
+          </div>
+          <nav>
+            @for (heading of headings(); track heading.id) {
+              <a
+                [href]="'#' + heading.id"
+                [class.is-sub]="heading.level === 3"
+                [class.is-active]="activeHeading() === heading.id"
+              >
+                {{ heading.text }}
+              </a>
+            }
+          </nav>
+          <p class="toc-file">{{ meta.file }} · consulta 24/10/2026</p>
+        </aside>
+
+        @if (!showToc()) {
+          <button class="toc-reopen" type="button" (click)="toggleToc()">Mostrar índice</button>
+        }
+
+        <article #content class="guide-markdown" [innerHTML]="html()"></article>
+      </div>
+    }
+  </div>
+</div>

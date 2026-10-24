@@ -53,6 +53,24 @@
       >
         pH ácido-base
       </button>
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeProcess() === 'calorimetry'"
+        [class.is-active]="activeProcess() === 'calorimetry'"
+        (click)="setProcess('calorimetry')"
+      >
+        Calorimetria
+      </button>
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeProcess() === 'half-life'"
+        [class.is-active]="activeProcess() === 'half-life'"
+        (click)="setProcess('half-life')"
+      >
+        Meia-vida
+      </button>
     </div>
 
     @if (elementsLoading()) {
@@ -485,6 +503,93 @@
           </section>
         }
 
+        @case ('calorimetry') {
+          <section class="chem-card ph-card" aria-labelledby="calorimetry-title">
+            <div class="chem-card-head">
+              <div>
+                <p class="eyebrow">Termoquímica</p>
+                <h2 id="calorimetry-title">Calorimetria</h2>
+              </div>
+              <span class="chem-lab-chip">Q = m · c · ΔT</span>
+            </div>
+            <div class="inline-fields">
+              <label class="field">
+                <span>Massa (g)</span>
+                <input type="number" min="0" step="any" [value]="calorimetryMass() ?? ''" (input)="setNumber('calorimetryMass', $event)" />
+              </label>
+              <label class="field">
+                <span>Calor específico (J/g·°C)</span>
+                <input type="number" min="0" step="any" [value]="calorimetryHeat() ?? ''" (input)="setNumber('calorimetryHeat', $event)" />
+              </label>
+              <label class="field">
+                <span>Variação de temperatura (°C)</span>
+                <input type="number" step="any" [value]="calorimetryDeltaT() ?? ''" (input)="setNumber('calorimetryDeltaT', $event)" />
+              </label>
+            </div>
+            @if (calorimetryResult(); as result) {
+              <div class="result-grid result-grid--two">
+                <div>
+                  <span>Calor (J)</span>
+                  <strong>{{ format(result.energyJoules, 2) }} J</strong>
+                </div>
+                <div>
+                  <span>Calor (kJ)</span>
+                  <strong>{{ format(result.energyKilojoules, 3) }} kJ</strong>
+                </div>
+                <div>
+                  <span>Sentido</span>
+                  <strong>{{ result.released ? 'Liberado' : 'Absorvido' }}</strong>
+                </div>
+              </div>
+            } @else {
+              <p class="field-hint">Informe massa, calor específico e variação de temperatura.</p>
+            }
+            <p class="field-hint">
+              Q positivo indica calor absorvido; Q negativo, calor liberado. O modelo supõe
+              aquecimento/resfriamento sem mudança de estado.
+            </p>
+          </section>
+        }
+
+        @case ('half-life') {
+          <section class="chem-card ph-card" aria-labelledby="half-life-title">
+            <div class="chem-card-head">
+              <div>
+                <p class="eyebrow">Radioatividade</p>
+                <h2 id="half-life-title">Meia-vida</h2>
+              </div>
+              <span class="chem-lab-chip">N = N₀ / 2ˣ</span>
+            </div>
+            <div class="inline-fields">
+              <label class="field">
+                <span>Massa inicial (g)</span>
+                <input type="number" min="0" step="any" [value]="halfLifeInitial() ?? ''" (input)="setNumber('halfLifeInitial', $event)" />
+              </label>
+              <label class="field">
+                <span>Meia-vida (mesma unidade de tempo)</span>
+                <input type="number" min="0" step="any" [value]="halfLifeValue() ?? ''" (input)="setNumber('halfLifeValue', $event)" />
+              </label>
+              <label class="field">
+                <span>Tempo decorrido</span>
+                <input type="number" min="0" step="any" [value]="halfLifeElapsed() ?? ''" (input)="setNumber('halfLifeElapsed', $event)" />
+              </label>
+            </div>
+            @if (halfLifeResult(); as result) {
+              <div class="result-grid">
+                <div><span>Massa restante</span><strong>{{ formatSmall(result.remaining) }} g</strong></div>
+                <div><span>Fração restante</span><strong>{{ format(result.fraction * 100, 3) }}%</strong></div>
+                <div><span>Meias-vidas decorridas</span><strong>{{ format(result.halfLives, 3) }}</strong></div>
+              </div>
+            } @else {
+              <p class="field-hint">Informe valores positivos para calcular.</p>
+            }
+            <p class="field-hint">
+              Modelo de decaimento exponencial ideal. A unidade de tempo do tempo decorrido deve
+              ser a mesma da meia-vida.
+            </p>
+          </section>
+        }
+
         @case ('gas') {
           <section class="chem-card gas-card" aria-labelledby="gas-title">
             <div class="chem-card-head">
@@ -540,9 +645,9 @@
 
     <section class="chem-lab-footnote">
       <strong>Escopo desta versão:</strong> balanceamento de fórmulas livres, massa molar,
-      estequiometria, soluções/diluição, gás ideal e pH ácido-base. Previsão automática de produtos,
-      equilíbrio com dados ausentes, redox e eletroquímica ainda não estão implementados; quando
-      entrarem, terão validação e fontes próprias.
+      estequiometria, soluções/diluição, gás ideal, pH ácido-base, calorimetria e meia-vida.
+      Previsão automática de produtos, equilíbrio com dados ausentes, redox e eletroquímica ainda
+      não estão implementados; quando entrarem, terão validação e fontes próprias.
     </section>
   </div>
 </div>

@@ -43,6 +43,38 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'guias',
+    title: 'Guias completos do ENEM · ENEM Aberto',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/guides/guide-library').then((module) => module.GuideLibrary),
+  },
+  {
+    path: 'guias/:slug',
+    title: 'Guia completo · ENEM Aberto',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/guides/guide-reader').then((module) => module.GuideReader),
+  },
+  {
+    path: 'matematica',
+    title: 'Matemática · ENEM Aberto',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/mathematics/guide/mathematics-guide').then(
+        (module) => module.MathematicsGuide,
+      ),
+  },
+  {
+    path: 'matematica/laboratorio',
+    title: 'Laboratório de Matemática · ENEM Aberto',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/mathematics/lab/mathematics-lab').then(
+        (module) => module.MathematicsLab,
+      ),
+  },
+  {
     path: 'quimica',
     title: 'Química · ENEM Aberto',
     canActivate: [authGuard],

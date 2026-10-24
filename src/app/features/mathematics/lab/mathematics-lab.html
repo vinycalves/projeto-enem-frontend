@@ -1,0 +1,259 @@
+<div class="page math-lab-page">
+  <div class="container">
+    <header class="math-lab-head">
+      <div>
+        <p class="eyebrow">Laboratório de Matemática</p>
+        <h1>Calcule, compare, visualize.</h1>
+        <p class="lede">
+          Ferramentas para os blocos de maior recorrência: porcentagem e juros, proporção,
+          geometria, estatística, probabilidade e funções. Cada resultado mostra a fórmula e as
+          unidades usadas.
+        </p>
+      </div>
+      <div class="math-lab-actions">
+        <span class="math-chip">2D · cálculo</span>
+        <a class="btn btn--outline btn--small" routerLink="/matematica">Voltar ao guia</a>
+      </div>
+    </header>
+
+    <div class="process-tabs" role="tablist" aria-label="Ferramentas de Matemática">
+      <button type="button" [class.is-active]="activeProcess() === 'finance'" (click)="setProcess('finance')">Porcentagem e juros</button>
+      <button type="button" [class.is-active]="activeProcess() === 'proportion'" (click)="setProcess('proportion')">Proporção</button>
+      <button type="button" [class.is-active]="activeProcess() === 'geometry'" (click)="setProcess('geometry')">Geometria</button>
+      <button type="button" [class.is-active]="activeProcess() === 'statistics'" (click)="setProcess('statistics')">Estatística</button>
+      <button type="button" [class.is-active]="activeProcess() === 'probability'" (click)="setProcess('probability')">Probabilidade</button>
+      <button type="button" [class.is-active]="activeProcess() === 'function'" (click)="setProcess('function')">Funções</button>
+    </div>
+
+    @switch (activeProcess()) {
+      @case ('finance') {
+        <div class="tool-grid">
+          <section class="math-card">
+            <div class="math-card-head">
+              <div><p class="eyebrow">Porcentagem</p><h2>Parte, todo e variação</h2></div>
+              <code>p% = p/100</code>
+            </div>
+            <div class="field-grid">
+              <label class="field"><span>Valor base</span><input type="number" step="any" [value]="percentageValue() ?? ''" (input)="setNumber('percentageValue', $event)" /></label>
+              <label class="field"><span>Percentual (%)</span><input type="number" step="any" [value]="percentageRate() ?? ''" (input)="setNumber('percentageRate', $event)" /></label>
+            </div>
+            @if (percentageResult() !== null) {
+              <div class="result-grid result-grid--two">
+                <div><span>Resultado</span><strong>{{ format(percentageResult(), 2) }}</strong></div>
+              </div>
+            }
+            <div class="field-grid">
+              <label class="field"><span>Valor inicial</span><input type="number" step="any" [value]="initialValue() ?? ''" (input)="setNumber('initialValue', $event)" /></label>
+              <label class="field"><span>Valor final</span><input type="number" step="any" [value]="finalValue() ?? ''" (input)="setNumber('finalValue', $event)" /></label>
+            </div>
+            @if (changeResult() !== null) {
+              <div class="result-grid result-grid--two">
+                <div><span>Variação percentual</span><strong>{{ format(changeResult(), 2) }}%</strong></div>
+              </div>
+            }
+            <label class="field"><span>Variações sucessivas (separe por ponto e vírgula)</span><input type="text" [value]="successiveRates()" (input)="setSuccessiveRates($any($event.target).value)" /></label>
+            @if (successiveResult() !== null) {
+              <p class="math-hint">Valor após as variações: <strong>{{ format(successiveResult(), 2) }}</strong></p>
+            }
+          </section>
+
+          <section class="math-card">
+            <div class="math-card-head">
+              <div><p class="eyebrow">Juros</p><h2>Simples e compostos</h2></div>
+              <code>M = C(1+i)^t</code>
+            </div>
+            <div class="field-grid">
+              <label class="field"><span>Capital (R$)</span><input type="number" min="0" step="any" [value]="capital() ?? ''" (input)="setNumber('capital', $event)" /></label>
+              <label class="field"><span>Taxa por período (%)</span><input type="number" step="any" [value]="interestRate() ?? ''" (input)="setNumber('interestRate', $event)" /></label>
+              <label class="field"><span>Períodos</span><input type="number" min="0" step="any" [value]="periods() ?? ''" (input)="setNumber('periods', $event)" /></label>
+            </div>
+            @if (simpleResult(); as result) {
+              <div class="interest-block">
+                <h3>Juros simples</h3>
+                <div class="result-grid result-grid--two">
+                  <div><span>Juros</span><strong>R$ {{ format(result.interest, 2) }}</strong></div>
+                  <div><span>Montante</span><strong>R$ {{ format(result.amount, 2) }}</strong></div>
+                </div>
+              </div>
+            }
+            @if (compoundResult(); as result) {
+              <div class="interest-block">
+                <h3>Juros compostos</h3>
+                <div class="result-grid result-grid--two">
+                  <div><span>Juros</span><strong>R$ {{ format(result.interest, 2) }}</strong></div>
+                  <div><span>Montante</span><strong>R$ {{ format(result.amount, 2) }}</strong></div>
+                </div>
+              </div>
+            }
+            <p class="math-hint">Taxa e tempo precisam estar na mesma unidade. O modelo não inclui impostos ou tarifas.</p>
+          </section>
+        </div>
+      }
+
+      @case ('proportion') {
+        <section class="math-card narrow-card">
+          <div class="math-card-head">
+            <div><p class="eyebrow">Razão e proporção</p><h2>Regra de três</h2></div>
+            <code>a/b = c/x</code>
+          </div>
+          <div class="field-grid">
+            <label class="field"><span>a</span><input type="number" step="any" [value]="proportionA() ?? ''" (input)="setNumber('proportionA', $event)" /></label>
+            <label class="field"><span>b</span><input type="number" step="any" [value]="proportionB() ?? ''" (input)="setNumber('proportionB', $event)" /></label>
+            <label class="field"><span>c</span><input type="number" step="any" [value]="proportionC() ?? ''" (input)="setNumber('proportionC', $event)" /></label>
+            <label class="field"><span>Relação</span><select [value]="relation()" (change)="setRelation($any($event.target).value)"><option value="direct">Diretamente proporcional</option><option value="inverse">Inversamente proporcional</option></select></label>
+          </div>
+          @if (proportionResult() !== null) {
+            <div class="result-grid result-grid--two">
+              <div><span>Valor de x</span><strong>{{ format(proportionResult(), 3) }}</strong></div>
+            </div>
+          }
+          <p class="math-hint">Na relação direta, a razão é constante; na inversa, o produto é constante. Não aplique a mesma conta aos dois casos.</p>
+        </section>
+      }
+
+      @case ('geometry') {
+        <section class="math-card">
+          <div class="math-card-head">
+            <div><p class="eyebrow">Geometria</p><h2>Área, perímetro e volume</h2></div>
+            <code>unidades consistentes</code>
+          </div>
+          <label class="field"><span>Figura ou sólido</span><select [value]="shape()" (change)="setShape($any($event.target).value)">
+            <option value="rectangle">Retângulo</option>
+            <option value="triangle">Triângulo</option>
+            <option value="circle">Círculo</option>
+            <option value="trapezoid">Trapézio</option>
+            <option value="cylinder">Cilindro</option>
+            <option value="cone">Cone</option>
+            <option value="sphere">Esfera</option>
+          </select></label>
+          <div class="field-grid">
+            @if (geometryFields().base) {
+              <label class="field"><span>Base</span><input type="number" min="0" step="any" [value]="geometryBase() ?? ''" (input)="setNumber('geometryBase', $event)" /></label>
+            }
+            @if (geometryFields().top) {
+              <label class="field"><span>Base menor</span><input type="number" min="0" step="any" [value]="geometryTop() ?? ''" (input)="setNumber('geometryTop', $event)" /></label>
+            }
+            @if (geometryFields().height) {
+              <label class="field"><span>Altura</span><input type="number" min="0" step="any" [value]="geometryHeight() ?? ''" (input)="setNumber('geometryHeight', $event)" /></label>
+            }
+            @if (geometryFields().radius) {
+              <label class="field"><span>Raio</span><input type="number" min="0" step="any" [value]="geometryRadius() ?? ''" (input)="setNumber('geometryRadius', $event)" /></label>
+            }
+          </div>
+          @if (geometryResult(); as result) {
+            <div class="result-grid">
+              @if (result.area !== undefined) {
+                <div><span>Área</span><strong>{{ format(result.area, 3) }}</strong></div>
+              }
+              @if (result.perimeter !== undefined) {
+                <div><span>Perímetro / circunferência</span><strong>{{ format(result.perimeter, 3) }}</strong></div>
+              }
+              @if (result.volume !== undefined) {
+                <div><span>Volume</span><strong>{{ format(result.volume, 3) }}</strong></div>
+              }
+              @if (result.surface !== undefined) {
+                <div><span>Área da superfície</span><strong>{{ format(result.surface, 3) }}</strong></div>
+              }
+            </div>
+          } @else {
+            <p class="math-hint">Preencha as medidas positivas da figura selecionada.</p>
+          }
+          <p class="math-hint">As unidades de área e volume são quadradas e cúbicas; não misture cm com m.</p>
+        </section>
+      }
+
+      @case ('statistics') {
+        <section class="math-card">
+          <div class="math-card-head">
+            <div><p class="eyebrow">Estatística descritiva</p><h2>Resumo de um conjunto</h2></div>
+            <code>x̄ = Σxᵢ/n</code>
+          </div>
+          <label class="field"><span>Valores (separe por ponto e vírgula, vírgula ou espaço)</span><textarea rows="3" [value]="statisticsInput()" (input)="setStatisticsInput($any($event.target).value)"></textarea></label>
+          @if (statisticsResult(); as result) {
+            <div class="result-grid">
+              <div><span>Quantidade</span><strong>{{ result.count }}</strong></div>
+              <div><span>Média</span><strong>{{ format(result.mean, 3) }}</strong></div>
+              <div><span>Mediana</span><strong>{{ format(result.median, 3) }}</strong></div>
+              <div><span>Moda</span><strong>{{ result.mode.length ? result.mode.join(', ') : 'sem repetição' }}</strong></div>
+              <div><span>Amplitude</span><strong>{{ format(result.range, 3) }}</strong></div>
+              <div><span>Desvio padrão</span><strong>{{ format(result.standardDeviation, 3) }}</strong></div>
+            </div>
+          } @else {
+            <p class="math-hint">Digite pelo menos um número.</p>
+          }
+          <p class="math-hint">Média e desvio padrão podem ser sensíveis a valores extremos; a mediana costuma ser mais resistente.</p>
+        </section>
+      }
+
+      @case ('probability') {
+        <div class="tool-grid">
+          <section class="math-card">
+            <div class="math-card-head"><div><p class="eyebrow">Probabilidade</p><h2>Casos equiprováveis</h2></div><code>P(A)=n(A)/n(Ω)</code></div>
+            <div class="field-grid">
+              <label class="field"><span>Casos favoráveis</span><input type="number" min="0" step="1" [value]="favorable() ?? ''" (input)="setNumber('favorable', $event)" /></label>
+              <label class="field"><span>Casos possíveis</span><input type="number" min="0" step="1" [value]="totalOutcomes() ?? ''" (input)="setNumber('totalOutcomes', $event)" /></label>
+            </div>
+            @if (probabilityResult() !== null) {
+              <div class="result-grid result-grid--two">
+                <div><span>Probabilidade</span><strong>{{ format((probabilityResult() ?? 0) * 100, 2) }}%</strong></div>
+                <div><span>Forma decimal</span><strong>{{ format(probabilityResult(), 4) }}</strong></div>
+              </div>
+            }
+          </section>
+          <section class="math-card">
+            <div class="math-card-head"><div><p class="eyebrow">Contagem</p><h2>Arranjo e combinação</h2></div><code>ordem importa?</code></div>
+            <div class="field-grid">
+              <label class="field"><span>n</span><input type="number" min="0" step="1" [value]="countN() ?? ''" (input)="setNumber('countN', $event)" /></label>
+              <label class="field"><span>p</span><input type="number" min="0" step="1" [value]="countP() ?? ''" (input)="setNumber('countP', $event)" /></label>
+            </div>
+            @if (permutationResult() !== null) {
+              <div class="result-grid result-grid--two">
+                <div><span>Arranjo (ordem importa)</span><strong>{{ format(permutationResult(), 0) }}</strong></div>
+                <div><span>Combinação (ordem não importa)</span><strong>{{ format(combinationResult(), 0) }}</strong></div>
+              </div>
+            }
+            <p class="math-hint">A fórmula de casos favoráveis/casos possíveis exige resultados equiprováveis.</p>
+          </section>
+        </div>
+      }
+
+      @case ('function') {
+        <section class="math-card">
+          <div class="math-card-head"><div><p class="eyebrow">Funções</p><h2>Gráfico e lei de formação</h2></div><code>tabela ↔ gráfico</code></div>
+          <div class="field-grid">
+            <label class="field"><span>Tipo</span><select [value]="functionKind()" (change)="setFunctionKind($any($event.target).value)">
+              <option value="affine">Afim: ax + b</option>
+              <option value="quadratic">Quadrática: ax² + bx + c</option>
+              <option value="exponential">Exponencial: a·bˣ + c</option>
+            </select></label>
+            <label class="field"><span>a</span><input type="number" step="any" [value]="functionA() ?? ''" (input)="setNumber('functionA', $event)" /></label>
+            <label class="field"><span>b</span><input type="number" step="any" [value]="functionB() ?? ''" (input)="setNumber('functionB', $event)" /></label>
+            @if (functionKind() !== 'affine') {
+              <label class="field"><span>c</span><input type="number" step="any" [value]="functionC() ?? ''" (input)="setNumber('functionC', $event)" /></label>
+            }
+          </div>
+          <p class="function-description">{{ functionDescription() }}</p>
+          <div class="function-plot" aria-label="Gráfico da função">
+            <svg viewBox="0 0 640 320" role="img">
+              <title>{{ functionDescription() }}</title>
+              <line class="math-axis" x1="60" y1="280" x2="580" y2="280" />
+              <line class="math-axis" x1="60" y1="40" x2="60" y2="280" />
+              @for (tick of [0, 1, 2, 3, 4, 5, 6, 7, 8]; track tick) {
+                <line class="math-grid-line" [attr.x1]="60 + tick * 65" y1="40" [attr.x2]="60 + tick * 65" y2="280" />
+              }
+              <path class="math-function-path" [attr.d]="functionPath()" />
+            </svg>
+          </div>
+          <p class="math-hint">A janela do gráfico é x de −10 a 10; o eixo y se ajusta à função. Para interpretar um contexto, confira domínio e unidades.</p>
+        </section>
+      }
+    }
+
+    <section class="math-footnote">
+      <strong>Escopo desta versão:</strong> porcentagem e juros, regra de três, geometria plana/espacial,
+      estatística descritiva, probabilidade/contagem e visualização de funções. Cálculos de
+      trigonometria, geometria analítica, PA/PG, matrizes e sistemas continuam no guia como estudo
+      dirigido e podem ganhar ferramentas próprias na próxima fase.
+    </section>
+  </div>
+</div>

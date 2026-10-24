@@ -3,7 +3,7 @@ export type GuidePriority = 'alta' | 'media' | 'baixa';
 export interface GuideTool {
   label: string;
   route: string;
-  process?: 'reaction' | 'solution' | 'gas' | 'ph';
+  process?: 'reaction' | 'solution' | 'gas' | 'ph' | 'calorimetry' | 'half-life';
 }
 
 export interface GuideTopic {
@@ -595,6 +595,7 @@ export const CHEMISTRY_GUIDE: GuideBlock[] = [
           'Poder calorífico é energia liberada por unidade de massa ou volume.',
         ],
         formulas: ['Q = m · c · ΔT'],
+        tool: { label: 'Calcular calorimetria', route: LAB, process: 'calorimetry' },
       },
       {
         id: 'entropia-gibbs',
@@ -895,6 +896,7 @@ export const CHEMISTRY_GUIDE: GuideBlock[] = [
           'Datação por carbono-14 usa esse princípio.',
         ],
         formulas: ['N = N₀ / 2ˣ', 'x = t / t₁/₂'],
+        tool: { label: 'Calcular meia-vida', route: LAB, process: 'half-life' },
       },
       {
         id: 'fissao-fusao',

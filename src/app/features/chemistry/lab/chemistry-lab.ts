@@ -22,6 +22,8 @@ import {
   formulaNotation,
   parseChemicalFormula,
 } from './formula';
+import { calculateCalorimetry } from './calorimetry';
+import { calculateHalfLife } from './half-life';
 import { calculatePh } from './ph';
 import { calculateStoichiometry, StoichiometryResult } from './stoichiometry';
 import { ChemEquation, EquationTerm } from '../shared/chem-equation';
@@ -53,7 +55,7 @@ interface MolarRow {
   molarMass: number;
 }
 
-type LabProcess = 'reaction' | 'solution' | 'gas' | 'ph';
+type LabProcess = 'reaction' | 'solution' | 'gas' | 'ph' | 'calorimetry' | 'half-life';
 
 @Component({
   selector: 'app-chemistry-lab',
@@ -106,7 +108,10 @@ export class ChemistryLab implements OnInit {
   protected readonly phResult = computed(() => {
     const concentration = this.phConcentration();
     const constant = this.phConstant();
-    if (concentration === null || this.phStrength() === 'weak' && (constant === null || constant <= 0)) {
+    if (
+      concentration === null ||
+      (this.phStrength() === 'weak' && (constant === null || constant <= 0))
+    ) {
       return null;
     }
     return calculatePh({
@@ -116,6 +121,36 @@ export class ChemistryLab implements OnInit {
       ionizationConstant: this.phStrength() === 'weak' ? constant ?? 0 : 0,
       kw: 1e-14,
     });
+  });
+
+  protected readonly calorimetryMass = signal<number | null>(100);
+  protected readonly calorimetryHeat = signal<number | null>(4.18);
+  protected readonly calorimetryDeltaT = signal<number | null>(10);
+  protected readonly calorimetryResult = computed(() => {
+    const mass = this.calorimetryMass();
+    const heat = this.calorimetryHeat();
+    const deltaT = this.calorimetryDeltaT();
+    if (mass === null || heat === null || deltaT === null) {
+      return null;
+    }
+    return calculateCalorimetry({
+      massGrams: mass,
+      specificHeatJPerGramCelsius: heat,
+      temperatureChangeCelsius: deltaT,
+    });
+  });
+
+  protected readonly halfLifeInitial = signal<number | null>(80);
+  protected readonly halfLifeValue = signal<number | null>(5);
+  protected readonly halfLifeElapsed = signal<number | null>(10);
+  protected readonly halfLifeResult = computed(() => {
+    const initial = this.halfLifeInitial();
+    const halfLife = this.halfLifeValue();
+    const elapsed = this.halfLifeElapsed();
+    if (initial === null || halfLife === null || elapsed === null) {
+      return null;
+    }
+    return calculateHalfLife(initial, halfLife, elapsed);
   });
 
   protected readonly elementMap = computed<ElementTable>(() => {
@@ -331,7 +366,14 @@ export class ChemistryLab implements OnInit {
   ngOnInit(): void {
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const process = params.get('process');
-      if (process === 'reaction' || process === 'solution' || process === 'gas' || process === 'ph') {
+      if (
+        process === 'reaction' ||
+        process === 'solution' ||
+        process === 'gas' ||
+        process === 'ph' ||
+        process === 'calorimetry' ||
+        process === 'half-life'
+      ) {
         this.activeProcess.set(process);
       }
     });
@@ -467,6 +509,24 @@ export class ChemistryLab implements OnInit {
         break;
       case 'phConstant':
         this.phConstant.set(safe);
+        break;
+      case 'calorimetryMass':
+        this.calorimetryMass.set(safe);
+        break;
+      case 'calorimetryHeat':
+        this.calorimetryHeat.set(safe);
+        break;
+      case 'calorimetryDeltaT':
+        this.calorimetryDeltaT.set(safe);
+        break;
+      case 'halfLifeInitial':
+        this.halfLifeInitial.set(safe);
+        break;
+      case 'halfLifeValue':
+        this.halfLifeValue.set(safe);
+        break;
+      case 'halfLifeElapsed':
+        this.halfLifeElapsed.set(safe);
         break;
       default:
         break;

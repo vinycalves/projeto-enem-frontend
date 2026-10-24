@@ -1,0 +1,265 @@
+.guide-library-page {
+  padding-top: 1.2rem;
+}
+
+.library-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  align-items: end;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.library-head h1 {
+  max-width: 17ch;
+  margin-bottom: 0.5rem;
+}
+
+.library-head .lede {
+  max-width: 70ch;
+  margin-bottom: 0;
+}
+
+.library-stats {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0.1rem 0.5rem;
+  align-items: baseline;
+  flex-shrink: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-deep);
+}
+
+.library-stats strong {
+  color: var(--forest);
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.library-stats span {
+  color: var(--ink-faint);
+  font-size: 0.68rem;
+}
+
+.library-controls {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.library-search {
+  display: grid;
+  gap: 0.3rem;
+  max-width: 40rem;
+  color: var(--ink-soft);
+  font-size: 0.7rem;
+}
+
+.library-search input {
+  min-height: 2.5rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.library-search input:focus {
+  outline: 2px solid var(--forest);
+  outline-offset: 1px;
+}
+
+.area-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.area-filter button {
+  min-height: 2.2rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.area-filter button:hover,
+.area-filter button.is-active {
+  border-color: var(--forest);
+  background: var(--forest);
+  color: #fffdf6;
+}
+
+.area-filter .clear-filter {
+  border-color: transparent;
+  background: transparent;
+  color: var(--forest);
+  text-decoration: underline;
+}
+
+.library-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  padding-top: 1rem;
+}
+
+.library-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+
+.library-card.is-index {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.library-card.is-index h2,
+.library-card.is-index p,
+.library-card.is-index .library-card-top {
+  flex-basis: 100%;
+}
+
+.library-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.guide-mark {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.35rem;
+  border: 1px solid var(--forest);
+  color: var(--forest);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.guide-area {
+  color: var(--ink-faint);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.library-card h2 {
+  margin: 0.1rem 0 0;
+  font-size: 1.15rem;
+}
+
+.library-card h2 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.library-card h2 a:hover {
+  color: var(--forest);
+}
+
+.library-card p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
+.guide-priority {
+  color: var(--ink-faint) !important;
+  font-size: 0.68rem !important;
+}
+
+.guide-priority strong {
+  color: var(--terracotta-deep);
+}
+
+.library-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 0.4rem;
+}
+
+.primary-link {
+  color: var(--forest);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.secondary-link {
+  color: var(--terracotta-deep);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.library-note {
+  margin-top: 1.2rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line);
+  background: var(--paper-deep);
+  color: var(--ink-faint);
+  font-size: 0.68rem;
+  line-height: 1.55;
+}
+
+.library-note strong {
+  color: var(--ink-soft);
+}
+
+.guide-empty {
+  margin-top: 1rem;
+  padding: 2rem;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+
+.guide-empty h2 {
+  margin: 0.2rem 0 0.7rem;
+}
+
+@media (max-width: 1000px) {
+  .library-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .library-card.is-index {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  .library-head {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .library-grid {
+    grid-template-columns: 1fr;
+  }
+}

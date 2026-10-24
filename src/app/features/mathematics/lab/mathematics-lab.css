@@ -1,0 +1,274 @@
+.math-lab-page {
+  padding-top: 1.2rem;
+}
+
+.math-lab-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  align-items: end;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.math-lab-head h1 {
+  max-width: 16ch;
+  margin-bottom: 0.5rem;
+}
+
+.math-lab-head .lede {
+  max-width: 72ch;
+  margin-bottom: 0;
+}
+
+.math-lab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: 0.4rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.math-chip {
+  padding: 0.3rem 0.45rem;
+  border: 1px solid var(--forest);
+  color: var(--forest);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.process-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 1rem 0 0;
+}
+
+.process-tabs button {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.process-tabs button:hover,
+.process-tabs button.is-active {
+  border-color: var(--forest);
+  background: var(--forest);
+  color: #fffdf6;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  align-items: start;
+  padding-top: 1rem;
+}
+
+.math-card {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+
+.tool-grid .math-card {
+  margin-top: 0;
+}
+
+.math-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.math-card-head h2 {
+  margin: 0.1rem 0 0;
+  font-size: 1.15rem;
+}
+
+.math-card-head code {
+  flex-shrink: 0;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid var(--line);
+  background: var(--paper-deep);
+  color: var(--forest);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--ink-soft);
+  font-size: 0.7rem;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 2.2rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.78rem;
+}
+
+.field textarea {
+  min-height: 4rem;
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: 2px solid var(--forest);
+  outline-offset: 1px;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+
+.result-grid--two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.result-grid > div {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.55rem;
+  border-left: 2px solid var(--forest);
+  background: var(--paper-deep);
+}
+
+.result-grid span {
+  color: var(--ink-faint);
+  font-size: 0.65rem;
+}
+
+.result-grid strong {
+  color: var(--forest);
+  font-size: 0.84rem;
+}
+
+.interest-block {
+  display: grid;
+  gap: 0.4rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--line);
+}
+
+.interest-block h3 {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.math-hint {
+  margin: 0;
+  color: var(--ink-faint);
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+
+.narrow-card {
+  max-width: 42rem;
+}
+
+.function-description {
+  margin: 0;
+  color: var(--forest);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.function-plot {
+  padding: 0.4rem;
+  border: 1px solid var(--line);
+  background: var(--paper-deep);
+}
+
+.function-plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.math-axis {
+  stroke: rgba(16, 37, 31, 0.5);
+  stroke-width: 1.2;
+}
+
+.math-grid-line {
+  stroke: rgba(16, 37, 31, 0.1);
+  stroke-width: 1;
+}
+
+.math-function-path {
+  fill: none;
+  stroke: var(--terracotta-deep);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.math-footnote {
+  margin-top: 1.2rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line);
+  background: var(--paper-deep);
+  color: var(--ink-faint);
+  font-size: 0.68rem;
+  line-height: 1.55;
+}
+
+.math-footnote strong {
+  color: var(--ink-soft);
+}
+
+@media (max-width: 860px) {
+  .tool-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .math-lab-head {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .math-lab-actions {
+    justify-content: start;
+  }
+}
+
+@media (max-width: 620px) {
+  .field-grid,
+  .result-grid,
+  .result-grid--two {
+    grid-template-columns: 1fr;
+  }
+}
