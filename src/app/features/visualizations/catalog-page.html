@@ -1,0 +1,135 @@
+<div class="page catalog-page">
+  <div class="container">
+    <header class="catalog-head">
+      <div>
+        <p class="eyebrow">Aprender vendo acontecer</p>
+        <h1>Visualizações interativas</h1>
+        <p class="lede">
+          Módulos independentes para manipular, girar e variar parâmetros. Cada um conecta um
+          experimento visual a um ou mais assuntos do ENEM.
+        </p>
+      </div>
+      <div class="catalog-count" aria-live="polite">
+        <strong>{{ total() }}</strong>
+        <span>visualizações publicadas</span>
+      </div>
+    </header>
+
+    <section class="catalog-filters" aria-label="Filtros do catálogo">
+      <div class="filter-row">
+        <label class="filter-field">
+          <span>Matéria</span>
+          <select [value]="subject()" (change)="setSubject(($any($event.target)).value)">
+            <option value="">Todas</option>
+            @for (item of subjects(); track item.code) {
+              <option [value]="item.code">{{ item.name }}</option>
+            }
+          </select>
+        </label>
+
+        <div class="dimension-filter" role="group" aria-label="Dimensão">
+          <button
+            type="button"
+            class="dimension-button"
+            [class.is-active]="dimension() === ''"
+            (click)="setDimension('')"
+          >
+            Todas
+          </button>
+          <button
+            type="button"
+            class="dimension-button"
+            [class.is-active]="dimension() === '2d'"
+            (click)="setDimension('2d')"
+          >
+            2D
+          </button>
+          <button
+            type="button"
+            class="dimension-button"
+            [class.is-active]="dimension() === '3d'"
+            (click)="setDimension('3d')"
+          >
+            3D
+          </button>
+        </div>
+
+        <label class="filter-field">
+          <span>Dificuldade</span>
+          <select [value]="difficulty()" (change)="setDifficulty(($any($event.target)).value)">
+            <option value="">Todas</option>
+            <option value="basico">Básico</option>
+            <option value="intermediario">Intermediário</option>
+            <option value="avancado">Avançado</option>
+          </select>
+        </label>
+
+        <label class="filter-field filter-field--wide">
+          <span>Assunto do ENEM</span>
+          <select [value]="topic()" (change)="setTopic(($any($event.target)).value)">
+            <option value="">Todos</option>
+            @for (item of topics(); track item.id) {
+              <option [value]="item.slug">{{ item.name }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <div class="filter-row filter-row--search">
+        <form class="search-form" (submit)="submitSearch($event)">
+          <label for="catalog-search">Buscar</label>
+          <input
+            id="catalog-search"
+            type="search"
+            placeholder="Ex.: lançamento, DNA, célula"
+            [value]="search()"
+            (input)="setSearch(($any($event.target)).value)"
+          />
+          <button class="btn btn--primary btn--small" type="submit">Buscar</button>
+        </form>
+        <button class="btn btn--link btn--small" type="button" (click)="clearFilters()">
+          Limpar filtros
+        </button>
+      </div>
+    </section>
+
+    @if (loading()) {
+      <div class="catalog-loading" role="status">Carregando visualizações…</div>
+    } @else if (error()) {
+      <div class="alert alert--error state-error" role="alert">
+        <span>{{ error() }}</span>
+        <button class="btn btn--outline btn--small" type="button" (click)="load()">
+          Tentar novamente
+        </button>
+      </div>
+    } @else if (items().length === 0) {
+      <div class="catalog-empty">
+        <p class="eyebrow">Nada encontrado</p>
+        <h2>Nenhuma visualização corresponde aos filtros.</h2>
+        <p>Tente outra matéria, dimensão ou termo de busca.</p>
+        <button class="btn btn--outline btn--small" type="button" (click)="clearFilters()">
+          Limpar filtros
+        </button>
+      </div>
+    } @else {
+      <div class="viz-grid">
+        @for (item of items(); track item.id) {
+          <a class="viz-card" [routerLink]="['/visualizacoes', item.slug]">
+            <div class="viz-card-top">
+              <span class="dimension-badge" [class.is-3d]="item.dimension === '3d'">
+                {{ dimensionLabel(item.dimension) }}
+              </span>
+              <span class="viz-subject">{{ item.subject_name }}</span>
+            </div>
+            <h2>{{ item.title }}</h2>
+            <p>{{ item.summary }}</p>
+            <div class="viz-card-footer">
+              <span class="difficulty">{{ difficultyLabel(item.difficulty) }}</span>
+              <span class="viz-open">Abrir <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+        }
+      </div>
+    }
+  </div>
+</div>

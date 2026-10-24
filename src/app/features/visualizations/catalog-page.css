@@ -1,0 +1,256 @@
+.catalog-page {
+  padding-top: 1.2rem;
+}
+
+.catalog-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: end;
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.catalog-head h1 {
+  max-width: 13ch;
+  margin-bottom: 0.7rem;
+}
+
+.catalog-count {
+  display: grid;
+  justify-items: end;
+  gap: 0.1rem;
+  min-width: 9rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+
+.catalog-count strong {
+  color: var(--terracotta-deep);
+  font-family: var(--serif);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.catalog-count span {
+  color: var(--ink-faint);
+  font-size: 0.64rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.catalog-filters {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: end;
+}
+
+.filter-field {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 10rem;
+}
+
+.filter-field--wide {
+  min-width: 14rem;
+}
+
+.filter-field > span,
+.search-form label {
+  color: var(--ink-faint);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.filter-field select,
+.search-form input {
+  min-height: 2.4rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.dimension-filter {
+  display: inline-flex;
+  gap: 0.2rem;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  background: var(--paper-deep);
+}
+
+.dimension-button {
+  min-height: 2rem;
+  padding: 0.3rem 0.65rem;
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.dimension-button.is-active {
+  background: var(--forest);
+  color: #fffdf6;
+}
+
+.filter-row--search {
+  justify-content: space-between;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+.search-form input {
+  min-width: min(22rem, 60vw);
+}
+
+.catalog-loading {
+  padding: 3rem 0;
+  color: var(--ink-faint);
+  font-size: 0.8rem;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 0.9rem;
+  padding-top: 1.4rem;
+}
+
+.viz-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 13.5rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.viz-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+  box-shadow: 0 8px 22px rgba(31, 42, 36, 0.08);
+}
+
+.viz-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.dimension-badge {
+  padding: 0.22rem 0.4rem;
+  border: 1px solid var(--forest);
+  color: var(--forest);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.dimension-badge.is-3d {
+  border-color: var(--terracotta);
+  color: var(--terracotta-deep);
+}
+
+.viz-subject {
+  overflow: hidden;
+  color: var(--ink-faint);
+  font-size: 0.64rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viz-card h2 {
+  margin: 0 0 0.45rem;
+  font-size: 1.25rem;
+}
+
+.viz-card p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.viz-card-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.difficulty {
+  color: var(--ink-faint);
+  font-size: 0.64rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.viz-open {
+  color: var(--forest);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.catalog-empty {
+  padding: 2.2rem 0;
+}
+
+.catalog-empty h2 {
+  margin-bottom: 0.4rem;
+  font-size: 1.5rem;
+}
+
+.catalog-empty p {
+  color: var(--ink-soft);
+}
+
+@media (max-width: 720px) {
+  .catalog-head {
+    grid-template-columns: 1fr;
+  }
+
+  .catalog-count {
+    justify-items: start;
+    max-width: 12rem;
+  }
+
+  .search-form input {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .search-form {
+    width: 100%;
+  }
+}

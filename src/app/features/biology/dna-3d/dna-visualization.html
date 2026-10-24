@@ -1,0 +1,32 @@
+<div class="dna-visualization">
+  <div
+    #canvasHost
+    class="dna-canvas"
+    [class.is-hidden]="webglError()"
+    role="img"
+    aria-label="Modelo tridimensional da dupla hélice do DNA, com pares de bases entre as duas fitas."
+  ></div>
+
+  @if (webglError()) {
+    <div class="dna-fallback" role="img" aria-label="Representação esquemática da dupla hélice">
+      <div class="fallback-helix" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <p>
+        Seu navegador não conseguiu iniciar o WebGL. A dupla hélice é formada por duas fitas
+        antiparalelas de nucleotídeos unidas por pares A-T e C-G.
+      </p>
+    </div>
+  }
+
+  <div class="dna-legend" aria-label="Legenda dos pares de bases">
+    <span><i class="legend-dot legend-dot--at"></i> Adenina–Timina</span>
+    <span><i class="legend-dot legend-dot--cg"></i> Citosina–Guanina</span>
+    <span class="dna-hint">Arraste para girar · roda para zoom</span>
+  </div>
+
+  <p class="dna-note">
+    Modelo didático simplificado. As duas fitas são antiparalelas e os pares de bases ocupam o
+    interior da hélice.
+  </p>
+</div>

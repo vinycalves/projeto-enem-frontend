@@ -1,0 +1,748 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ENEM Aberto — API de Visualizações",
+    "description": "Catálogo de visualizações interativas, tópicos do ENEM, moléculas e camadas geográficas.",
+    "license": {
+      "name": "MIT",
+      "identifier": "MIT"
+    },
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/enem/topics": {
+      "get": {
+        "tags": [
+          "crate::topics"
+        ],
+        "operationId": "list_topics",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/geo/layers/{layer}": {
+      "get": {
+        "tags": [
+          "crate::geo"
+        ],
+        "operationId": "get_geo_layer",
+        "parameters": [
+          {
+            "name": "layer",
+            "in": "path",
+            "description": "Slug da camada geográfica",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeoLayerResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Camada não encontrada"
+          }
+        }
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "crate::health"
+        ],
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/molecules/{slug}": {
+      "get": {
+        "tags": [
+          "crate::molecules"
+        ],
+        "operationId": "get_molecule",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Slug da molécula",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoleculeResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Molécula não encontrada"
+          }
+        }
+      }
+    },
+    "/api/v1/subjects": {
+      "get": {
+        "tags": [
+          "crate::subjects"
+        ],
+        "operationId": "list_subjects",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/visualizations": {
+      "get": {
+        "tags": [
+          "crate::visualizations"
+        ],
+        "operationId": "list_visualizations",
+        "parameters": [
+          {
+            "name": "subject",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "dimension",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "topic",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "difficulty",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64",
+              "default": 1,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int64",
+              "default": 12,
+              "maximum": 50,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisualizationListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/visualizations/{slug}": {
+      "get": {
+        "tags": [
+          "crate::visualizations"
+        ],
+        "operationId": "get_visualization",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Slug único da visualização",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisualizationResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Visualização não encontrada"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GeoLayerDto": {
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "geojson",
+          "metadata",
+          "sources",
+          "level"
+        ],
+        "properties": {
+          "geojson": {
+            "type": "object"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "level": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "GeoLayerResponse": {
+        "type": "object",
+        "required": [
+          "layer"
+        ],
+        "properties": {
+          "layer": {
+            "$ref": "#/components/schemas/GeoLayerDto"
+          }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "MoleculeDto": {
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "formula",
+          "atoms",
+          "bonds",
+          "metadata",
+          "sources"
+        ],
+        "properties": {
+          "atoms": {
+            "type": "object"
+          },
+          "bonds": {
+            "type": "object"
+          },
+          "formula": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "metadata": {
+            "type": "object"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "MoleculeResponse": {
+        "type": "object",
+        "required": [
+          "molecule"
+        ],
+        "properties": {
+          "molecule": {
+            "$ref": "#/components/schemas/MoleculeDto"
+          }
+        }
+      },
+      "SubjectDto": {
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name",
+          "description"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "SubjectTopicsDto": {
+        "type": "object",
+        "required": [
+          "subject_code",
+          "subject_name",
+          "topics"
+        ],
+        "properties": {
+          "subject_code": {
+            "type": "string"
+          },
+          "subject_name": {
+            "type": "string"
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TopicDto"
+            }
+          }
+        }
+      },
+      "SubjectsResponse": {
+        "type": "object",
+        "required": [
+          "subjects"
+        ],
+        "properties": {
+          "subjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubjectDto"
+            }
+          }
+        }
+      },
+      "TopicDto": {
+        "type": "object",
+        "required": [
+          "id",
+          "subject_code",
+          "slug",
+          "name",
+          "sort_order"
+        ],
+        "properties": {
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parent_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "sort_order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "subject_code": {
+            "type": "string"
+          }
+        }
+      },
+      "TopicsResponse": {
+        "type": "object",
+        "required": [
+          "subjects"
+        ],
+        "properties": {
+          "subjects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubjectTopicsDto"
+            }
+          }
+        }
+      },
+      "VisualizationDetail": {
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "subject_code",
+          "subject_name",
+          "dimension",
+          "title",
+          "summary",
+          "learning_objectives",
+          "difficulty",
+          "params",
+          "common_mistakes",
+          "sources",
+          "component_key",
+          "topics"
+        ],
+        "properties": {
+          "common_mistakes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "component_key": {
+            "type": "string"
+          },
+          "difficulty": {
+            "type": "string"
+          },
+          "dimension": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "learning_objectives": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "params": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VisualizationParam"
+            }
+          },
+          "slug": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "subject_code": {
+            "type": "string"
+          },
+          "subject_name": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VisualizationTopicDto"
+            }
+          }
+        }
+      },
+      "VisualizationListResponse": {
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "per_page"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VisualizationSummary"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "per_page": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "VisualizationParam": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "kind",
+          "default"
+        ],
+        "properties": {
+          "default": {
+            "type": "object"
+          },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "max": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "min": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "options": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "step": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "unit": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "VisualizationResponse": {
+        "type": "object",
+        "required": [
+          "visualization"
+        ],
+        "properties": {
+          "visualization": {
+            "$ref": "#/components/schemas/VisualizationDetail"
+          }
+        }
+      },
+      "VisualizationSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "subject_code",
+          "subject_name",
+          "dimension",
+          "title",
+          "summary",
+          "difficulty"
+        ],
+        "properties": {
+          "difficulty": {
+            "type": "string"
+          },
+          "dimension": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "subject_code": {
+            "type": "string"
+          },
+          "subject_name": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "VisualizationTopicDto": {
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

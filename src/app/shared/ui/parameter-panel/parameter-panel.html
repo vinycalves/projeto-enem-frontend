@@ -1,0 +1,58 @@
+<div class="parameter-panel">
+  <div class="parameter-head">
+    <div>
+      <p class="eyebrow">Variáveis</p>
+      <h2>Parâmetros</h2>
+    </div>
+    <button class="reset-button" type="button" (click)="reset.emit()">Restaurar</button>
+  </div>
+
+  <div class="parameter-list">
+    @for (param of params(); track param.id) {
+      <div class="parameter-row">
+        @switch (param.kind) {
+          @case ('slider') {
+            <div class="parameter-label-row">
+              <label [for]="'param-' + param.id">{{ param.label }}</label>
+              <output [for]="'param-' + param.id">
+                {{ numberValue(param.id, defaultNumber(param)) }}{{ param.unit ?? '' }}
+              </output>
+            </div>
+            <input
+              [id]="'param-' + param.id"
+              type="range"
+              [min]="param.min ?? 0"
+              [max]="param.max ?? 100"
+              [step]="param.step ?? 1"
+              [value]="numberValue(param.id, defaultNumber(param))"
+              (input)="updateNumber(param.id, $event)"
+            />
+          }
+          @case ('toggle') {
+            <label class="toggle-row" [for]="'param-' + param.id">
+              <span>{{ param.label }}</span>
+              <input
+                [id]="'param-' + param.id"
+                type="checkbox"
+                [checked]="isOn(param.id)"
+                (change)="updateToggle(param.id, $event)"
+              />
+            </label>
+          }
+          @case ('select') {
+            <label [for]="'param-' + param.id">{{ param.label }}</label>
+            <select
+              [id]="'param-' + param.id"
+              [value]="stringValue(param.id, defaultString(param))"
+              (change)="updateSelect(param.id, $event)"
+            >
+              @for (option of param.options ?? []; track option) {
+                <option [value]="option">{{ option }}</option>
+              }
+            </select>
+          }
+        }
+      </div>
+    }
+  </div>
+</div>

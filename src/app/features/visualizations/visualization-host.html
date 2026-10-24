@@ -1,0 +1,92 @@
+<div class="page visualization-page">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Você está aqui">
+      <a routerLink="/visualizacoes">Visualizações</a>
+      <span class="sep" aria-hidden="true">/</span>
+      <span>{{ visualization()?.title ?? 'Carregando' }}</span>
+    </nav>
+
+    @if (loading()) {
+      <div class="viz-loading" role="status">Abrindo a visualização…</div>
+    } @else if (error()) {
+      <div class="alert alert--error state-error" role="alert">
+        <span>{{ error() }}</span>
+        <a class="btn btn--outline btn--small" routerLink="/visualizacoes">Voltar ao catálogo</a>
+      </div>
+    } @else if (visualization(); as viz) {
+      <header class="viz-header">
+        <div>
+          <p class="eyebrow">{{ viz.subject_name }} · ENEM</p>
+          <h1>{{ viz.title }}</h1>
+          <p class="lede">{{ viz.summary }}</p>
+        </div>
+        <div class="viz-meta">
+          <span class="dimension-badge" [class.is-3d]="viz.dimension === '3d'">
+            {{ dimensionLabel() }}
+          </span>
+          <span class="meta-pill">{{ difficultyLabel(viz.difficulty) }}</span>
+        </div>
+      </header>
+
+      <div class="viz-layout">
+        <section class="viz-stage-card" aria-label="Área interativa">
+          @if (component(); as activeComponent) {
+            <ng-container
+              [ngComponentOutlet]="activeComponent"
+              [ngComponentOutletInputs]="{ params: values() }"
+            />
+          } @else {
+            <div class="viz-missing">Componente ainda não disponível.</div>
+          }
+        </section>
+
+        <aside class="viz-sidebar">
+          <app-parameter-panel
+            [params]="params()"
+            [values]="values()"
+            (changed)="onParamsChange($event)"
+            (reset)="resetParams()"
+          />
+
+          <section class="viz-panel" aria-labelledby="enem-panel-title">
+            <p class="eyebrow">O que cai no ENEM</p>
+            <h2 id="enem-panel-title">Conexões com o exame</h2>
+            <ul class="topic-list">
+              @for (topic of viz.topics; track topic.id) {
+                <li>{{ topic.name }}</li>
+              }
+            </ul>
+          </section>
+
+          <section class="viz-panel" aria-labelledby="objectives-panel-title">
+            <p class="eyebrow">Objetivos</p>
+            <h2 id="objectives-panel-title">Ao final, você deve conseguir</h2>
+            <ul class="objective-list">
+              @for (objective of viz.learning_objectives; track objective) {
+                <li>{{ objective }}</li>
+              }
+            </ul>
+          </section>
+
+          <details class="viz-panel viz-details">
+            <summary>Erros comuns e fontes</summary>
+            <h2>Erros comuns</h2>
+            <ul class="mistake-list">
+              @for (mistake of viz.common_mistakes; track mistake) {
+                <li>{{ mistake }}</li>
+              }
+            </ul>
+            <h2>Fontes e referências</h2>
+            <ul class="source-list">
+              @for (source of viz.sources; track source) {
+                <li>{{ source }}</li>
+              }
+            </ul>
+          </details>
+
+          <a class="back-link" routerLink="/visualizacoes">← Voltar ao catálogo</a>
+        </aside>
+      </div>
+    }
+  </div>
+</div>

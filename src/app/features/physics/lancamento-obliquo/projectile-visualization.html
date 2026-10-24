@@ -1,0 +1,52 @@
+<div class="projectile-visualization">
+  <div class="projectile-stage">
+    <canvas
+      #canvas
+      class="projectile-canvas"
+      role="img"
+      [attr.aria-label]="
+        'Trajetória de lançamento oblíquo com velocidade ' +
+        stats().range.toFixed(1) +
+        ' metros de alcance e altura máxima de ' +
+        stats().maxHeight.toFixed(1) +
+        ' metros.'
+      "
+    ></canvas>
+  </div>
+
+  <div class="projectile-controls">
+    <div class="playback">
+      <button class="btn btn--paper btn--small" type="button" (click)="toggleRunning()">
+        {{ running() ? 'Pausar' : 'Continuar' }}
+      </button>
+      <button class="btn btn--outline btn--small" type="button" (click)="reset()">
+        Reiniciar
+      </button>
+    </div>
+    <p class="projectile-hint">Arraste os parâmetros ao lado e observe o alcance e os vetores.</p>
+  </div>
+
+  <dl class="projectile-stats" aria-live="polite">
+    <div>
+      <dt>Alcance</dt>
+      <dd>{{ stats().range.toFixed(1) }} m</dd>
+    </div>
+    <div>
+      <dt>Altura máxima</dt>
+      <dd>{{ stats().maxHeight.toFixed(1) }} m</dd>
+    </div>
+    <div>
+      <dt>Tempo de voo</dt>
+      <dd>{{ stats().flightTime.toFixed(2) }} s</dd>
+    </div>
+    <div>
+      <dt>Tempo atual</dt>
+      <dd>{{ stats().time.toFixed(2) }} s</dd>
+    </div>
+  </dl>
+
+  <p class="projectile-note">
+    Modelo sem resistência do ar. A componente horizontal da velocidade permanece constante; a
+    vertical varia por causa da gravidade.
+  </p>
+</div>

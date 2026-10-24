@@ -1,0 +1,109 @@
+.dna-visualization {
+  display: grid;
+  gap: 0.7rem;
+  min-height: 28rem;
+  padding: 0.8rem;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(127, 183, 201, 0.16), transparent 40%),
+    #10251f;
+  color: #edf6f0;
+}
+
+.dna-canvas {
+  min-height: 24rem;
+  cursor: grab;
+}
+
+.dna-canvas:active {
+  cursor: grabbing;
+}
+
+.dna-canvas.is-hidden {
+  display: none;
+}
+
+.dna-fallback {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.6fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  min-height: 24rem;
+  padding: 1rem;
+}
+
+.dna-fallback p {
+  color: #b9d1c2;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.fallback-helix {
+  display: grid;
+  gap: 0.7rem;
+  padding: 2rem 1rem;
+}
+
+.fallback-helix span {
+  display: block;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7fb7c9, #d97757, #9fe3c2);
+  transform: skewX(-28deg);
+}
+
+.fallback-helix span:nth-child(even) {
+  transform: skewX(28deg);
+}
+
+.dna-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.55rem 0.6rem;
+  border-top: 1px solid rgba(237, 246, 240, 0.15);
+  color: #d7e8df;
+  font-size: 0.68rem;
+}
+
+.dna-legend span {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.legend-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+.legend-dot--at {
+  background: #d97757;
+}
+
+.legend-dot--cg {
+  background: #5c9f8a;
+}
+
+.dna-hint {
+  margin-left: auto;
+  color: #9eb9aa;
+}
+
+.dna-note {
+  margin: 0;
+  color: #9eb9aa;
+  font-size: 0.64rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 620px) {
+  .dna-hint {
+    margin-left: 0;
+  }
+
+  .dna-fallback {
+    grid-template-columns: 1fr;
+  }
+}

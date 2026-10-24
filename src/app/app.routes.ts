@@ -27,6 +27,22 @@ export const routes: Routes = [
       import('./features/concept/concept-page').then((module) => module.ConceptPage),
   },
   {
+    path: 'visualizacoes',
+    title: 'Visualizações · ENEM Aberto',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/visualizations/catalog-page').then((module) => module.CatalogPage),
+  },
+  {
+    path: 'visualizacoes/:slug',
+    title: 'Visualização · ENEM Aberto',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/visualizations/visualization-host').then(
+        (module) => module.VisualizationHost,
+      ),
+  },
+  {
     path: 'biologia',
     title: 'Laboratório de Biologia · ENEM Aberto',
     canActivate: [authGuard],
