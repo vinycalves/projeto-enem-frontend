@@ -1,0 +1,114 @@
+<div class="page exam-page">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Você está aqui">
+      <a routerLink="/provas">Provas</a>
+      <span class="sep" aria-hidden="true">/</span>
+      <span>{{ exam()?.name ?? 'Prova' }}</span>
+    </nav>
+
+    @if (loading()) {
+      <app-loading label="Abrindo a prova…" />
+    } @else if (error()) {
+      <div class="alert alert--error state-error" role="alert">
+        <span>{{ error() }}</span>
+        <button class="btn btn--outline btn--small" type="button" (click)="retry()">
+          Tentar novamente
+        </button>
+      </div>
+    } @else if (exam(); as data) {
+      <header class="exam-hero">
+        <div class="exam-hero-copy">
+          <p class="eyebrow">{{ data.area_name }} · {{ data.subject_name }}</p>
+          <h1>Prova {{ data.name }}</h1>
+          <p class="lede">
+            {{ questionCountLabel(data.question_count) }} neste arquivo, incluindo variantes de
+            idioma quando disponíveis. Responda, compare raciocínios na discussão e consulte o
+            gabarito somente depois da tentativa.
+          </p>
+          <div class="exam-hero-actions">
+            @if (firstUnanswered(); as first) {
+              <a class="btn btn--primary" [routerLink]="['/questao', first.id]">
+                {{ first.has_attempted ? 'Revisar questão' : 'Começar pela primeira questão' }}
+                <span aria-hidden="true">→</span>
+              </a>
+            }
+            <a class="btn btn--outline" routerLink="/provas">Voltar para Provas</a>
+          </div>
+        </div>
+
+        <aside class="exam-summary" aria-label="Resumo da prova">
+          <p class="summary-label">Aplicação</p>
+          <p class="summary-year">{{ data.name }}</p>
+          <dl>
+            <div>
+              <dt>Área</dt>
+              <dd>{{ data.area_name }}</dd>
+            </div>
+            <div>
+              <dt>Questões</dt>
+              <dd>{{ data.question_count }}</dd>
+            </div>
+            <div>
+              <dt>Fonte</dt>
+              <dd>INEP · via enem.dev</dd>
+            </div>
+          </dl>
+        </aside>
+      </header>
+
+      <section class="question-section" aria-labelledby="exam-questions-title">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Arquivo da prova</p>
+            <h2 id="exam-questions-title">Questões</h2>
+          </div>
+          <p>Selecione uma questão para responder ou revisar.</p>
+        </div>
+
+        @if (questions().length === 0) {
+          <app-empty-state
+            heading="Nenhuma questão encontrada"
+            message="Esta prova ainda não tem questões publicadas."
+          />
+        } @else {
+          <ol class="exam-question-list">
+            @for (question of questions(); track question.id; let index = $index) {
+              <li>
+                <a class="exam-question-row" [routerLink]="['/questao', question.id]">
+                  <span class="question-number" aria-hidden="true">{{
+                    (index + 1).toString().padStart(2, '0')
+                  }}</span>
+                  <span class="question-body">
+                    <span class="question-meta">
+                      <span>{{ question.code }}</span>
+                      @if (question.language) {
+                        <span class="badge">{{ languageLabel(question) }}</span>
+                      }
+                      <span [class]="difficultyClass(question.difficulty)">{{
+                        difficulty(question.difficulty)
+                      }}</span>
+                    </span>
+                    <span class="question-statement">{{ question.statement }}</span>
+                    <span
+                      class="question-attempt"
+                      [class.is-correct]="question.last_attempt_is_correct"
+                      [class.is-wrong]="question.last_attempt_is_correct === false"
+                      >{{ attemptLabel(question) }}</span
+                    >
+                  </span>
+                  <span class="question-arrow" aria-hidden="true">→</span>
+                </a>
+              </li>
+            }
+          </ol>
+        }
+      </section>
+
+      <p class="exam-disclaimer">
+        Fonte: INEP, importada via enem.dev. O projeto não é afiliado ao INEP. A contagem é a do
+        arquivo importado e pode incluir variantes de idioma; confira o PDF oficial em caso de dúvida
+        sobre gabarito ou imagem.
+      </p>
+    }
+  </div>
+</div>

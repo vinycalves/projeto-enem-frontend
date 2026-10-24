@@ -1,0 +1,218 @@
+<div class="page taxonomy-page">
+  <div class="container">
+    <header class="lab-page-head">
+      <div>
+        <p class="eyebrow">Laboratório de Biologia</p>
+        <h1>Taxonomia</h1>
+        <p class="lede">
+          Como os seres vivos são agrupados e nomeados. Escolha um exemplo e percorra a hierarquia,
+          do domínio à espécie.
+        </p>
+      </div>
+      <a class="btn btn--outline" routerLink="/biologia">Voltar ao laboratório</a>
+    </header>
+
+    <section class="taxonomy-intro" aria-labelledby="taxonomy-how-title">
+      <div class="intro-copy">
+        <p class="eyebrow">Como funciona</p>
+        <h2 id="taxonomy-how-title">Do geral ao específico — com critérios.</h2>
+        <p>
+          Taxonomia é o sistema de classificação e nomenclatura dos seres vivos. Ela organiza a
+          diversidade em grupos cada vez mais restritos e permite que cientistas no mundo todo usem
+          os mesmos nomes.
+        </p>
+      </div>
+      <ol class="taxonomy-steps">
+        @for (step of steps; track step.number) {
+          <li>
+            <span class="step-number" aria-hidden="true">{{ step.number }}</span>
+            <div>
+              <h3>{{ step.title }}</h3>
+              <p>{{ step.text }}</p>
+            </div>
+          </li>
+        }
+      </ol>
+    </section>
+
+    <section class="tree-section" aria-labelledby="tree-title">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Mapa simplificado</p>
+          <h2 id="tree-title">Os três domínios da vida</h2>
+        </div>
+        <p>Bactérias, arqueias e eucariontes. Os grupos de eucariontes aparecem à direita.</p>
+      </div>
+
+      <div class="tree-card">
+        <svg viewBox="0 0 800 280" role="img" aria-labelledby="tree-svg-title tree-svg-desc">
+          <title id="tree-svg-title">Árvore simplificada dos três domínios da vida</title>
+          <desc id="tree-svg-desc">
+            A vida se divide em Bacteria, Archaea e Eukarya. Eukarya inclui Protista, Fungi, Plantae
+            e Animalia. O exemplo selecionado fica destacado.
+          </desc>
+
+          <g class="tree-lines" fill="none">
+            <path d="M120 140 C170 140 175 55 240 55" />
+            <path d="M120 140 C170 140 175 140 240 140" />
+            <path d="M120 140 C170 140 175 225 240 225" />
+            <path d="M340 225 C390 225 395 115 460 115" />
+            <path d="M340 225 C390 225 395 150 460 150" />
+            <path d="M340 225 C390 225 395 190 460 190" />
+            <path d="M340 225 C390 225 395 230 460 230" />
+          </g>
+
+          <g class="tree-node tree-node--root">
+            <circle cx="120" cy="140" r="7" />
+            <text x="120" y="166" text-anchor="middle">Vida</text>
+          </g>
+
+          <g
+            class="tree-node"
+            [class.is-active]="selected().domain === 'Bacteria'"
+            [attr.aria-label]="'Domínio Bacteria'"
+          >
+            <circle cx="240" cy="55" r="7" />
+            <text x="258" y="60">Bacteria</text>
+            <text class="node-note" x="258" y="77">procariontes</text>
+          </g>
+
+          <g
+            class="tree-node"
+            [class.is-active]="selected().domain === 'Archaea'"
+            [attr.aria-label]="'Domínio Archaea'"
+          >
+            <circle cx="240" cy="140" r="7" />
+            <text x="258" y="145">Archaea</text>
+            <text class="node-note" x="258" y="162">procariontes extremófilos</text>
+          </g>
+
+          <g
+            class="tree-node"
+            [class.is-active]="selected().domain === 'Eukarya'"
+            [attr.aria-label]="'Domínio Eukarya'"
+          >
+            <circle cx="240" cy="225" r="7" />
+            <text x="258" y="230">Eukarya</text>
+            <text class="node-note" x="258" y="247">células com núcleo</text>
+          </g>
+
+          <g
+            class="tree-node tree-node--group"
+            [class.is-active]="selected().group === 'Protista'"
+          >
+            <circle cx="460" cy="115" r="5" />
+            <text x="476" y="120">Protista</text>
+            <text class="node-note" x="476" y="137">grupo parafilético</text>
+          </g>
+
+          <g
+            class="tree-node tree-node--group"
+            [class.is-active]="selected().group === 'Fungi'"
+          >
+            <circle cx="460" cy="150" r="5" />
+            <text x="476" y="155">Fungi</text>
+          </g>
+
+          <g
+            class="tree-node tree-node--group"
+            [class.is-active]="selected().group === 'Plantae'"
+          >
+            <circle cx="460" cy="190" r="5" />
+            <text x="476" y="195">Plantae</text>
+          </g>
+
+          <g
+            class="tree-node tree-node--group"
+            [class.is-active]="selected().group === 'Animalia'"
+          >
+            <circle cx="460" cy="230" r="5" />
+            <text x="476" y="235">Animalia</text>
+          </g>
+
+          <g class="tree-legend">
+            <circle cx="585" cy="228" r="4" />
+            <text x="597" y="232">exemplo selecionado</text>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="example-section" aria-labelledby="example-title">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Percorra a hierarquia</p>
+          <h2 id="example-title">{{ selected().commonName }}</h2>
+        </div>
+        <p>
+          <em>{{ selected().scientificName }}</em> · {{ selected().domain }}
+        </p>
+      </div>
+
+      <div class="example-switch" role="group" aria-label="Escolha um exemplo">
+        @for (example of examples; track example.id) {
+          <button
+            type="button"
+            class="example-button"
+            [class.is-active]="selectedId() === example.id"
+            [attr.aria-pressed]="selectedId() === example.id"
+            [style.--example-color]="example.color"
+            (click)="selectExample(example.id)"
+          >
+            {{ example.commonName }}
+          </button>
+        }
+      </div>
+
+      <div class="example-summary">
+        <p>{{ selected().summary }}</p>
+        <span class="example-badge">{{ selected().domain }} · {{ selected().group }}</span>
+      </div>
+
+      <ol class="rank-path" aria-label="Hierarquia taxonômica do exemplo selecionado">
+        @for (rank of selected().ranks; track rank.rank; let last = $last) {
+          <li class="rank-card">
+            <span class="rank-label">{{ rank.rank }}</span>
+            <span class="rank-name">{{ rank.name }}</span>
+            <span class="rank-note">{{ rank.note }}</span>
+            @if (!last) {
+              <span class="rank-arrow" aria-hidden="true">→</span>
+            }
+          </li>
+        }
+      </ol>
+    </section>
+
+    <section class="nomenclature-card" aria-labelledby="nomenclature-title">
+      <div>
+        <p class="eyebrow">Nomenclatura binomial</p>
+        <h2 id="nomenclature-title">Gênero + espécie.</h2>
+        <p>
+          O nome científico é formado por duas palavras em latim: o gênero, com inicial maiúscula, e
+          o epíteto específico, com inicial minúscula. Deve ser escrito em <em>itálico</em>.
+        </p>
+      </div>
+      <div class="nomenclature-example">
+        <span class="nomenclature-genus">Homo</span>
+        <span class="nomenclature-species">sapiens</span>
+        <span class="nomenclature-note">gênero + espécie</span>
+      </div>
+    </section>
+
+    <aside class="science-caveat">
+      <strong>Taxonomia não é filogenia.</strong>
+      <p>
+        A classificação tradicional agrupa seres por características compartilhadas, mas nem todos
+        os grupos antigos são monofiléticos. “Protista”, por exemplo, reúne organismos de linhagens
+        diferentes. A filogenia busca reconstruir a história evolutiva; a taxonomia organiza e nomeia.
+      </p>
+    </aside>
+
+    <div class="lab-next">
+      <p>Quer rever as organelas?</p>
+      <a class="btn btn--paper" routerLink="/biologia/celula">
+        Voltar à célula 3D <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,154 @@
+<div class="page cell-lab-page">
+  <div class="container">
+    <header class="lab-page-head">
+      <div>
+        <p class="eyebrow">Laboratório de Biologia</p>
+        <h1>Célula em 3D</h1>
+        <p class="lede">
+          Gire, aproxime e selecione as estruturas. Compare uma célula animal com uma célula
+          vegetal e veja o que muda na organização interna.
+        </p>
+      </div>
+      <a class="btn btn--outline" routerLink="/biologia">Voltar ao laboratório</a>
+    </header>
+
+    <div class="cell-switch" role="group" aria-label="Escolha o tipo de célula">
+      <button
+        type="button"
+        class="switch-button"
+        [class.is-active]="kind() === 'animal'"
+        [attr.aria-pressed]="kind() === 'animal'"
+        (click)="setCellKind('animal')"
+      >
+        Célula animal
+      </button>
+      <button
+        type="button"
+        class="switch-button"
+        [class.is-active]="kind() === 'vegetal'"
+        [attr.aria-pressed]="kind() === 'vegetal'"
+        (click)="setCellKind('vegetal')"
+      >
+        Célula vegetal
+      </button>
+    </div>
+
+    <div class="cell-layout">
+      <section class="viewport-card" aria-labelledby="viewer-title">
+        <div class="viewport-toolbar">
+          <div>
+            <p class="eyebrow">Modelo interativo</p>
+            <h2 id="viewer-title">
+              {{ kind() === 'animal' ? 'Célula animal' : 'Célula vegetal' }}
+            </h2>
+          </div>
+          <div class="viewport-actions" aria-label="Controles do modelo">
+            <button
+              class="tool-button"
+              type="button"
+              [class.is-active]="autoRotate()"
+              [attr.aria-pressed]="autoRotate()"
+              (click)="toggleAutoRotate()"
+            >
+              {{ autoRotate() ? 'Rotação ligada' : 'Rotação desligada' }}
+            </button>
+            <button
+              class="tool-button"
+              type="button"
+              [class.is-active]="isolate()"
+              [attr.aria-pressed]="isolate()"
+              (click)="toggleIsolate()"
+            >
+              {{ isolate() ? 'Mostrar tudo' : 'Isolar estrutura' }}
+            </button>
+            <button class="tool-button" type="button" (click)="resetView()">Recentralizar</button>
+          </div>
+        </div>
+
+        <div
+          #canvasHost
+          class="canvas-host"
+          [class.is-hidden]="webglError()"
+          role="img"
+          [attr.aria-label]="
+            'Modelo tridimensional da célula ' +
+            kind() +
+            '. Use a lista de estruturas ao lado para explorar as organelas.'
+          "
+        ></div>
+
+        @if (webglError()) {
+          <div class="cell-fallback" role="img" aria-label="Representação esquemática de uma célula">
+            <div class="fallback-cell" aria-hidden="true">
+              <span class="fallback-nucleus"></span>
+              <span class="fallback-organelle fallback-organelle--one"></span>
+              <span class="fallback-organelle fallback-organelle--two"></span>
+              <span class="fallback-organelle fallback-organelle--three"></span>
+            </div>
+            <div>
+              <h3>Visualização 3D indisponível</h3>
+              <p>
+                Seu navegador não conseguiu iniciar o WebGL. Use a lista de estruturas ao lado para
+                estudar as organelas e suas funções.
+              </p>
+            </div>
+          </div>
+        }
+
+        <div class="viewport-caption">
+          <span class="selected-chip">
+            <span class="chip-dot" [style.background]="selected()?.color"></span>
+            {{ selected()?.name }}
+          </span>
+          <span class="viewport-hint">Arraste para girar · use a roda para aproximar</span>
+        </div>
+      </section>
+
+      <aside class="organelle-panel" aria-labelledby="organelle-list-title">
+        <div class="organelle-list">
+          <div class="panel-head">
+            <p class="eyebrow">Mapa da célula</p>
+            <h2 id="organelle-list-title">Estruturas</h2>
+          </div>
+
+          <div class="organelle-buttons">
+            @for (organelle of organelles(); track organelle.id) {
+              <button
+                class="organelle-button"
+                type="button"
+                [class.is-active]="selectedId() === organelle.id"
+                [attr.aria-pressed]="selectedId() === organelle.id"
+                (click)="selectOrganelle(organelle.id)"
+              >
+                <span class="organelle-dot" [style.background]="organelle.color"></span>
+                <span class="organelle-name">{{ organelle.name }}</span>
+                <span class="organelle-short">{{ organelle.short }}</span>
+              </button>
+            }
+          </div>
+        </div>
+
+        @if (selected(); as item) {
+          <article class="organelle-info" aria-live="polite">
+            <p class="eyebrow">Estrutura selecionada</p>
+            <h2>{{ item.name }}</h2>
+            <p class="organelle-function">{{ item.function }}</p>
+            <p>{{ item.description }}</p>
+            <p class="science-note">
+              Modelo didático esquemático. Tamanhos, quantidades e posições não estão em escala.
+            </p>
+          </article>
+        }
+      </aside>
+    </div>
+
+    <div class="lab-next">
+      <p>
+        A célula é só uma parte. Veja também como os seres vivos são organizados e nomeados.
+      </p>
+      <a class="btn btn--paper" routerLink="/biologia/taxonomia">
+        Explorar taxonomia <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</div>

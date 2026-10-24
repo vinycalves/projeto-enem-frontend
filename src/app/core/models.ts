@@ -76,12 +76,28 @@ export interface ConceptResponse {
   concept: ConceptDetail;
 }
 
+export interface Exam {
+  id: Id;
+  title: string;
+  year: number;
+  area_code: string;
+  area_name: string;
+  area_color: string;
+  question_count: number;
+}
+
+export interface ExamsResponse {
+  exams: Exam[];
+}
+
 export interface QuestionListItem {
   id: Id;
   code: string;
   statement: string;
   difficulty: string;
   language?: string | null;
+  is_official?: boolean;
+  exam_year?: number | null;
   concept_id: Id;
   concept_name: string;
   subject_name: string;

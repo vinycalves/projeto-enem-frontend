@@ -1,0 +1,83 @@
+<div class="page biology-page">
+  <div class="container">
+    <header class="biology-hero">
+      <div class="biology-copy">
+        <p class="eyebrow">Laboratório de Biologia</p>
+        <h1>Ver por dentro muda a forma de entender.</h1>
+        <p class="lede">
+          Explore a célula em três dimensões, compare a organização animal e vegetal e percorra a
+          hierarquia que os cientistas usam para classificar a vida.
+        </p>
+        <div class="biology-actions">
+          <a class="btn btn--primary" routerLink="/biologia/celula">
+            Abrir célula 3D <span aria-hidden="true">→</span>
+          </a>
+          <a class="btn btn--outline" routerLink="/biologia/taxonomia">Explorar taxonomia</a>
+        </div>
+      </div>
+
+      <div class="biology-mark" aria-hidden="true">
+        <div class="cell-illustration">
+          <span class="cell-ring cell-ring--outer"></span>
+          <span class="cell-ring cell-ring--inner"></span>
+          <span class="cell-nucleus"></span>
+          <span class="cell-organelle cell-organelle--one"></span>
+          <span class="cell-organelle cell-organelle--two"></span>
+          <span class="cell-organelle cell-organelle--three"></span>
+          <span class="cell-organelle cell-organelle--four"></span>
+        </div>
+        <p>Modelo didático · célula animal</p>
+      </div>
+    </header>
+
+    <section class="biology-grid" aria-label="Experiências de Biologia">
+      <article class="biology-card biology-card--cell">
+        <span class="card-index" aria-hidden="true">01</span>
+        <p class="eyebrow">Citologia</p>
+        <h2>Célula em 3D</h2>
+        <p>
+          Gire, aproxime e selecione organelas. Alterne entre célula animal e vegetal e veja o que
+          cada estrutura faz.
+        </p>
+        <ul class="card-list">
+          <li>Membrana, núcleo, mitocôndrias, cloroplastos e mais</li>
+          <li>Isolamento de estruturas e controle de rotação</li>
+          <li>Lista acessível com função e descrição</li>
+        </ul>
+        <a class="card-link" routerLink="/biologia/celula">
+          Entrar no laboratório <span aria-hidden="true">→</span>
+        </a>
+      </article>
+
+      <article class="biology-card biology-card--taxonomy">
+        <span class="card-index" aria-hidden="true">02</span>
+        <p class="eyebrow">Classificação</p>
+        <h2>Taxonomia</h2>
+        <p>
+          Do domínio à espécie: entenda a hierarquia, a nomenclatura binomial e a diferença entre
+          taxonomia e filogenia.
+        </p>
+        <ul class="card-list">
+          <li>Mapa dos três domínios da vida</li>
+          <li>Exemplos: humano, milho, E. coli e cogumelo</li>
+          <li>Trilha completa de ranks taxonômicos</li>
+        </ul>
+        <a class="card-link" routerLink="/biologia/taxonomia">
+          Abrir mapa taxonômico <span aria-hidden="true">→</span>
+        </a>
+      </article>
+    </section>
+
+    <section class="biology-note" aria-labelledby="biology-note-title">
+      <div>
+        <p class="eyebrow">Por que 3D?</p>
+        <h2 id="biology-note-title">A geometria importa — mas não é enfeite.</h2>
+      </div>
+      <p>
+        O modelo 3D ajuda a visualizar relações espaciais entre membranas, organelas e o núcleo.
+        Ele é esquemático: não representa proporções reais. Para taxonomia, um mapa hierárquico é
+        mais legível do que um modelo tridimensional.
+      </p>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<div class="page exams-page">
+  <div class="container">
+    <header class="page-head exams-head">
+      <div>
+        <p class="eyebrow">Banco oficial</p>
+        <h1>Provas do ENEM</h1>
+        <p class="lede">
+          Provas aplicadas de 2009 a 2023, organizadas por área e ano. Cada questão mantém a fonte,
+          a licença e as imagens originais.
+        </p>
+      </div>
+      <aside class="exams-stamp" aria-label="Origem das provas">
+        <span class="stamp-kicker">Fonte</span>
+        <strong>INEP</strong>
+        <span>via enem.dev</span>
+        <span class="stamp-note">Dados públicos</span>
+      </aside>
+    </header>
+
+    @if (loading()) {
+      <app-loading label="Abrindo o arquivo de provas…" />
+    } @else if (error()) {
+      <div class="alert alert--error state-error" role="alert">
+        <span>{{ error() }}</span>
+        <button class="btn btn--outline btn--small" type="button" (click)="load()">
+          Tentar novamente
+        </button>
+      </div>
+    } @else if (groups().length === 0) {
+      <app-empty-state
+        heading="Nenhuma prova importada"
+        message="Rode o importador do backend para carregar as provas oficiais."
+      />
+    } @else {
+      <div class="exam-groups">
+        @for (group of groups(); track group.areaCode) {
+          <section class="exam-group" [attr.aria-labelledby]="'area-' + group.areaCode">
+            <div class="exam-group-head">
+              <div>
+                <p class="eyebrow">{{ group.exams.length }} edições</p>
+                <h2 [id]="'area-' + group.areaCode">{{ group.areaName }}</h2>
+              </div>
+              <span class="area-line" [style.background]="group.areaColor" aria-hidden="true"></span>
+            </div>
+
+            <div class="exam-grid">
+              @for (exam of group.exams; track exam.id) {
+                <a
+                  class="exam-card"
+                  [routerLink]="['/provas', exam.id]"
+                  [style.--exam-accent]="areaAccent(exam)"
+                >
+                  <span class="exam-year">{{ exam.year }}</span>
+                  <span class="exam-title">{{ exam.title }}</span>
+                  <span class="exam-meta">
+                    {{ questionCountLabel(exam.question_count) }}
+                    <span aria-hidden="true">·</span>
+                    arquivo importado
+                  </span>
+                  <span class="exam-open">
+                    Abrir prova
+                    <span aria-hidden="true">→</span>
+                  </span>
+                </a>
+              }
+            </div>
+          </section>
+        }
+      </div>
+
+      <p class="exams-disclaimer">
+        Projeto independente, sem vínculo com o INEP. As provas são importadas de dados públicos
+        disponibilizados pelo enem.dev; confira sempre o PDF oficial antes de usar uma questão como
+        referência definitiva.
+      </p>
+    }
+  </div>
+</div>

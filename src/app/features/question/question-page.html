@@ -18,9 +18,15 @@
       </div>
     } @else if (question(); as q) {
       <nav class="breadcrumb" aria-label="Você está aqui">
-        <a routerLink="/estudar">Estudar</a>
-        <span class="sep" aria-hidden="true">/</span>
-        <a [routerLink]="['/conceito', q.concept_id]">{{ q.concept_name }}</a>
+        @if (q.is_official) {
+          <a routerLink="/provas">Provas</a>
+          <span class="sep" aria-hidden="true">/</span>
+          <a [routerLink]="['/provas', q.concept_id]">ENEM {{ q.exam_year }}</a>
+        } @else {
+          <a routerLink="/estudar">Estudar</a>
+          <span class="sep" aria-hidden="true">/</span>
+          <a [routerLink]="['/conceito', q.concept_id]">{{ q.concept_name }}</a>
+        }
         <span class="sep" aria-hidden="true">/</span>
         <span>Questão {{ q.code }}</span>
       </nav>
@@ -37,8 +43,13 @@
               }
             </div>
             <p class="question-concept">
-              Conceito:
-              <a [routerLink]="['/conceito', q.concept_id]">{{ q.concept_name }}</a>
+              @if (q.is_official) {
+                Prova:
+                <a [routerLink]="['/provas', q.concept_id]">ENEM {{ q.exam_year }}</a>
+              } @else {
+                Conceito:
+                <a [routerLink]="['/conceito', q.concept_id]">{{ q.concept_name }}</a>
+              }
             </p>
             @if (q.has_attempted && !attempt()) {
               <div class="meta-row previous-attempt">
