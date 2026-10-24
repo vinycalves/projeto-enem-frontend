@@ -164,3 +164,7 @@ frontend/
 - A discussão e a resposta dependem de `403` antes da tentativa. O frontend evita a chamada enquanto não houver tentativa e traduz o 403 em uma mensagem clara caso o backend responda assim mesmo.
 - O `accuracy` das estatísticas é apresentado como percentual tanto se o backend enviar fração (0–1) quanto percentual (0–100).
 - Não há service worker, PWA, SSR, telemetria ou biblioteca de UI.
+
+## Licença
+
+Código aberto sob a licença MIT. Consulte o arquivo `LICENSE`.
