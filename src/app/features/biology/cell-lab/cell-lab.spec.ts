@@ -42,9 +42,10 @@ describe('CellLab', () => {
     plantButton!.click();
     fixture.detectChanges();
 
-    expect(root.querySelectorAll('.organelle-button').length).toBe(11);
+    expect(root.querySelectorAll('.organelle-button').length).toBe(12);
     expect(root.textContent).toContain('Cloroplasto');
     expect(root.textContent).toContain('Vacúolo central');
+    expect(root.textContent).toContain('Peroxissomo');
     expect(root.textContent).not.toContain('Lisossomo');
   });
 });

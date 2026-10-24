@@ -108,6 +108,29 @@
   color: #ffffff;
 }
 
+.water-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.2rem;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid rgba(159, 227, 194, 0.22);
+  color: #9fe3c2;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.water-chip::before {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: #7fb7c9;
+  box-shadow: 0 0 0 0.22rem rgba(127, 183, 201, 0.12);
+  content: '';
+}
+
 .canvas-host {
   flex: 1;
   min-height: 27rem;
@@ -180,7 +203,7 @@
 
 .organelle-button {
   display: grid;
-  grid-template-columns: 0.6rem minmax(0, 1fr) auto;
+  grid-template-columns: 1.1rem 0.55rem minmax(0, 1fr) auto;
   gap: 0.55rem;
   align-items: center;
   width: 100%;
@@ -202,6 +225,13 @@
 .organelle-button.is-active {
   border-color: var(--forest);
   background: var(--forest-wash);
+}
+
+.organelle-index {
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  text-align: right;
 }
 
 .organelle-dot {
@@ -374,5 +404,94 @@
 
   .cell-fallback {
     grid-template-columns: 1fr;
+  }
+}
+
+.canvas-host {
+  position: relative;
+  overflow: hidden;
+}
+
+:host ::ng-deep .cell-callouts {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+:host ::ng-deep .cell-callout-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+:host ::ng-deep .callout-line {
+  stroke-width: 1.1;
+  opacity: 0.8;
+}
+
+:host ::ng-deep .callout-dot {
+  opacity: 0.95;
+}
+
+:host ::ng-deep .callout-card {
+  position: absolute;
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  width: 9.25rem;
+  min-height: 2.3rem;
+  padding: 0.28rem 0.4rem;
+  border: 1px solid var(--callout-color, #9fe3c2);
+  border-left-width: 3px;
+  border-radius: 2px;
+  background: rgba(7, 27, 24, 0.9);
+  color: #f0fdfa;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: left;
+  pointer-events: auto;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.24);
+}
+
+:host ::ng-deep .callout-card:hover,
+:host ::ng-deep .callout-card.is-active {
+  border-color: #ffffff;
+  background: var(--callout-color, #9fe3c2);
+  color: #08211d;
+}
+
+:host ::ng-deep .callout-index {
+  display: inline-grid;
+  flex: 0 0 1.15rem;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  background: var(--callout-color, #9fe3c2);
+  color: #08211d;
+  font-size: 0.58rem;
+  font-weight: 800;
+}
+
+:host ::ng-deep .callout-card:hover .callout-index,
+:host ::ng-deep .callout-card.is-active :host ::ng-deep .callout-index {
+  background: #08211d;
+  color: var(--callout-color, #9fe3c2);
+}
+
+:host ::ng-deep .callout-card.is-hidden {
+  display: none;
+}
+
+@media (max-width: 980px) {
+  :host ::ng-deep .cell-callouts {
+    display: none !important;
   }
 }

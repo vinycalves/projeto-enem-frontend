@@ -43,14 +43,15 @@
             </h2>
           </div>
           <div class="viewport-actions" aria-label="Controles do modelo">
+            <span class="water-chip">Meio aquoso</span>
             <button
               class="tool-button"
               type="button"
-              [class.is-active]="autoRotate()"
-              [attr.aria-pressed]="autoRotate()"
-              (click)="toggleAutoRotate()"
+              [class.is-active]="showLabels()"
+              [attr.aria-pressed]="showLabels()"
+              (click)="toggleLabels()"
             >
-              {{ autoRotate() ? 'Rotação ligada' : 'Rotação desligada' }}
+              Rótulos
             </button>
             <button
               class="tool-button"
@@ -97,10 +98,10 @@
 
         <div class="viewport-caption">
           <span class="selected-chip">
-            <span class="chip-dot" [style.background]="selected()?.color"></span>
+            <span class="chip-dot" [style.background]="selectedColor()"></span>
             {{ selected()?.name }}
           </span>
-          <span class="viewport-hint">Arraste para girar · use a roda para aproximar</span>
+          <span class="viewport-hint">Arraste para girar · organelas em movimento</span>
         </div>
       </section>
 
@@ -112,7 +113,7 @@
           </div>
 
           <div class="organelle-buttons">
-            @for (organelle of organelles(); track organelle.id) {
+            @for (organelle of organelles(); track organelle.id; let index = $index) {
               <button
                 class="organelle-button"
                 type="button"
@@ -120,7 +121,8 @@
                 [attr.aria-pressed]="selectedId() === organelle.id"
                 (click)="selectOrganelle(organelle.id)"
               >
-                <span class="organelle-dot" [style.background]="organelle.color"></span>
+                <span class="organelle-index">{{ index + 1 }}</span>
+                <span class="organelle-dot" [style.background]="organelleColor(organelle)"></span>
                 <span class="organelle-name">{{ organelle.name }}</span>
                 <span class="organelle-short">{{ organelle.short }}</span>
               </button>

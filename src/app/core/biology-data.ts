@@ -112,6 +112,16 @@ export const CELL_ORGANELLES: Organelle[] = [
     kinds: ['animal'],
   },
   {
+    id: 'peroxisome',
+    name: 'Peroxissomo',
+    short: 'Detoxificação',
+    description:
+      'Vesícula que degrada peróxido de hidrogênio e participa do metabolismo de lipídios.',
+    function: 'Detoxificação e metabolismo de lipídios.',
+    color: '#8b5cf6',
+    kinds: ['vegetal'],
+  },
+  {
     id: 'cellwall',
     name: 'Parede celular',
     short: 'Suporte e proteção',
