@@ -131,6 +131,8 @@
                     <p>
                       @if (result.is_correct) {
                         Resposta registrada. A discussão já está liberada abaixo.
+                      } @else if (answer()) {
+                        O gabarito e a explicação estão logo abaixo.
                       } @else {
                         Não mostramos o gabarito agora. Use a discussão ou peça a resposta e a
                         explicação.
@@ -351,14 +353,14 @@
                     id="comment-body"
                     formControlName="body"
                     rows="5"
-                    maxlength="2000"
+                    maxlength="1000"
                     placeholder="Explique seu raciocínio, aponte uma dúvida ou ajude quem errou."
                     aria-describedby="comment-body-hint comment-body-error"
                     [attr.aria-invalid]="
                       commentForm.controls.body.touched && commentForm.controls.body.invalid
                     "
                   ></textarea>
-                  <span id="comment-body-hint" class="field-hint">Até 2.000 caracteres.</span>
+                  <span id="comment-body-hint" class="field-hint">Até 1.000 caracteres.</span>
                   @if (
                     commentForm.controls.body.touched &&
                     commentForm.controls.body.hasError('required')
@@ -376,7 +378,7 @@
                     commentForm.controls.body.hasError('maxlength')
                   ) {
                     <span id="comment-body-error" class="field-error"
-                      >O comentário ultrapassou 2.000 caracteres.</span
+                      >O comentário ultrapassou 1.000 caracteres.</span
                     >
                   }
                 </div>
