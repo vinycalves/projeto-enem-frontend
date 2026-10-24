@@ -81,6 +81,7 @@ export interface QuestionListItem {
   code: string;
   statement: string;
   difficulty: string;
+  language?: string | null;
   concept_id: Id;
   concept_name: string;
   subject_name: string;
@@ -94,10 +95,19 @@ export interface QuestionListItem {
 export interface QuestionOption {
   label: string;
   text: string;
+  image_url?: string | null;
+}
+
+export interface QuestionAsset {
+  kind: string;
+  option_label: string | null;
+  url: string;
+  position: number;
 }
 
 export interface QuestionDetail extends QuestionListItem {
   options: QuestionOption[];
+  assets?: QuestionAsset[];
 }
 
 export interface QuestionsResponse {

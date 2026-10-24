@@ -67,6 +67,27 @@
   line-height: 1.78;
 }
 
+.question-context-media {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0 0 1.5rem;
+}
+
+.question-context-media figure {
+  margin: 0;
+  padding: 0.7rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.question-context-media img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
 .options-fieldset {
   margin: 0;
   padding: 0;
@@ -135,9 +156,22 @@
 }
 
 .option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
   color: var(--ink);
   font-size: 0.93rem;
   line-height: 1.55;
+}
+
+.option-image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 12rem;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  background: var(--paper);
 }
 
 .option.is-selected {

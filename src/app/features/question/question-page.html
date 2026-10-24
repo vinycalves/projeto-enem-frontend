@@ -32,6 +32,9 @@
             <div class="question-title-row">
               <h1 id="question-title">Questão {{ q.code }}</h1>
               <span [class]="difficultyClass(q.difficulty)">{{ difficulty(q.difficulty) }}</span>
+              @if (q.language) {
+                <span class="badge">{{ languageLabel(q.language) }}</span>
+              }
             </div>
             <p class="question-concept">
               Conceito:
@@ -63,6 +66,23 @@
             <h2 id="statement-title" class="sr-only">Enunciado</h2>
             <p class="statement preserve-lines">{{ q.statement }}</p>
 
+            @if (q.assets?.length) {
+              <div class="question-context-media">
+                @for (asset of q.assets; track asset.url) {
+                  @if (asset.kind === 'context') {
+                    <figure>
+                      <img
+                        [src]="asset.url"
+                        [alt]="'Imagem de apoio da questão ' + q.code"
+                        loading="lazy"
+                        referrerpolicy="no-referrer"
+                      />
+                    </figure>
+                  }
+                }
+              </div>
+            }
+
             <fieldset class="options-fieldset" [disabled]="optionsLocked()">
               <legend>Escolha uma alternativa</legend>
               <div class="options">
@@ -86,7 +106,18 @@
                       (change)="selectOption(option.label)"
                     />
                     <span class="option-letter" aria-hidden="true">{{ option.label }}</span>
-                    <span class="option-text">{{ option.text }}</span>
+                    <span class="option-text">
+                      {{ option.text }}
+                      @if (option.image_url) {
+                        <img
+                          class="option-image"
+                          [src]="option.image_url"
+                          [alt]="'Imagem da alternativa ' + option.label"
+                          loading="lazy"
+                          referrerpolicy="no-referrer"
+                        />
+                      }
+                    </span>
                     @if (answer()?.correct_option === option.label) {
                       <span class="option-flag option-flag--correct">Correta</span>
                     } @else if (answer() && selectedOption() === option.label) {

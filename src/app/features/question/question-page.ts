@@ -342,6 +342,16 @@ export class QuestionPage implements OnInit {
     return difficultyLabel(value);
   }
 
+  protected languageLabel(language: string | null | undefined): string {
+    if (language === 'ingles') {
+      return 'Inglês';
+    }
+    if (language === 'espanhol') {
+      return 'Espanhol';
+    }
+    return language ?? '';
+  }
+
   protected difficultyClass(value: string): string {
     return `difficulty difficulty--${difficultyTone(value)}`;
   }
