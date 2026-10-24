@@ -15,10 +15,12 @@ import { Api } from '../../core/api/api';
 import { getVisualization } from '../../core/api/fn/crate-visualizations/get-visualization';
 import { VisualizationDetail } from '../../core/api/models/visualization-detail';
 import { getApiErrorMessage } from '../../core/api-error';
+import { MiniQuiz } from '../chemistry/shared/mini-quiz';
 import {
   ParamDefinition,
   ParameterPanel,
 } from '../../shared/ui/parameter-panel/parameter-panel';
+import { VisualizationParamsBridge } from './visualization-params';
 
 const VISUALIZATIONS: Record<string, () => Promise<Type<unknown>>> = {
   'projectile-2d': () =>
@@ -27,11 +29,23 @@ const VISUALIZATIONS: Record<string, () => Promise<Type<unknown>>> = {
     ),
   'dna-3d': () =>
     import('../biology/dna-3d/dna-visualization').then((module) => module.DnaVisualization),
+  'combustion-2d': () =>
+    import('../chemistry/combustion/combustion-visualization').then(
+      (module) => module.CombustionVisualization,
+    ),
+  'equilibrium-2d': () =>
+    import('../chemistry/equilibrium/equilibrium-visualization').then(
+      (module) => module.EquilibriumVisualization,
+    ),
+  'titration-2d': () =>
+    import('../chemistry/titration/titration-visualization').then(
+      (module) => module.TitrationVisualization,
+    ),
 };
 
 @Component({
   selector: 'app-visualization-host',
-  imports: [NgComponentOutlet, ParameterPanel, RouterLink],
+  imports: [NgComponentOutlet, ParameterPanel, MiniQuiz, RouterLink],
   templateUrl: './visualization-host.html',
   styleUrl: './visualization-host.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +54,7 @@ export class VisualizationHost implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(Api);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly paramsBridge = inject(VisualizationParamsBridge);
 
   protected readonly visualization = signal<VisualizationDetail | null>(null);
   protected readonly params = signal<ParamDefinition[]>([]);
@@ -50,6 +65,12 @@ export class VisualizationHost implements OnInit {
   protected readonly dimensionLabel = computed(() =>
     this.visualization()?.dimension === '3d' ? '3D' : '2D',
   );
+
+  constructor() {
+    this.paramsBridge.connect((patch) => {
+      this.values.update((current) => ({ ...current, ...patch }));
+    });
+  }
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
@@ -81,6 +102,26 @@ export class VisualizationHost implements OnInit {
         basico: 'Básico',
         intermediario: 'Intermediário',
         avancado: 'Avançado',
+      }[value] ?? value
+    );
+  }
+
+  protected modelKindLabel(value: string): string {
+    return (
+      {
+        simulacao: 'Simulação',
+        animacao_didatica: 'Animação didática',
+        diagrama: 'Diagrama',
+      }[value] ?? value
+    );
+  }
+
+  protected tierLabel(value: string): string {
+    return (
+      {
+        T1: 'Alta recorrência',
+        T2: 'Média recorrência',
+        T3: 'Baixa recorrência',
       }[value] ?? value
     );
   }

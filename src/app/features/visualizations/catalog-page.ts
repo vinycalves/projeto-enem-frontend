@@ -128,4 +128,14 @@ export class CatalogPage implements OnInit {
   protected dimensionLabel(value: string): string {
     return value === '3d' ? '3D' : '2D';
   }
+
+  protected modelKindLabel(value: string): string {
+    return (
+      {
+        simulacao: 'Simulação',
+        animacao_didatica: 'Animação didática',
+        diagrama: 'Diagrama',
+      }[value] ?? value
+    );
+  }
 }

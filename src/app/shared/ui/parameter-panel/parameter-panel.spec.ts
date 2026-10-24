@@ -47,6 +47,7 @@ describe('ParameterPanel', () => {
   it('renders metadata-driven controls', () => {
     expect(root.querySelectorAll('.parameter-row').length).toBe(3);
     expect(root.textContent).toContain('Velocidade');
+    expect(root.textContent).toContain('30 m/s');
     expect(root.querySelector<HTMLInputElement>('input[type="range"]')?.max).toBe('80');
     expect(root.querySelectorAll('select option').length).toBe(2);
   });

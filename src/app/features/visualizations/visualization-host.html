@@ -21,12 +21,24 @@
           <p class="lede">{{ viz.summary }}</p>
         </div>
         <div class="viz-meta">
+          <span
+            class="model-badge"
+            [class.is-simulation]="viz.model_kind === 'simulacao'"
+            [class.is-animation]="viz.model_kind === 'animacao_didatica'"
+          >
+            {{ modelKindLabel(viz.model_kind) }}
+          </span>
           <span class="dimension-badge" [class.is-3d]="viz.dimension === '3d'">
             {{ dimensionLabel() }}
           </span>
           <span class="meta-pill">{{ difficultyLabel(viz.difficulty) }}</span>
+          <span class="tier-pill">{{ viz.tier }}</span>
         </div>
       </header>
+
+      <p class="dimension-rationale">
+        <strong>Por que {{ dimensionLabel() }}?</strong> {{ viz.dimension_rationale }}
+      </p>
 
       <div class="viz-layout">
         <section class="viz-stage-card" aria-label="Área interativa">
@@ -48,6 +60,20 @@
             (reset)="resetParams()"
           />
 
+          <section class="viz-panel" aria-labelledby="model-panel-title">
+            <p class="eyebrow">Como ler este modelo</p>
+            <h2 id="model-panel-title">{{ modelKindLabel(viz.model_kind) }}</h2>
+            <p class="model-summary">{{ viz.dimension_rationale }}</p>
+            @if (viz.simplifications.length > 0) {
+              <h3 class="panel-subtitle">Simplificações</h3>
+              <ul class="simplification-list">
+                @for (item of viz.simplifications; track item) {
+                  <li>{{ item }}</li>
+                }
+              </ul>
+            }
+          </section>
+
           <section class="viz-panel" aria-labelledby="enem-panel-title">
             <p class="eyebrow">O que cai no ENEM</p>
             <h2 id="enem-panel-title">Conexões com o exame</h2>
@@ -56,6 +82,13 @@
                 <li>{{ topic.name }}</li>
               }
             </ul>
+            @if (viz.enem_notes.length > 0) {
+              <ul class="enem-note-list">
+                @for (note of viz.enem_notes; track note) {
+                  <li>{{ note }}</li>
+                }
+              </ul>
+            }
           </section>
 
           <section class="viz-panel" aria-labelledby="objectives-panel-title">
@@ -67,6 +100,8 @@
               }
             </ul>
           </section>
+
+          <app-mini-quiz [questions]="viz.quiz" />
 
           <details class="viz-panel viz-details">
             <summary>Erros comuns e fontes</summary>

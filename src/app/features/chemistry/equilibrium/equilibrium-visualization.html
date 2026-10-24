@@ -1,0 +1,127 @@
+@if (loading()) {
+  <div class="chem-loading" role="status">Carregando o equilíbrio…</div>
+} @else if (error()) {
+  <div class="chem-error" role="alert">{{ error() }}</div>
+} @else if (data(); as data) {
+  <article class="equilibrium">
+    <header class="chem-view-head">
+      <div>
+        <p class="chem-eyebrow">Equilíbrio dinâmico</p>
+        <h3>N₂O₄ ⇌ 2 NO₂</h3>
+      </div>
+      <span class="chem-note">Simulação</span>
+    </header>
+
+    <section class="equation-card" aria-label="Equação do equilíbrio">
+      <app-chem-equation [reactants]="reactants()" [products]="products()" arrow="⇌" />
+      <p class="equation-note">
+        Kc = {{ formatQ(data.n2o4No2.kc) }} a {{ data.n2o4No2.temperatureK }} K
+      </p>
+    </section>
+
+    @if (state(); as current) {
+      <section class="readout-grid" aria-label="Leituras do sistema">
+        <div class="readout">
+          <span>[N₂O₄]</span>
+          <strong>{{ formatConcentration(current.n2o4) }} mol/L</strong>
+        </div>
+        <div class="readout">
+          <span>[NO₂]</span>
+          <strong>{{ formatConcentration(current.no2) }} mol/L</strong>
+        </div>
+        <div class="readout">
+          <span>Q</span>
+          <strong>{{ formatQ(current.q) }}</strong>
+        </div>
+        <div class="readout" [class.is-forward]="current.direction === 'forward'" [class.is-reverse]="current.direction === 'reverse'">
+          <span>Sentido</span>
+          <strong>{{ directionLabel() }}</strong>
+        </div>
+      </section>
+
+      <section class="particle-card" aria-labelledby="particle-title">
+        <div class="section-heading">
+          <div>
+            <p class="chem-eyebrow">Nível submicroscópico</p>
+            <h4 id="particle-title">Partículas no sistema</h4>
+          </div>
+          <span class="chem-note">Esquema</span>
+        </div>
+        <div class="particle-groups">
+          <div class="particle-group">
+            <span class="particle-label">N₂O₄</span>
+            <span class="particles">
+              @for (item of particleIndexes(particleCounts().n2o4); track item) {
+                <span class="particle particle--n2o4"></span>
+              }
+            </span>
+          </div>
+          <div class="particle-group">
+            <span class="particle-label">NO₂</span>
+            <span class="particles">
+              @for (item of particleIndexes(particleCounts().no2); track item) {
+                <span class="particle particle--no2"></span>
+              }
+            </span>
+          </div>
+        </div>
+        <p class="chem-hint">
+          Quantidades normalizadas para leitura; não estão em escala e não representam a geometria
+          molecular.
+        </p>
+      </section>
+
+      <section class="chart-card" aria-labelledby="equilibrium-chart-title">
+        <div class="section-heading">
+          <div>
+            <p class="chem-eyebrow">Concentração × tempo</p>
+            <h4 id="equilibrium-chart-title">Evolução até o equilíbrio</h4>
+          </div>
+          <span class="time-chip">{{ formatTime(current.timeSeconds) }} s</span>
+        </div>
+        <app-chart-panel
+          [series]="series()"
+          [xDomain]="xDomain()"
+          [yDomain]="yDomain()"
+          xLabel="tempo (s)"
+          yLabel="concentração (mol/L)"
+        />
+      </section>
+    }
+
+    <section class="controls-card" aria-labelledby="perturbation-title">
+      <div class="section-heading">
+        <div>
+          <p class="chem-eyebrow">Perturbações</p>
+          <h4 id="perturbation-title">Teste o princípio de Le Chatelier</h4>
+        </div>
+        <div class="controls">
+          <button class="chem-button" type="button" (click)="togglePlay()">
+            {{ playing() ? 'Pausar' : 'Continuar' }}
+          </button>
+          <button class="chem-button chem-button--ghost" type="button" (click)="reset()">
+            Reiniciar
+          </button>
+        </div>
+      </div>
+      <div class="perturbation-buttons">
+        <button class="chem-button chem-button--ghost" type="button" (click)="addN2O4()">
+          + 0,010 mol/L de N₂O₄
+        </button>
+        <button class="chem-button chem-button--ghost" type="button" (click)="addNO2()">
+          + 0,010 mol/L de NO₂
+        </button>
+        <button class="chem-button chem-button--ghost" type="button" (click)="compress()">
+          Comprimir volume × 0,5
+        </button>
+      </div>
+      <p class="chem-hint">
+        Simulação com solução ideal, volume constante e temperatura fixa em 298 K. A constante K
+        depende da temperatura e não é alterada por adição de espécies.
+        @if (reducedMotion) {
+          Movimento automático desativado pela preferência de redução de movimento.
+        }
+      </p>
+    </section>
+  </article>
+}

@@ -15,7 +15,7 @@
             <div class="parameter-label-row">
               <label [for]="'param-' + param.id">{{ param.label }}</label>
               <output [for]="'param-' + param.id">
-                {{ numberValue(param.id, defaultNumber(param)) }}{{ param.unit ?? '' }}
+                {{ displayNumber(param) }}{{ param.unit ? ' ' + param.unit : '' }}
               </output>
             </div>
             <input

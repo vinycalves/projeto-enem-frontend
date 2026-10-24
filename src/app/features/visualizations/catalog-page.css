@@ -180,8 +180,18 @@
   color: var(--terracotta-deep);
 }
 
+.viz-model {
+  padding: 0.18rem 0.35rem;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.58rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .viz-subject {
   overflow: hidden;
+  margin-left: auto;
   color: var(--ink-faint);
   font-size: 0.64rem;
   text-overflow: ellipsis;

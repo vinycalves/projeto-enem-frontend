@@ -1,0 +1,186 @@
+@if (loading()) {
+  <div class="chem-loading" role="status">Carregando reação e dados termoquímicos…</div>
+} @else if (error()) {
+  <div class="chem-error" role="alert">{{ error() }}</div>
+} @else if (reaction(); as data) {
+  <article class="combustion">
+    <header class="chem-view-head">
+      <div>
+        <p class="chem-eyebrow">Reação de combustão</p>
+        <h3>{{ data.name }}</h3>
+      </div>
+      <span class="chem-note">Animação didática</span>
+    </header>
+
+    <section class="equation-card" aria-label="Equação química balanceada">
+      <app-chem-equation [reactants]="reactants()" [products]="products()" arrow="→" />
+      <p class="equation-note">
+        Balanceamento conserva {{ reactantElements().length }} elementos:
+        @for (item of reactantElements(); track item.element; let index = $index) {
+          @if (index > 0) {
+            <span aria-hidden="true"> · </span>
+          }
+          {{ item.element }}: {{ item.count }}
+        }
+      </p>
+    </section>
+
+    <section class="atom-scheme" aria-labelledby="atom-scheme-title">
+      <div class="section-heading">
+        <div>
+          <p class="chem-eyebrow">Nível submicroscópico</p>
+          <h4 id="atom-scheme-title">Conservação dos átomos</h4>
+        </div>
+        <span class="chem-note">Esquema</span>
+      </div>
+      <div class="atom-columns">
+        <div class="atom-side">
+          <span class="atom-side-label">Reagentes</span>
+          @for (species of reactantSpecies(); track species.formula) {
+            <div class="atom-group">
+              <span class="atom-formula"><app-chem-formula [formula]="species.formula" /></span>
+              <span class="atom-dots">
+                @for (atom of species.atoms; track atom.id) {
+                  <span
+                    class="atom-dot"
+                    [style.background]="atomColor(atom.element)"
+                    [attr.title]="atom.element"
+                  ></span>
+                }
+              </span>
+            </div>
+          }
+        </div>
+        <span class="atom-arrow" aria-hidden="true">→</span>
+        <div class="atom-side">
+          <span class="atom-side-label">Produtos</span>
+          @for (species of productSpecies(); track species.formula) {
+            <div class="atom-group">
+              <span class="atom-formula"><app-chem-formula [formula]="species.formula" /></span>
+              <span class="atom-dots">
+                @for (atom of species.atoms; track atom.id) {
+                  <span
+                    class="atom-dot"
+                    [style.background]="atomColor(atom.element)"
+                    [attr.title]="atom.element"
+                  ></span>
+                }
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+      <p class="chem-hint">
+        Cada círculo representa um átomo; C em cinza, H em branco e O em vermelho. O esquema não
+        representa a geometria molecular nem o mecanismo real.
+      </p>
+    </section>
+
+    <section class="animation-card" aria-labelledby="combustion-stage-title">
+      <div class="stage-heading">
+        <div>
+          <p class="chem-eyebrow">Etapa {{ stage()?.id }}</p>
+          <h4 id="combustion-stage-title">{{ stage()?.legend }}</h4>
+        </div>
+        <span class="progress-value">{{ (progress() * 100).toFixed(0) }}%</span>
+      </div>
+
+      <div class="controls">
+        <button class="chem-button" type="button" (click)="togglePlay()">
+          {{ playing() ? 'Pausar' : 'Reproduzir' }}
+        </button>
+        <button class="chem-button chem-button--ghost" type="button" (click)="reset()">
+          Reiniciar
+        </button>
+        <label class="range-label">
+          <span>Progresso</span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            [value]="progress()"
+            (input)="setProgress($event)"
+          />
+        </label>
+      </div>
+
+      <div class="stage-timeline" aria-hidden="true">
+        @for (item of data.stages; track item.id) {
+          <span
+            class="stage-segment"
+            [class.is-current]="stage()?.id === item.id"
+            [style.flex]="item.to - item.from"
+          ></span>
+        }
+      </div>
+
+      <div class="bond-list">
+        @if (stage()?.breakingBonds?.length) {
+          <span class="bond-chip bond-chip--break">
+            Ligações que se rompem: {{ stage()?.breakingBonds?.join(', ') }}
+          </span>
+        }
+        @if (stage()?.formingBonds?.length) {
+          <span class="bond-chip bond-chip--form">
+            Ligações que se formam: {{ stage()?.formingBonds?.join(', ') }}
+          </span>
+        }
+      </div>
+
+      <p class="chem-hint">
+        A sequência é didática: mostra estados inicial e final, não o mecanismo radicalar real.
+        @if (reducedMotion) {
+          Movimento automático desativado pela preferência de redução de movimento.
+        }
+      </p>
+    </section>
+
+    <div class="combustion-grid">
+      <section class="metric-card" aria-label="Variação de entalpia">
+        <p class="chem-eyebrow">Energia</p>
+        <strong class="metric-value">ΔH = {{ formattedDeltaH() }} kJ/mol</strong>
+        <span>Água líquida como estado de referência</span>
+        @if (formationDeltaH() !== null) {
+          <small>
+            Conferência por entalpias de formação: {{ formattedFormationDeltaH() }} kJ/mol
+          </small>
+        }
+      </section>
+
+      <section class="metric-card" aria-label="Conservação de átomos">
+        <p class="chem-eyebrow">Conservação</p>
+        <strong class="metric-value">{{ conserved() ? 'Balanceada' : 'Verificar' }}</strong>
+        <span>
+          Reagentes:
+          @for (item of reactantElements(); track item.element) {
+            {{ item.element }}{{ item.count }}
+          }
+        </span>
+        <span>
+          Produtos:
+          @for (item of productElements(); track item.element) {
+            {{ item.element }}{{ item.count }}
+          }
+        </span>
+      </section>
+    </div>
+
+    @if (showEnergy()) {
+      <section class="energy-card" aria-labelledby="energy-title">
+        <div class="section-heading">
+          <div>
+            <p class="chem-eyebrow">Diagrama de entalpia</p>
+            <h4 id="energy-title">Reagentes e produtos</h4>
+          </div>
+          <span class="chem-note">Sem escala real</span>
+        </div>
+        <app-energy-level-diagram
+          reactantsLabel="CH₄(g) + 2 O₂(g)"
+          productsLabel="CO₂(g) + 2 H₂O(l)"
+          [deltaHKjMol]="deltaH()"
+        />
+      </section>
+    }
+  </article>
+}

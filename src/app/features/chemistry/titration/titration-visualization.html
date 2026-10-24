@@ -1,0 +1,124 @@
+@if (loading()) {
+  <div class="chem-loading" role="status">Carregando dados ácido-base…</div>
+} @else if (error()) {
+  <div class="chem-error" role="alert">{{ error() }}</div>
+} @else if (data(); as data) {
+  <article class="titration">
+    <header class="chem-view-head">
+      <div>
+        <p class="chem-eyebrow">Volumetria de neutralização</p>
+        <h3>Titulação ácido-base</h3>
+      </div>
+      <span class="chem-note">Simulação</span>
+    </header>
+
+    <section class="equation-card" aria-label="Equação da neutralização">
+      <app-chem-equation
+        [reactants]="equationReactants()"
+        [products]="equationProducts()"
+        arrow="→"
+      />
+      <p class="equation-note">
+        Reação 1:1. {{ acid()?.name }} com hidróxido de sódio.
+      </p>
+    </section>
+
+    <div class="titration-grid">
+      <section class="chart-card" aria-labelledby="titration-chart-title">
+        <div class="section-heading">
+          <div>
+            <p class="chem-eyebrow">Curva de titulação</p>
+            <h4 id="titration-chart-title">pH × volume de titulante</h4>
+          </div>
+          <span class="time-chip">25 °C</span>
+        </div>
+        <app-chart-panel
+          [series]="series()"
+          [xDomain]="xDomain()"
+          [yDomain]="[0, 14]"
+          [annotations]="annotations()"
+          xLabel="volume de NaOH (mL)"
+          yLabel="pH"
+        />
+      </section>
+
+      <aside class="glass-card" aria-label="Representação do experimento">
+        <div class="glass-row">
+          <app-lab-glassware
+            variant="burette"
+            [fillPercent]="65"
+            [liquidColor]="'#d7e8df'"
+            label="Bureta com NaOH"
+          />
+          <app-lab-glassware
+            variant="flask"
+            [fillPercent]="35"
+            [liquidColor]="liquidColor()"
+            [label]="'Erlenmeyer com ' + (acid()?.name ?? 'analito')"
+          />
+        </div>
+        <div class="indicator-readout">
+          <span class="indicator-dot" [style.background]="liquidColor()"></span>
+          <div>
+            <strong>{{ indicatorLabel() }}</strong>
+            @if (selectedIndicator(); as indicator) {
+              <small>
+                Faixa de viragem: {{ formatRangeValue(indicator.lowPh) }}–{{
+                  formatRangeValue(indicator.highPh)
+                }}
+              </small>
+            }
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    @if (model(); as model) {
+      <section class="readout-grid" aria-label="Leituras da titulação">
+        <div class="readout">
+          <span>Volume adicionado</span>
+          <strong>{{ formatVolume(addedVolume()) }} mL</strong>
+        </div>
+        <div class="readout">
+          <span>pH atual</span>
+          <strong>{{ formatPH(currentPH()) }}</strong>
+        </div>
+        <div class="readout">
+          <span>Volume de equivalência</span>
+          <strong>{{ formatVolume(equivalence()) }} mL</strong>
+        </div>
+        <div class="readout">
+          <span>pH na equivalência</span>
+          <strong>{{ formatPH(model.pHAt(equivalence())) }}</strong>
+        </div>
+      </section>
+
+      <section class="controls-card" aria-labelledby="titration-controls-title">
+        <div class="section-heading">
+          <div>
+            <p class="chem-eyebrow">Exploração</p>
+            <h4 id="titration-controls-title">Percorra a curva</h4>
+          </div>
+          <button class="chem-button" type="button" (click)="goToEquivalence()">
+            Ir à equivalência
+          </button>
+        </div>
+        <div class="volume-buttons">
+          <button class="chem-button chem-button--ghost" type="button" (click)="addVolume(-1)">
+            − 1 mL
+          </button>
+          <button class="chem-button chem-button--ghost" type="button" (click)="addVolume(1)">
+            + 1 mL
+          </button>
+          <span class="volume-hint">
+            Use também o controle “Volume de titulante adicionado” na barra lateral.
+          </span>
+        </div>
+        <p class="chem-hint">
+          Simulação de solução ideal a 25 °C, sem coeficientes de atividade. A curva é calculada
+          por balanço de carga para ácido monoprótico.
+        </p>
+      </section>
+    }
+  </article>
+}

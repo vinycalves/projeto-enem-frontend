@@ -5,9 +5,11 @@ export interface VisualizationSummary {
   difficulty: string;
   dimension: string;
   id: string;
+  model_kind: string;
   slug: string;
   subject_code: string;
   subject_name: string;
   summary: string;
+  tier: string;
   title: string;
 }

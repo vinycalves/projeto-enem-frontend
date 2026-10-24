@@ -47,6 +47,16 @@ export class ParameterPanel {
     return Number.isFinite(value) ? value : 0;
   }
 
+  protected displayNumber(param: ParamDefinition): string {
+    const value = this.numberValue(param.id, this.defaultNumber(param));
+    const step = Math.abs(param.step ?? 1);
+    const digits = step >= 1 ? 0 : step >= 0.1 ? 1 : step >= 0.01 ? 2 : 3;
+    return new Intl.NumberFormat('pt-BR', {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    }).format(value);
+  }
+
   protected updateNumber(id: string, event: Event): void {
     const target = event.target as HTMLInputElement;
     this.emit({ ...this.values(), [id]: Number(target.value) });

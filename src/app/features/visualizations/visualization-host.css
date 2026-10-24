@@ -18,13 +18,18 @@
 
 .viz-meta {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.4rem;
   align-items: center;
+  justify-content: end;
   flex-shrink: 0;
+  max-width: 27rem;
 }
 
 .dimension-badge,
-.meta-pill {
+.meta-pill,
+.tier-pill,
+.model-badge {
   padding: 0.28rem 0.5rem;
   border: 1px solid var(--forest);
   color: var(--forest);
@@ -32,6 +37,36 @@
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.model-badge {
+  border-color: var(--terracotta);
+  color: var(--terracotta-deep);
+}
+
+.model-badge.is-simulation {
+  border-color: #0f766e;
+  background: #e3f4ef;
+  color: #0f5f59;
+}
+
+.model-badge.is-animation {
+  border-color: #a16207;
+  background: #fbf3df;
+  color: #854d0e;
+}
+
+.tier-pill {
+  border-color: var(--line);
+  color: var(--ink-faint);
+}
+
+.dimension-rationale {
+  max-width: 78ch;
+  margin: 0.8rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.55;
 }
 
 .dimension-badge.is-3d {
@@ -73,6 +108,46 @@
 .viz-panel h2 {
   margin: 0.15rem 0 0.5rem;
   font-size: 1.05rem;
+}
+
+.panel-subtitle {
+  margin: 0.65rem 0 0.3rem;
+  color: var(--ink);
+  font-size: 0.76rem;
+}
+
+.model-summary {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+  line-height: 1.55;
+}
+
+.simplification-list,
+.enem-note-list {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.simplification-list li,
+.enem-note-list li {
+  position: relative;
+  padding-left: 0.85rem;
+  color: var(--ink-soft);
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+.simplification-list li::before,
+.enem-note-list li::before {
+  position: absolute;
+  left: 0;
+  color: var(--terracotta);
+  content: '→';
+  font-size: 0.65rem;
 }
 
 .topic-list,

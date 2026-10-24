@@ -10,6 +10,72 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/api/v1/chemistry/datasets/{name}": {
+      "get": {
+        "tags": [
+          "crate::chemistry"
+        ],
+        "operationId": "get_dataset",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Nome do dataset químico versionado",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChemistryDatasetResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dataset não encontrado"
+          }
+        }
+      }
+    },
+    "/api/v1/chemistry/reactions/{id}": {
+      "get": {
+        "tags": [
+          "crate::chemistry"
+        ],
+        "operationId": "get_reaction",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identificador da reação",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChemistryReactionResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Reação não encontrada"
+          }
+        }
+      }
+    },
     "/api/v1/enem/topics": {
       "get": {
         "tags": [
@@ -274,6 +340,88 @@
   },
   "components": {
     "schemas": {
+      "AtomMappingSeed": {
+        "type": "object",
+        "required": [
+          "from",
+          "to"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          }
+        }
+      },
+      "AtomSeed": {
+        "type": "object",
+        "required": [
+          "id",
+          "element"
+        ],
+        "properties": {
+          "element": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "ChemistryDatasetDto": {
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "conditions",
+          "data",
+          "sources"
+        ],
+        "properties": {
+          "conditions": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ChemistryDatasetResponse": {
+        "type": "object",
+        "required": [
+          "dataset"
+        ],
+        "properties": {
+          "dataset": {
+            "$ref": "#/components/schemas/ChemistryDatasetDto"
+          }
+        }
+      },
+      "ChemistryReactionResponse": {
+        "type": "object",
+        "required": [
+          "reaction"
+        ],
+        "properties": {
+          "reaction": {
+            "$ref": "#/components/schemas/ReactionSeed"
+          }
+        }
+      },
       "GeoLayerDto": {
         "type": "object",
         "required": [
@@ -389,6 +537,158 @@
           }
         }
       },
+      "ReactionSeed": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "classification",
+          "equation",
+          "species",
+          "atomMapping",
+          "stages",
+          "enemTopics",
+          "didacticNote",
+          "sources"
+        ],
+        "properties": {
+          "atomMapping": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AtomMappingSeed"
+            }
+          },
+          "classification": {
+            "type": "string"
+          },
+          "didacticNote": {
+            "type": "string"
+          },
+          "enemTopics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "equation": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "species": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReactionSpeciesSeed"
+            }
+          },
+          "stages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReactionStageSeed"
+            }
+          },
+          "thermodynamics": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ThermodynamicsSeed"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "ReactionSpeciesSeed": {
+        "type": "object",
+        "required": [
+          "side",
+          "formula",
+          "name",
+          "state",
+          "coefficient",
+          "charge",
+          "atoms"
+        ],
+        "properties": {
+          "atoms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AtomSeed"
+            }
+          },
+          "charge": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "coefficient": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "formula": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "side": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        }
+      },
+      "ReactionStageSeed": {
+        "type": "object",
+        "required": [
+          "id",
+          "from",
+          "to",
+          "legend",
+          "breakingBonds",
+          "formingBonds"
+        ],
+        "properties": {
+          "breakingBonds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "formingBonds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "from": {
+            "type": "number",
+            "format": "double"
+          },
+          "id": {
+            "type": "string"
+          },
+          "legend": {
+            "type": "string"
+          },
+          "to": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
       "SubjectDto": {
         "type": "object",
         "required": [
@@ -446,6 +746,26 @@
             "items": {
               "$ref": "#/components/schemas/SubjectDto"
             }
+          }
+        }
+      },
+      "ThermodynamicsSeed": {
+        "type": "object",
+        "required": [
+          "deltaHKjMol",
+          "conditions",
+          "source"
+        ],
+        "properties": {
+          "conditions": {
+            "type": "string"
+          },
+          "deltaHKjMol": {
+            "type": "number",
+            "format": "double"
+          },
+          "source": {
+            "type": "string"
           }
         }
       },
@@ -521,6 +841,12 @@
           "common_mistakes",
           "sources",
           "component_key",
+          "model_kind",
+          "dimension_rationale",
+          "tier",
+          "simplifications",
+          "enem_notes",
+          "quiz",
           "topics"
         ],
         "properties": {
@@ -539,6 +865,15 @@
           "dimension": {
             "type": "string"
           },
+          "dimension_rationale": {
+            "type": "string"
+          },
+          "enem_notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "id": {
             "type": "string",
             "format": "uuid"
@@ -549,10 +884,25 @@
               "type": "string"
             }
           },
+          "model_kind": {
+            "type": "string"
+          },
           "params": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/VisualizationParam"
+            }
+          },
+          "quiz": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VisualizationQuizQuestion"
+            }
+          },
+          "simplifications": {
+            "type": "array",
+            "items": {
+              "type": "string"
             }
           },
           "slug": {
@@ -571,6 +921,9 @@
             "type": "string"
           },
           "summary": {
+            "type": "string"
+          },
+          "tier": {
             "type": "string"
           },
           "title": {
@@ -672,6 +1025,33 @@
           }
         }
       },
+      "VisualizationQuizQuestion": {
+        "type": "object",
+        "required": [
+          "question",
+          "options",
+          "correctIndex",
+          "explanation"
+        ],
+        "properties": {
+          "correctIndex": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "explanation": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "question": {
+            "type": "string"
+          }
+        }
+      },
       "VisualizationResponse": {
         "type": "object",
         "required": [
@@ -693,7 +1073,9 @@
           "dimension",
           "title",
           "summary",
-          "difficulty"
+          "difficulty",
+          "model_kind",
+          "tier"
         ],
         "properties": {
           "difficulty": {
@@ -706,6 +1088,9 @@
             "type": "string",
             "format": "uuid"
           },
+          "model_kind": {
+            "type": "string"
+          },
           "slug": {
             "type": "string"
           },
@@ -716,6 +1101,9 @@
             "type": "string"
           },
           "summary": {
+            "type": "string"
+          },
+          "tier": {
             "type": "string"
           },
           "title": {
