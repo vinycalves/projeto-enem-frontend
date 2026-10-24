@@ -3,6 +3,8 @@
 
 export type { GetDataset$Params as GetDataset$Params } from './fn/crate-chemistry/get-dataset';
 export { getDataset as getDataset } from './fn/crate-chemistry/get-dataset';
+export type { GetElements$Params as GetElements$Params } from './fn/crate-chemistry/get-elements';
+export { getElements as getElements } from './fn/crate-chemistry/get-elements';
 export type { GetReaction$Params as GetReaction$Params } from './fn/crate-chemistry/get-reaction';
 export { getReaction as getReaction } from './fn/crate-chemistry/get-reaction';
 export type { ListTopics$Params as ListTopics$Params } from './fn/crate-topics/list-topics';

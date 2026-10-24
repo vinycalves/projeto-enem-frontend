@@ -6,6 +6,8 @@ export type { AtomSeed } from './models/atom-seed';
 export type { ChemistryDatasetDto } from './models/chemistry-dataset-dto';
 export type { ChemistryDatasetResponse } from './models/chemistry-dataset-response';
 export type { ChemistryReactionResponse } from './models/chemistry-reaction-response';
+export type { ElementSeed } from './models/element-seed';
+export type { ElementsResponse } from './models/elements-response';
 export type { GeoLayerDto } from './models/geo-layer-dto';
 export type { GeoLayerResponse } from './models/geo-layer-response';
 export type { HealthResponse } from './models/health-response';

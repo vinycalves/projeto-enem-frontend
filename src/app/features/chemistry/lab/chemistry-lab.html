@@ -1,0 +1,548 @@
+<div class="page chem-lab-page">
+  <div class="container">
+    <header class="chem-lab-head">
+      <div>
+        <p class="eyebrow">Laboratório de Química</p>
+        <h1>Monte, balanceie, calcule.</h1>
+        <p class="lede">
+          Digite os agentes químicos livremente. A ferramenta busca os elementos na base periódica,
+          balanceia a equação, calcula massas e resolve processos quantitativos. Ela não inventa
+          produtos para reações fora da base: quando algo não fecha, mostra o motivo.
+        </p>
+      </div>
+      <div class="chem-lab-head-actions">
+        <span class="chem-lab-chip">2D · cálculo</span>
+        <a class="btn btn--outline btn--small" routerLink="/visualizacoes">Voltar ao catálogo</a>
+      </div>
+    </header>
+
+    <div class="process-tabs" role="tablist" aria-label="Processos do laboratório">
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeProcess() === 'reaction'"
+        [class.is-active]="activeProcess() === 'reaction'"
+        (click)="setProcess('reaction')"
+      >
+        Reação e estequiometria
+      </button>
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeProcess() === 'solution'"
+        [class.is-active]="activeProcess() === 'solution'"
+        (click)="setProcess('solution')"
+      >
+        Soluções e diluição
+      </button>
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeProcess() === 'gas'"
+        [class.is-active]="activeProcess() === 'gas'"
+        (click)="setProcess('gas')"
+      >
+        Gases ideais
+      </button>
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="activeProcess() === 'ph'"
+        [class.is-active]="activeProcess() === 'ph'"
+        (click)="setProcess('ph')"
+      >
+        pH ácido-base
+      </button>
+    </div>
+
+    @if (elementsLoading()) {
+      <div class="chem-lab-message" role="status">Carregando a base periódica…</div>
+    } @else if (elementsError()) {
+      <div class="alert alert--error" role="alert">{{ elementsError() }}</div>
+    } @else {
+      @switch (activeProcess()) {
+        @case ('reaction') {
+          <div class="reaction-layout">
+            <section class="chem-card editor-card" aria-labelledby="reaction-editor-title">
+              <div class="chem-card-head">
+                <div>
+                  <p class="eyebrow">Editor de reação</p>
+                  <h2 id="reaction-editor-title">Agentes químicos</h2>
+                </div>
+                <button class="text-button" type="button" (click)="loadExample()">Exemplo</button>
+              </div>
+
+              <fieldset class="species-group">
+                <legend>Reagentes</legend>
+                @for (item of reactants(); track item.id; let index = $index) {
+                  <div class="species-row">
+                    <span class="species-number">{{ index + 1 }}</span>
+                    <input
+                      type="text"
+                      autocomplete="off"
+                      spellcheck="false"
+                      [attr.aria-label]="'Reagente ' + (index + 1)"
+                      [value]="item.formula"
+                      placeholder="Ex.: CH4, Fe^3+, Ca(OH)2"
+                      (input)="updateFormula('reactants', item.id, $any($event.target).value)"
+                    />
+                    <button
+                      class="icon-button"
+                      type="button"
+                      aria-label="Remover reagente"
+                      [disabled]="reactants().length <= 1"
+                      (click)="removeSpecies('reactants', item.id)"
+                    >
+                      ×
+                    </button>
+                  </div>
+                }
+                <button class="add-button" type="button" (click)="addSpecies('reactants')">
+                  + Adicionar reagente
+                </button>
+              </fieldset>
+
+              <fieldset class="species-group">
+                <legend>Produtos</legend>
+                @for (item of products(); track item.id; let index = $index) {
+                  <div class="species-row">
+                    <span class="species-number">{{ index + 1 }}</span>
+                    <input
+                      type="text"
+                      autocomplete="off"
+                      spellcheck="false"
+                      [attr.aria-label]="'Produto ' + (index + 1)"
+                      [value]="item.formula"
+                      placeholder="Ex.: CO2, H2O, Fe(OH)3"
+                      (input)="updateFormula('products', item.id, $any($event.target).value)"
+                    />
+                    <button
+                      class="icon-button"
+                      type="button"
+                      aria-label="Remover produto"
+                      [disabled]="products().length <= 1"
+                      (click)="removeSpecies('products', item.id)"
+                    >
+                      ×
+                    </button>
+                  </div>
+                }
+                <button class="add-button" type="button" (click)="addSpecies('products')">
+                  + Adicionar produto
+                </button>
+              </fieldset>
+
+              @if (balanceError()) {
+                <p class="form-error" role="alert">{{ balanceError() }}</p>
+              }
+
+              <div class="editor-actions">
+                <button class="btn btn--primary btn--small" type="button" (click)="balance()">
+                  Balancear reação
+                </button>
+                <button class="btn btn--link btn--small" type="button" (click)="clearReaction()">
+                  Limpar
+                </button>
+              </div>
+
+              <p class="field-hint">
+                Aceita fórmulas como H2O, Ca(OH)2, CuSO4·5H2O e íons como Fe^3+ ou SO4^2−.
+                Coeficientes são calculados automaticamente.
+              </p>
+            </section>
+
+            <div class="reaction-results">
+              @if (balanceState(); as state) {
+                <section class="chem-card equation-result" aria-labelledby="balanced-equation-title">
+                  <div class="chem-card-head">
+                    <div>
+                      <p class="eyebrow">Resultado</p>
+                      <h2 id="balanced-equation-title">Equação balanceada</h2>
+                    </div>
+                    <span class="status-ok">Balanceada</span>
+                  </div>
+                  <div class="balanced-equation">
+                    <app-chem-equation
+                      [reactants]="reactantTerms()"
+                      [products]="productTerms()"
+                      arrow="→"
+                    />
+                  </div>
+
+                  <div class="table-wrap">
+                    <table>
+                      <caption>Conservação de átomos</caption>
+                      <thead>
+                        <tr>
+                          <th>Elemento</th>
+                          <th>Reagentes</th>
+                          <th>Produtos</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (row of elementRows(); track row.element) {
+                          <tr [class.is-unbalanced]="!row.balanced">
+                            <td>{{ row.element }} <small>{{ elementName(row.element) }}</small></td>
+                            <td>{{ row.left }}</td>
+                            <td>{{ row.right }}</td>
+                            <td>{{ row.balanced ? '✓' : '✕' }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                  @if (chargeBalance().left !== 0 || chargeBalance().right !== 0) {
+                    <p class="charge-status" [class.is-unbalanced]="!chargeBalance().balanced">
+                      Carga: reagentes {{ chargeLabel(chargeBalance().left) }} · produtos
+                      {{ chargeLabel(chargeBalance().right) }}
+                    </p>
+                  }
+                </section>
+
+                <section class="chem-card" aria-labelledby="molar-mass-title">
+                  <div class="chem-card-head">
+                    <div>
+                      <p class="eyebrow">Massas</p>
+                      <h2 id="molar-mass-title">Massas molares</h2>
+                    </div>
+                  </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Lado</th>
+                          <th>Espécie</th>
+                          <th>Coef.</th>
+                          <th>M (g/mol)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (row of molarRows(); track $index) {
+                          <tr>
+                            <td>{{ row.side }}</td>
+                            <td><app-chem-formula [formula]="row.formula" /></td>
+                            <td>{{ row.coefficient }}</td>
+                            <td>{{ format(row.molarMass, 3) }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <section class="chem-card stoich-card" aria-labelledby="stoich-title">
+                  <div class="chem-card-head">
+                    <div>
+                      <p class="eyebrow">Estequiometria</p>
+                      <h2 id="stoich-title">Quanto reage e quanto forma?</h2>
+                    </div>
+                  </div>
+                  <p class="field-hint">
+                    Informe a massa de pelo menos um reagente. O limitante e o rendimento são
+                    calculados a partir da equação balanceada.
+                  </p>
+
+                  <div class="mass-list">
+                    @for (item of reactants(); track item.id; let index = $index) {
+                      <div class="mass-row">
+                        <label [for]="'mass-' + item.id">
+                          Massa de
+                          <app-chem-formula [formula]="state.reactants[index].formula" />
+                        </label>
+                        <span class="mass-unit">g</span>
+                        <input
+                          [id]="'mass-' + item.id"
+                          type="number"
+                          min="0"
+                          step="any"
+                          inputmode="decimal"
+                          [value]="masses()[item.id] ?? ''"
+                          (input)="updateMass(item.id, $event)"
+                        />
+                      </div>
+                    }
+                  </div>
+
+                  <div class="stoich-controls">
+                    <label>
+                      Produto de interesse
+                      <select
+                        [value]="targetProductId() ?? ''"
+                        (change)="setTarget($any($event.target).value)"
+                      >
+                        @for (item of targetProducts(); track item.id) {
+                          <option [value]="item.id">{{ item.label }}</option>
+                        }
+                      </select>
+                    </label>
+                    <label>
+                      Rendimento (%)
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="1"
+                        [value]="yieldPercent()"
+                        (input)="setYield($event)"
+                      />
+                    </label>
+                  </div>
+
+                  @if (stoichiometry(); as result) {
+                    <div class="stoich-results">
+                      <div class="result-banner">
+                        <span>Reagente limitante</span>
+                        <strong>
+                          <app-chem-formula [formula]="limitingFormula(result)" />
+                        </strong>
+                      </div>
+                      <div class="table-wrap">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Reagente</th>
+                              <th>n (mol)</th>
+                              <th>Excesso (mol)</th>
+                              <th>Excesso (g)</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @for (row of result.rows; track row.id) {
+                              <tr [class.is-limiting]="row.limiting">
+                                <td>{{ row.formula }} @if (row.limiting) { <small>limitante</small> }</td>
+                                <td>{{ row.moles === null ? '—' : format(row.moles, 4) }}</td>
+                                <td>{{ row.excessMoles === null ? '—' : format(row.excessMoles, 4) }}</td>
+                                <td>{{ row.excessMassGrams === null ? '—' : format(row.excessMassGrams, 3) }}</td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="yield-result">
+                        <span>Massa teórica de {{ result.target.formula }}</span>
+                        <strong>{{ format(result.target.theoreticalMassGrams, 3) }} g</strong>
+                        <span>Com rendimento de {{ format(result.target.yieldPercent, 0) }}%</span>
+                        <strong>{{ format(result.target.actualMassGrams, 3) }} g</strong>
+                      </div>
+                    </div>
+                  } @else {
+                    <p class="field-hint">Aguardando massas para calcular o limitante.</p>
+                  }
+                </section>
+              } @else {
+                <section class="chem-card empty-result" aria-live="polite">
+                  <p class="eyebrow">Próximo passo</p>
+                  <h2>Digite os agentes e clique em balancear.</h2>
+                  <p>
+                    O balanceador resolve a conservação de átomos e carga para a reação que você
+                    montar. Ele não prevê produtos desconhecidos: você informa os produtos e a
+                    ferramenta verifica se a equação fecha.
+                  </p>
+                  <div class="empty-examples">
+                    <span>Exemplos de fórmulas aceitas:</span>
+                    <code>CH4</code>
+                    <code>O2</code>
+                    <code>Ca(OH)2</code>
+                    <code>CuSO4·5H2O</code>
+                    <code>Fe^3+</code>
+                  </div>
+                </section>
+              }
+            </div>
+          </div>
+        }
+
+        @case ('solution') {
+          <div class="tool-grid">
+            <section class="chem-card" aria-labelledby="solution-title">
+              <div class="chem-card-head">
+                <div>
+                  <p class="eyebrow">Solução</p>
+                  <h2 id="solution-title">Preparo e concentração</h2>
+                </div>
+              </div>
+              <label class="field">
+                <span>Fórmula do soluto</span>
+                <input
+                  type="text"
+                  spellcheck="false"
+                  placeholder="Ex.: NaCl, CH3COOH, CuSO4·5H2O"
+                  [value]="solutionFormula()"
+                  (input)="setSolutionFormula($any($event.target).value)"
+                />
+              </label>
+              @if (solutionError()) {
+                <p class="form-error" role="alert">{{ solutionError() }}</p>
+              }
+              <div class="inline-fields">
+                <label class="field">
+                  <span>Massa do soluto (g)</span>
+                  <input type="number" min="0" step="any" (input)="setNumber('solutionMass', $event)" />
+                </label>
+                <label class="field">
+                  <span>Volume da solução (mL)</span>
+                  <input type="number" min="0" step="any" (input)="setNumber('solutionVolumeMl', $event)" />
+                </label>
+              </div>
+              @if (solutionResult(); as result) {
+                <div class="result-grid">
+                  <div><span>Massa molar</span><strong>{{ format(result.molarMass, 3) }} g/mol</strong></div>
+                  <div><span>Quantidade de matéria</span><strong>{{ format(result.moles, 4) }} mol</strong></div>
+                  <div><span>Concentração molar</span><strong>{{ format(result.molarity, 4) }} mol/L</strong></div>
+                  <div><span>Concentração comum</span><strong>{{ format(result.gramsPerLiter, 3) }} g/L</strong></div>
+                </div>
+              } @else {
+                <p class="field-hint">Informe fórmula, massa e volume para calcular.</p>
+              }
+            </section>
+
+            <section class="chem-card" aria-labelledby="dilution-title">
+              <div class="chem-card-head">
+                <div>
+                  <p class="eyebrow">Diluição</p>
+                  <h2 id="dilution-title">C1 · V1 = C2 · V2</h2>
+                </div>
+              </div>
+              <div class="inline-fields">
+                <label class="field">
+                  <span>Concentração inicial (mol/L)</span>
+                  <input type="number" min="0" step="any" (input)="setNumber('stockConcentration', $event)" />
+                </label>
+                <label class="field">
+                  <span>Volume inicial (mL)</span>
+                  <input type="number" min="0" step="any" (input)="setNumber('stockVolumeMl', $event)" />
+                </label>
+                <label class="field">
+                  <span>Volume final (mL)</span>
+                  <input type="number" min="0" step="any" (input)="setNumber('dilutedVolumeMl', $event)" />
+                </label>
+              </div>
+              @if (dilutionResult(); as result) {
+                <div class="result-grid result-grid--two">
+                  <div><span>Concentração final</span><strong>{{ format(result.concentration, 4) }} mol/L</strong></div>
+                  <div><span>Fator de diluição</span><strong>{{ format(result.factor, 2) }}×</strong></div>
+                </div>
+              } @else {
+                <p class="field-hint">O volume final deve ser maior ou igual ao inicial.</p>
+              }
+            </section>
+          </div>
+        }
+
+        @case ('ph') {
+          <section class="chem-card ph-card" aria-labelledby="ph-title">
+            <div class="chem-card-head">
+              <div>
+                <p class="eyebrow">Equilíbrio ácido-base</p>
+                <h2 id="ph-title">pH de uma solução</h2>
+              </div>
+              <span class="chem-lab-chip">25 °C · Kw = 1,0 × 10⁻¹⁴</span>
+            </div>
+            <div class="inline-fields">
+              <label class="field">
+                <span>Natureza</span>
+                <select [value]="phNature()" (change)="setPhNature($any($event.target).value)">
+                  <option value="acid">Ácido</option>
+                  <option value="base">Base</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Força</span>
+                <select [value]="phStrength()" (change)="setPhStrength($any($event.target).value)">
+                  <option value="strong">Forte (dissociação completa)</option>
+                  <option value="weak">Fraco (equilíbrio)</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Concentração analítica (mol/L)</span>
+                <input type="number" min="0" step="any" [value]="phConcentration() ?? ''" (input)="setNumber('phConcentration', $event)" />
+              </label>
+              @if (phStrength() === 'weak') {
+                <label class="field">
+                  <span>{{ phNature() === 'acid' ? 'Ka' : 'Kb' }}</span>
+                  <input type="number" min="0" step="any" [value]="phConstant() ?? ''" (input)="setNumber('phConstant', $event)" />
+                </label>
+              }
+            </div>
+            @if (phResult(); as result) {
+              <div class="result-grid">
+                <div><span>pH</span><strong>{{ format(result.ph, 2) }}</strong></div>
+                <div><span>pOH</span><strong>{{ format(result.poh, 2) }}</strong></div>
+                <div><span>[H⁺]</span><strong>{{ formatSmall(result.hydrogen) }} mol/L</strong></div>
+                <div><span>[OH⁻]</span><strong>{{ formatSmall(result.hydroxide) }} mol/L</strong></div>
+                @if (result.degree !== null) {
+                  <div><span>Grau de ionização</span><strong>{{ format(result.degree * 100, 3) }}%</strong></div>
+                }
+              </div>
+            } @else {
+              <p class="field-hint">Informe concentração e constante para calcular.</p>
+            }
+            <p class="field-hint">
+              Modelo de solução ideal, monoprótico e a 25 °C. Para ácidos ou bases polipróticos,
+              atividade ou temperaturas diferentes, o resultado não se aplica diretamente.
+            </p>
+          </section>
+        }
+
+        @case ('gas') {
+          <section class="chem-card gas-card" aria-labelledby="gas-title">
+            <div class="chem-card-head">
+              <div>
+                <p class="eyebrow">Gás ideal</p>
+                <h2 id="gas-title">P · V = n · R · T</h2>
+              </div>
+              <span class="chem-lab-chip">R = 0,082057 L·atm/(mol·K)</span>
+            </div>
+            <label class="field">
+              <span>Grandeza a calcular</span>
+              <select [value]="gasUnknown()" (change)="setGasUnknown($any($event.target).value)">
+                <option value="P">Pressão (P)</option>
+                <option value="V">Volume (V)</option>
+                <option value="n">Quantidade de matéria (n)</option>
+                <option value="T">Temperatura (T)</option>
+              </select>
+            </label>
+            <div class="inline-fields inline-fields--four">
+              <label class="field">
+                <span>Pressão (atm)</span>
+                <input type="number" min="0" step="any" [value]="gasPressure() ?? ''" (input)="setNumber('gasPressure', $event)" />
+              </label>
+              <label class="field">
+                <span>Volume (L)</span>
+                <input type="number" min="0" step="any" [value]="gasVolume() ?? ''" (input)="setNumber('gasVolume', $event)" />
+              </label>
+              <label class="field">
+                <span>Mols (mol)</span>
+                <input type="number" min="0" step="any" [value]="gasMoles() ?? ''" (input)="setNumber('gasMoles', $event)" />
+              </label>
+              <label class="field">
+                <span>Temperatura (K)</span>
+                <input type="number" min="0" step="any" [value]="gasTemperature() ?? ''" (input)="setNumber('gasTemperature', $event)" />
+              </label>
+            </div>
+            @if (gasResult(); as result) {
+              <div class="gas-result">
+                <span>{{ result.label }}</span>
+                <strong>{{ format(result.value, 4) }} {{ result.unit }}</strong>
+              </div>
+            } @else {
+              <p class="field-hint">Preencha as outras três grandezas para calcular a incógnita.</p>
+            }
+            <p class="field-hint">
+              Aproximação de gás ideal. Não use para pressões altas, temperaturas próximas da
+              liquefação ou gases reais.
+            </p>
+          </section>
+        }
+      }
+    }
+
+    <section class="chem-lab-footnote">
+      <strong>Escopo desta versão:</strong> balanceamento de fórmulas livres, massa molar,
+      estequiometria, soluções/diluição, gás ideal e pH ácido-base. Previsão automática de produtos,
+      equilíbrio com dados ausentes, redox e eletroquímica ainda não estão implementados; quando
+      entrarem, terão validação e fontes próprias.
+    </section>
+  </div>
+</div>

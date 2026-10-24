@@ -26,4 +26,18 @@ describe('parseFormulaParts', () => {
       { text: '2−', script: 'sup' },
     ]);
   });
+
+  it('keeps hydrate coefficients in normal size', () => {
+    expect(parseFormulaParts('CuSO4·5H2O')).toEqual([
+      { text: 'Cu' },
+      { text: 'S' },
+      { text: 'O' },
+      { text: '4', script: 'sub' },
+      { text: '·' },
+      { text: '5' },
+      { text: 'H' },
+      { text: '2', script: 'sub' },
+      { text: 'O' },
+    ]);
+  });
 });

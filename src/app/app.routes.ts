@@ -43,6 +43,20 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'quimica',
+    title: 'Laboratório de Química · ENEM Aberto',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/chemistry/lab/chemistry-lab').then((module) => module.ChemistryLab),
+  },
+  {
+    path: 'quimica/laboratorio',
+    title: 'Laboratório de Química · ENEM Aberto',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/chemistry/lab/chemistry-lab').then((module) => module.ChemistryLab),
+  },
+  {
     path: 'biologia',
     title: 'Laboratório de Biologia · ENEM Aberto',
     canActivate: [authGuard],

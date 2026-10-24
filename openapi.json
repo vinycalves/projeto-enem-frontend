@@ -43,6 +43,25 @@
         }
       }
     },
+    "/api/v1/chemistry/elements": {
+      "get": {
+        "tags": [
+          "crate::chemistry"
+        ],
+        "operationId": "get_elements",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ElementsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/chemistry/reactions/{id}": {
       "get": {
         "tags": [
@@ -419,6 +438,98 @@
         "properties": {
           "reaction": {
             "$ref": "#/components/schemas/ReactionSeed"
+          }
+        }
+      },
+      "ElementSeed": {
+        "type": "object",
+        "required": [
+          "atomicNumber",
+          "symbol",
+          "namePt",
+          "atomicMass",
+          "period",
+          "electronConfiguration",
+          "category",
+          "sources"
+        ],
+        "properties": {
+          "atomicMass": {
+            "type": "number",
+            "format": "double"
+          },
+          "atomicNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "atomicRadiusPm": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "category": {
+            "type": "string"
+          },
+          "cpkHex": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "electronConfiguration": {
+            "type": "string"
+          },
+          "electronegativity": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "groupNumber": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "namePt": {
+            "type": "string"
+          },
+          "period": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "standardState": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "symbol": {
+            "type": "string"
+          }
+        }
+      },
+      "ElementsResponse": {
+        "type": "object",
+        "required": [
+          "elements"
+        ],
+        "properties": {
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ElementSeed"
+            }
           }
         }
       },

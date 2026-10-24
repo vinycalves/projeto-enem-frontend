@@ -12,6 +12,20 @@ export function parseFormulaParts(formula: string): FormulaPart[] {
   while (index < formula.length) {
     const character = formula[index];
 
+    if (character === '·' || character === '*') {
+      parts.push({ text: character === '*' ? '·' : character });
+      index += 1;
+      let coefficient = '';
+      while (index < formula.length && /\d/.test(formula[index])) {
+        coefficient += formula[index];
+        index += 1;
+      }
+      if (coefficient) {
+        parts.push({ text: coefficient });
+      }
+      continue;
+    }
+
     if (character === '^') {
       index += 1;
       let charge = '';

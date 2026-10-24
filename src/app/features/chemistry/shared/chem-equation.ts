@@ -103,6 +103,7 @@ export class ChemEquation {
     if (!term.charge) {
       return term.formula;
     }
-    return `${term.formula}^${Math.abs(term.charge)}${term.charge > 0 ? '+' : '−'}`;
+    const magnitude = Math.abs(term.charge) === 1 ? '' : String(Math.abs(term.charge));
+    return `${term.formula}^${magnitude}${term.charge > 0 ? '+' : '−'}`;
   }
 }
