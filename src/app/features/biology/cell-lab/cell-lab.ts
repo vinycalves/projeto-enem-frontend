@@ -37,17 +37,12 @@ interface Floater {
 interface Callout {
   id: string;
   button: HTMLButtonElement;
-  line: SVGLineElement;
-  dot: SVGCircleElement;
   localCenter: THREE.Vector3;
-  side: 'left' | 'right';
-  anchorX: number;
-  anchorY: number;
 }
 
 const LABEL_IDS: Record<CellKind, string[]> = {
-  animal: ['membrane', 'nucleus', 'nucleolus', 'mitochondrion', 'rer', 'golgi', 'lysosome', 'centrosome'],
-  vegetal: ['cellwall', 'nucleus', 'chloroplast', 'vacuole', 'mitochondrion', 'golgi', 'peroxisome', 'rer'],
+  animal: ['membrane', 'nucleus', 'mitochondrion', 'rer', 'golgi', 'lysosome', 'centrosome'],
+  vegetal: ['cellwall', 'nucleus', 'chloroplast', 'vacuole', 'mitochondrion', 'golgi', 'peroxisome'],
 };
 
 @Component({
@@ -84,7 +79,6 @@ export class CellLab implements AfterViewInit, OnDestroy {
   private composer?: EffectComposer;
   private bloomPass?: UnrealBloomPass;
   private calloutLayer?: HTMLDivElement;
-  private calloutSvg?: SVGSVGElement;
   private readonly callouts: Callout[] = [];
   private cellGroup?: THREE.Group;
   private membrane?: THREE.Object3D;
@@ -226,9 +220,6 @@ export class CellLab implements AfterViewInit, OnDestroy {
 
     this.calloutLayer = document.createElement('div');
     this.calloutLayer.className = 'cell-callouts';
-    this.calloutSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    this.calloutSvg.setAttribute('class', 'cell-callout-lines');
-    this.calloutLayer.appendChild(this.calloutSvg);
     host.appendChild(this.calloutLayer);
 
     this.scene = new THREE.Scene();
@@ -894,19 +885,18 @@ export class CellLab implements AfterViewInit, OnDestroy {
   }
 
   private buildCallouts(): void {
-    if (!this.calloutLayer || !this.calloutSvg) {
+    if (!this.calloutLayer) {
       return;
     }
 
     this.callouts.length = 0;
-    this.calloutLayer.querySelectorAll('.callout-card').forEach((element) => element.remove());
-    this.calloutSvg.replaceChildren();
+    this.calloutLayer.querySelectorAll('.organelle-marker').forEach((element) => element.remove());
 
     const visibleIds = new Set(LABEL_IDS[this.kind()]);
     const organelles = this.organelles();
     const selected = organelles.filter((organelle) => visibleIds.has(organelle.id));
 
-    selected.forEach((organelle, index) => {
+    selected.forEach((organelle) => {
       const object = this.meshes.get(organelle.id);
       if (!object) {
         return;
@@ -916,72 +906,33 @@ export class CellLab implements AfterViewInit, OnDestroy {
       const worldCenter = box.getCenter(new THREE.Vector3());
       const localCenter = object.worldToLocal(worldCenter.clone());
 
+      // Large shells would otherwise place their marker in the middle of the
+      // cell, on top of the nucleus. Put these markers on the visible rim.
+      if (organelle.id === 'membrane') {
+        localCenter.set(1.55, 1.7, 0);
+      } else if (organelle.id === 'cellwall') {
+        localCenter.set(-1.15, 1.72, 1.12);
+      }
+
       const overallIndex = organelles.findIndex((item) => item.id === organelle.id) + 1;
       const color = this.organelleColor(organelle);
+
       const button = document.createElement('button');
       button.type = 'button';
-      button.className = 'callout-card';
-      button.style.setProperty('--callout-color', color);
-      button.innerHTML = `<span class="callout-index">${overallIndex}</span><span>${organelle.name}</span>`;
+      button.className = 'organelle-marker';
+      button.style.setProperty('--marker-color', color);
+      button.setAttribute('aria-label', `${overallIndex}. ${organelle.name}`);
+      button.title = organelle.name;
+      button.innerHTML = `<span class="marker-index">${overallIndex}</span><span class="marker-label">${organelle.name}</span>`;
       button.addEventListener('click', () => {
         this.ngZone.run(() => this.selectOrganelle(organelle.id));
       });
       this.calloutLayer?.appendChild(button);
 
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('class', 'callout-line');
-      line.setAttribute('stroke', color);
-      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      dot.setAttribute('class', 'callout-dot');
-      dot.setAttribute('fill', color);
-      dot.setAttribute('r', '3');
-      this.calloutSvg?.append(line, dot);
-
-      this.callouts.push({
-        id: organelle.id,
-        button,
-        line,
-        dot,
-        localCenter,
-        side: index % 2 === 0 ? 'left' : 'right',
-        anchorX: 0,
-        anchorY: 0,
-      });
+      this.callouts.push({ id: organelle.id, button, localCenter });
     });
 
-    this.layoutCallouts();
     this.updateCallouts();
-  }
-
-  private layoutCallouts(): void {
-    if (!this.calloutLayer || !this.calloutSvg) {
-      return;
-    }
-    const width = Math.max(this.calloutLayer.clientWidth, 1);
-    const height = Math.max(this.calloutLayer.clientHeight, 1);
-    this.calloutSvg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-    this.calloutSvg.setAttribute('width', String(width));
-    this.calloutSvg.setAttribute('height', String(height));
-
-    const left = this.callouts.filter((callout) => callout.side === 'left');
-    const right = this.callouts.filter((callout) => callout.side === 'right');
-    const position = (list: Callout[], side: 'left' | 'right') => {
-      list.forEach((callout, index) => {
-        const fraction = list.length <= 1 ? 0.5 : 0.08 + (index / (list.length - 1)) * 0.72;
-        callout.button.style.top = `${fraction * 100}%`;
-        callout.button.style.left = side === 'left' ? '0.35rem' : 'calc(100% - 9.6rem)';
-      });
-    };
-    position(left, 'left');
-    position(right, 'right');
-
-    const hostRect = this.calloutLayer.getBoundingClientRect();
-    for (const callout of this.callouts) {
-      const rect = callout.button.getBoundingClientRect();
-      callout.anchorX =
-        (callout.side === 'left' ? rect.right : rect.left) - hostRect.left;
-      callout.anchorY = rect.top + rect.height / 2 - hostRect.top;
-    }
   }
 
   private updateCallouts(): void {
@@ -993,44 +944,68 @@ export class CellLab implements AfterViewInit, OnDestroy {
     const height = Math.max(host.clientHeight, 1);
     const selected = this.selectedId();
 
+    const candidates: Array<{ callout: Callout; x: number; y: number }> = [];
     for (const callout of this.callouts) {
       const object = this.meshes.get(callout.id);
       if (!object || !object.visible) {
         callout.button.classList.add('is-hidden');
-        callout.line.style.display = 'none';
-        callout.dot.style.display = 'none';
         continue;
       }
       object.updateWorldMatrix(true, false);
       const world = callout.localCenter.clone().applyMatrix4(object.matrixWorld);
       const projected = world.project(this.camera);
-      const visible =
-        projected.z > -1 &&
-        projected.z < 1 &&
-        projected.x > -1.2 &&
-        projected.x < 1.2 &&
-        projected.y > -1.2 &&
-        projected.y < 1.2;
 
-      if (!visible) {
+      if (projected.z < -1 || projected.z > 1) {
         callout.button.classList.add('is-hidden');
-        callout.line.style.display = 'none';
-        callout.dot.style.display = 'none';
         continue;
       }
 
       const x = (projected.x * 0.5 + 0.5) * width;
       const y = (-projected.y * 0.5 + 0.5) * height;
-      callout.button.classList.remove('is-hidden');
+      if (x < -40 || x > width + 40 || y < -40 || y > height + 40) {
+        callout.button.classList.add('is-hidden');
+        continue;
+      }
+      candidates.push({ callout, x, y });
+    }
+
+    // Keep the markers readable. When two organelles project to nearly the
+    // same point, the most important one stays visible; the sidebar still
+    // lists every structure and its number.
+    const priority = [
+      'nucleus',
+      'chloroplast',
+      'vacuole',
+      'mitochondrion',
+      'membrane',
+      'cellwall',
+      'golgi',
+      'rer',
+      'peroxisome',
+      'lysosome',
+      'centrosome',
+    ];
+    candidates.sort((a, b) => {
+      if (a.callout.id === selected) return -1;
+      if (b.callout.id === selected) return 1;
+      return priority.indexOf(a.callout.id) - priority.indexOf(b.callout.id);
+    });
+
+    const placed: Array<{ x: number; y: number }> = [];
+    const minimumGap = 30;
+    for (const candidate of candidates) {
+      const { callout, x, y } = candidate;
+      const overlaps = placed.some(
+        (other) => (other.x - x) ** 2 + (other.y - y) ** 2 < minimumGap ** 2,
+      );
+      callout.button.classList.toggle('is-hidden', overlaps);
       callout.button.classList.toggle('is-active', callout.id === selected);
-      callout.line.style.display = 'block';
-      callout.dot.style.display = 'block';
-      callout.line.setAttribute('x1', String(callout.anchorX));
-      callout.line.setAttribute('y1', String(callout.anchorY));
-      callout.line.setAttribute('x2', String(x));
-      callout.line.setAttribute('y2', String(y));
-      callout.dot.setAttribute('cx', String(x));
-      callout.dot.setAttribute('cy', String(y));
+      callout.button.classList.toggle('is-right', x > width * 0.65);
+      callout.button.style.left = `${x}px`;
+      callout.button.style.top = `${y}px`;
+      if (!overlaps) {
+        placed.push({ x, y });
+      }
     }
   }
 
@@ -1282,7 +1257,6 @@ export class CellLab implements AfterViewInit, OnDestroy {
     this.camera.updateProjectionMatrix();
     this.composer?.setSize(width, height);
     this.bloomPass?.setSize(width, height);
-    this.layoutCallouts();
     this.updateCallouts();
   }
 
