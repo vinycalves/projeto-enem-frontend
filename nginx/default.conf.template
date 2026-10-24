@@ -1,0 +1,43 @@
+server {
+    listen 80;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    server_tokens off;
+
+    # API: same-origin proxy so the HttpOnly session cookie stays first-party.
+    # BACKEND_URL is expanded by the official nginx entrypoint at container start.
+    location /api/ {
+        proxy_pass ${BACKEND_URL}/api/;
+
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header Cookie $http_cookie;
+
+        proxy_connect_timeout 10s;
+        proxy_read_timeout 60s;
+        proxy_send_timeout 60s;
+
+        proxy_buffering off;
+    }
+
+    # Single-page application fallback.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # The HTML shell should never be cached aggressively.
+    location = /index.html {
+        add_header Cache-Control "no-cache, must-revalidate";
+    }
+
+    gzip on;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml;
+    gzip_min_length 1024;
+}
