@@ -1,0 +1,134 @@
+<div class="page calendar-page">
+  <div class="container">
+    <header class="page-head calendar-head">
+      <div>
+        <p class="eyebrow">Datas para anotar</p>
+        <h1>Calendário do ENEM</h1>
+        <p class="lede">
+          Inscrições, provas, gabaritos e resultados em uma linha do tempo. As fontes oficiais ficam
+          sempre ao lado de cada etapa.
+        </p>
+      </div>
+
+      <div class="calendar-countdown" aria-label="Contagem para a primeira prova">
+        <p class="countdown-label">Primeira prova</p>
+        <p class="countdown-value">
+          @if (daysToExam >= 0) {
+            <strong>{{ daysToExam }}</strong>
+          } @else {
+            <strong>—</strong>
+          }
+          <span>{{ countdownLabel() }}</span>
+        </p>
+        <p class="countdown-date">{{ firstExamLabel }}</p>
+      </div>
+    </header>
+
+    @if (loading()) {
+      <app-loading label="Consultando as datas do ENEM…" />
+    } @else if (error()) {
+      <div class="alert alert--error state-error" role="alert">
+        <span>{{ error() }}</span>
+        <button class="btn btn--outline btn--small" type="button" (click)="load()">
+          Tentar novamente
+        </button>
+      </div>
+    } @else if (sortedEvents().length === 0) {
+      <app-empty-state
+        heading="Nenhuma data publicada"
+        message="O calendário ainda não tem eventos. As datas oficiais aparecerão aqui quando forem cadastradas."
+      />
+    } @else {
+      <div class="calendar-layout">
+        <ol class="timeline">
+          @for (event of sortedEvents(); track event.id; let index = $index) {
+            <li
+              class="timeline-item"
+              [class.is-confirmed]="event.confirmed"
+              [class.is-unconfirmed]="!event.confirmed"
+            >
+              <span class="timeline-marker" aria-hidden="true">{{
+                (index + 1).toString().padStart(2, '0')
+              }}</span>
+
+              <article class="event-card">
+                <div class="event-top">
+                  <span [class]="kindClass(event.kind)">{{ kindLabel(event.kind) }}</span>
+                  @if (event.confirmed) {
+                    <span class="badge badge--success">Confirmado</span>
+                  } @else if (!event.starts_on) {
+                    <span class="badge badge--muted">A definir</span>
+                  } @else {
+                    <span class="badge badge--gold">A confirmar</span>
+                  }
+                </div>
+
+                <h2 class="event-title">{{ event.title }}</h2>
+
+                <p class="event-date">
+                  @if (event.starts_on) {
+                    <time [attr.datetime]="event.starts_on">{{ dateRange(event) }}</time>
+                  } @else {
+                    <span class="date-tbd">Data a definir</span>
+                  }
+                </p>
+
+                @if (event.description) {
+                  <p class="event-description">{{ event.description }}</p>
+                }
+
+                <div class="event-footer">
+                  <span class="confirmed-note">
+                    {{
+                      event.confirmed ? 'Data confirmada na fonte oficial' : 'Sujeito a alteração'
+                    }}
+                  </span>
+                  @if (event.source_url) {
+                    <a
+                      class="source-link"
+                      [href]="event.source_url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Fonte oficial
+                      <span class="sr-only">(abre em nova aba)</span>
+                      <span aria-hidden="true">↗</span>
+                    </a>
+                  }
+                </div>
+              </article>
+            </li>
+          }
+        </ol>
+
+        <aside class="calendar-aside">
+          <div class="legend-card">
+            <p class="eyebrow">Legenda</p>
+            <ul class="legend-list">
+              <li>
+                <span class="legend-mark legend-mark--confirmed" aria-hidden="true"></span>
+                <span><strong>Confirmado</strong> — data publicada na fonte oficial.</span>
+              </li>
+              <li>
+                <span class="legend-mark legend-mark--tentative" aria-hidden="true"></span>
+                <span><strong>A confirmar</strong> — previsão que pode mudar.</span>
+              </li>
+              <li>
+                <span class="legend-mark legend-mark--tbd" aria-hidden="true"></span>
+                <span><strong>A definir</strong> — etapa ainda sem data.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="notice-card">
+            <h2>Confira na fonte</h2>
+            <p>
+              Este calendário reúne informações públicas, mas não substitui os comunicados do INEP.
+              Antes de viajar ou organizar seus estudos, confirme as datas no site oficial.
+            </p>
+          </div>
+        </aside>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,425 @@
+<div class="page question-page">
+  <div class="container">
+    @if (loading()) {
+      <app-loading label="Carregando a questão…" />
+    } @else if (error()) {
+      <div class="question-error">
+        <p class="eyebrow">Questão</p>
+        <h1>Não foi possível abrir esta página</h1>
+        <div class="alert alert--error state-error" role="alert">
+          <span>{{ error() }}</span>
+          <div class="cluster">
+            <button class="btn btn--outline btn--small" type="button" (click)="retry()">
+              Tentar novamente
+            </button>
+            <a class="btn btn--link" routerLink="/estudar">Voltar para Estudar</a>
+          </div>
+        </div>
+      </div>
+    } @else if (question(); as q) {
+      <nav class="breadcrumb" aria-label="Você está aqui">
+        <a routerLink="/estudar">Estudar</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a [routerLink]="['/conceito', q.concept_id]">{{ q.concept_name }}</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span>Questão {{ q.code }}</span>
+      </nav>
+
+      <div class="question-layout">
+        <article class="question-main" aria-labelledby="question-title">
+          <header class="question-head">
+            <p class="eyebrow">{{ q.area_name }} · {{ q.subject_name }}</p>
+            <div class="question-title-row">
+              <h1 id="question-title">Questão {{ q.code }}</h1>
+              <span [class]="difficultyClass(q.difficulty)">{{ difficulty(q.difficulty) }}</span>
+            </div>
+            <p class="question-concept">
+              Conceito:
+              <a [routerLink]="['/conceito', q.concept_id]">{{ q.concept_name }}</a>
+            </p>
+            @if (q.has_attempted && !attempt()) {
+              <div class="meta-row previous-attempt">
+                <span
+                  class="badge"
+                  [class.badge--success]="q.last_attempt_is_correct"
+                  [class.badge--danger]="q.last_attempt_is_correct === false"
+                >
+                  @if (q.last_attempt_is_correct) {
+                    Última tentativa: acertou
+                  } @else if (q.last_attempt_is_correct === false) {
+                    Última tentativa: errou
+                  } @else {
+                    Você já respondeu esta questão
+                  }
+                </span>
+                <span class="muted small"
+                  >O gabarito continua guardado até você pedir para ver.</span
+                >
+              </div>
+            }
+          </header>
+
+          <section class="statement-card card" aria-labelledby="statement-title">
+            <h2 id="statement-title" class="sr-only">Enunciado</h2>
+            <p class="statement preserve-lines">{{ q.statement }}</p>
+
+            <fieldset class="options-fieldset" [disabled]="optionsLocked()">
+              <legend>Escolha uma alternativa</legend>
+              <div class="options">
+                @for (option of q.options; track option.label) {
+                  <label
+                    class="option"
+                    [class.is-selected]="selectedOption() === option.label"
+                    [class.is-correct]="answer()?.correct_option === option.label"
+                    [class.is-wrong]="
+                      answer() &&
+                      selectedOption() === option.label &&
+                      answer()?.correct_option !== option.label
+                    "
+                  >
+                    <input
+                      type="radio"
+                      name="selected-option"
+                      [value]="option.label"
+                      [checked]="selectedOption() === option.label"
+                      [disabled]="optionsLocked()"
+                      (change)="selectOption(option.label)"
+                    />
+                    <span class="option-letter" aria-hidden="true">{{ option.label }}</span>
+                    <span class="option-text">{{ option.text }}</span>
+                    @if (answer()?.correct_option === option.label) {
+                      <span class="option-flag option-flag--correct">Correta</span>
+                    } @else if (answer() && selectedOption() === option.label) {
+                      <span class="option-flag option-flag--wrong">Sua resposta</span>
+                    }
+                  </label>
+                }
+              </div>
+            </fieldset>
+
+            <div class="question-actions">
+              @if (!attempt()) {
+                <button
+                  class="btn btn--primary"
+                  type="button"
+                  [disabled]="!selectedOption() || submitting()"
+                  (click)="submitAttempt()"
+                >
+                  {{ submitting() ? 'Enviando…' : 'Responder' }}
+                </button>
+                <span class="action-hint">
+                  @if (selectedOption()) {
+                    Alternativa {{ selectedOption() }} selecionada.
+                  } @else {
+                    Selecione uma alternativa para responder.
+                  }
+                </span>
+              } @else if (attempt(); as result) {
+                <div
+                  class="attempt-result"
+                  [class.is-correct]="result.is_correct"
+                  [class.is-wrong]="!result.is_correct"
+                  role="status"
+                >
+                  <span class="attempt-icon" aria-hidden="true">{{
+                    result.is_correct ? '✓' : '×'
+                  }}</span>
+                  <div>
+                    <strong>{{
+                      result.is_correct ? 'Você acertou.' : 'Sua resposta não está correta.'
+                    }}</strong>
+                    <p>
+                      @if (result.is_correct) {
+                        Resposta registrada. A discussão já está liberada abaixo.
+                      } @else {
+                        Não mostramos o gabarito agora. Use a discussão ou peça a resposta e a
+                        explicação.
+                      }
+                    </p>
+                  </div>
+                </div>
+              }
+
+              <div class="reveal-area">
+                @if (hasAttempted()) {
+                  @if (!answer()) {
+                    <button
+                      class="btn btn--outline"
+                      type="button"
+                      [disabled]="revealing()"
+                      (click)="revealAnswer()"
+                    >
+                      {{ revealing() ? 'Abrindo resposta…' : 'Ver resposta e explicação' }}
+                    </button>
+                  } @else {
+                    <span class="badge badge--gold">Resposta revelada</span>
+                  }
+                } @else {
+                  <p class="locked-hint">
+                    Depois de responder, você pode ver a resposta e participar da discussão.
+                  </p>
+                }
+              </div>
+            </div>
+
+            <div class="feedback" aria-live="polite">
+              @if (attemptError()) {
+                <div class="alert alert--error" role="alert">{{ attemptError() }}</div>
+              }
+              @if (revealError()) {
+                <div class="alert alert--error" role="alert">{{ revealError() }}</div>
+              }
+            </div>
+          </section>
+
+          @if (answer(); as revealed) {
+            <section class="answer-section card card--pad" aria-labelledby="answer-title">
+              <p class="eyebrow">Resposta e explicação</p>
+              <h2 id="answer-title">Alternativa {{ revealed.correct_option }}</h2>
+              <div class="prose preserve-lines answer-explanation">{{ revealed.explanation }}</div>
+              @if (revealed.source || revealed.license) {
+                <dl class="answer-meta">
+                  @if (revealed.source) {
+                    <div>
+                      <dt>Fonte</dt>
+                      <dd>{{ revealed.source }}</dd>
+                    </div>
+                  }
+                  @if (revealed.license) {
+                    <div>
+                      <dt>Licença</dt>
+                      <dd>{{ revealed.license }}</dd>
+                    </div>
+                  }
+                </dl>
+              }
+            </section>
+          }
+
+          <section class="discussion" aria-labelledby="discussion-title">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Depois da tentativa</p>
+                <h2 id="discussion-title">Discussão da questão</h2>
+              </div>
+              <p>Compare raciocínios e comente a alternativa que escolheu.</p>
+            </div>
+
+            @if (!hasAttempted()) {
+              <div class="locked-discussion">
+                <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                  <rect x="7" y="14" width="18" height="13" rx="2" />
+                  <path d="M11 14v-4a5 5 0 0 1 10 0v4" />
+                  <path d="M16 19v4" />
+                </svg>
+                <div>
+                  <h3>Disponível após a tentativa</h3>
+                  <p>
+                    A discussão fica disponível depois que você responde. Assim, ninguém chega à
+                    resposta por acidente.
+                  </p>
+                </div>
+              </div>
+            } @else if (discussionLoading()) {
+              <app-loading label="Abrindo a discussão…" />
+            } @else if (discussionError()) {
+              <div class="alert alert--error state-error" role="alert">
+                <span>{{ discussionError() }}</span>
+                @if (hasAttempted()) {
+                  <button
+                    class="btn btn--outline btn--small"
+                    type="button"
+                    (click)="loadDiscussion()"
+                  >
+                    Tentar novamente
+                  </button>
+                }
+              </div>
+            } @else {
+              @if (reportSuccess()) {
+                <p class="alert alert--success" role="status">{{ reportSuccess() }}</p>
+              }
+              @if (reportError()) {
+                <p class="alert alert--error" role="alert">{{ reportError() }}</p>
+              }
+
+              @if (comments().length === 0) {
+                <app-empty-state
+                  heading="Seja a primeira pessoa a comentar"
+                  message="Compartilhe seu raciocínio ou uma dúvida sobre as alternativas."
+                />
+              } @else {
+                <div class="comment-groups">
+                  @for (group of commentGroups(); track group.title) {
+                    <section class="comment-group" [attr.aria-labelledby]="groupId(group)">
+                      <h3 [id]="groupId(group)">
+                        {{ group.title }}
+                        <span class="group-count">{{ group.comments.length }}</span>
+                      </h3>
+                      <ul>
+                        @for (comment of group.comments; track comment.id) {
+                          <li class="comment">
+                            <div class="comment-head">
+                              <strong>{{ comment.author }}</strong>
+                              @if (comment.is_own) {
+                                <span class="badge badge--forest">Você</span>
+                              }
+                              <time [attr.datetime]="comment.created_at">{{
+                                dateTime(comment.created_at)
+                              }}</time>
+                            </div>
+                            <p class="comment-body preserve-lines">{{ comment.body }}</p>
+
+                            @if (!comment.is_own) {
+                              <div class="comment-report-area">
+                                @if (reportingId() === comment.id) {
+                                  <div class="report-form">
+                                    <label [for]="'report-reason-' + comment.id"
+                                      >Motivo da denúncia</label
+                                    >
+                                    <select
+                                      [id]="'report-reason-' + comment.id"
+                                      [value]="reportReason()"
+                                      (change)="setReportReason($event)"
+                                    >
+                                      @for (reason of reportReasons; track reason) {
+                                        <option [value]="reason">{{ reason }}</option>
+                                      }
+                                    </select>
+                                    <div class="cluster">
+                                      <button
+                                        class="btn btn--outline btn--small"
+                                        type="button"
+                                        (click)="confirmReport(comment.id)"
+                                      >
+                                        Enviar denúncia
+                                      </button>
+                                      <button
+                                        class="btn--link"
+                                        type="button"
+                                        (click)="cancelReport()"
+                                      >
+                                        Cancelar
+                                      </button>
+                                    </div>
+                                  </div>
+                                } @else if (reportedIds().has(comment.id)) {
+                                  <span class="reported-note">Denúncia enviada</span>
+                                } @else {
+                                  <button
+                                    class="btn--link comment-report"
+                                    type="button"
+                                    (click)="openReport(comment.id)"
+                                  >
+                                    Denunciar
+                                  </button>
+                                }
+                              </div>
+                            }
+                          </li>
+                        }
+                      </ul>
+                    </section>
+                  }
+                </div>
+              }
+
+              <form
+                class="comment-form"
+                [formGroup]="commentForm"
+                (ngSubmit)="submitComment()"
+                novalidate
+              >
+                <h3>Participe da discussão</h3>
+                <p class="muted small">
+                  Comentários são públicos. Evite dados pessoais e contribua com o raciocínio.
+                </p>
+
+                <div class="field">
+                  <label for="comment-option">Vincular a uma alternativa (opcional)</label>
+                  <select id="comment-option" formControlName="option_label">
+                    <option value="">Comentário geral</option>
+                    @for (option of q.options; track option.label) {
+                      <option [value]="option.label">Alternativa {{ option.label }}</option>
+                    }
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="comment-body">Seu comentário</label>
+                  <textarea
+                    id="comment-body"
+                    formControlName="body"
+                    rows="5"
+                    maxlength="2000"
+                    placeholder="Explique seu raciocínio, aponte uma dúvida ou ajude quem errou."
+                    aria-describedby="comment-body-hint comment-body-error"
+                    [attr.aria-invalid]="
+                      commentForm.controls.body.touched && commentForm.controls.body.invalid
+                    "
+                  ></textarea>
+                  <span id="comment-body-hint" class="field-hint">Até 2.000 caracteres.</span>
+                  @if (
+                    commentForm.controls.body.touched &&
+                    commentForm.controls.body.hasError('required')
+                  ) {
+                    <span id="comment-body-error" class="field-error">Escreva um comentário.</span>
+                  } @else if (
+                    commentForm.controls.body.touched &&
+                    commentForm.controls.body.hasError('minlength')
+                  ) {
+                    <span id="comment-body-error" class="field-error"
+                      >O comentário precisa ter pelo menos 2 caracteres.</span
+                    >
+                  } @else if (
+                    commentForm.controls.body.touched &&
+                    commentForm.controls.body.hasError('maxlength')
+                  ) {
+                    <span id="comment-body-error" class="field-error"
+                      >O comentário ultrapassou 2.000 caracteres.</span
+                    >
+                  }
+                </div>
+
+                <div class="comment-actions">
+                  <button class="btn btn--primary" type="submit" [disabled]="commentSubmitting()">
+                    {{ commentSubmitting() ? 'Publicando…' : 'Publicar comentário' }}
+                  </button>
+                </div>
+
+                <div aria-live="polite">
+                  @if (commentError()) {
+                    <div class="alert alert--error" role="alert">{{ commentError() }}</div>
+                  }
+                  @if (commentSuccess()) {
+                    <div class="alert alert--success" role="status">{{ commentSuccess() }}</div>
+                  }
+                </div>
+              </form>
+            }
+          </section>
+        </article>
+
+        <aside class="question-aside">
+          <div class="aside-card">
+            <p class="eyebrow">Como funciona</p>
+            <h2>Uma resposta, depois a conversa.</h2>
+            <ol class="how-list">
+              <li><span>01</span> Escolha uma alternativa e responda.</li>
+              <li><span>02</span> Veja se acertou ou errou, sem gabarito.</li>
+              <li><span>03</span> Participe da discussão sobre a questão.</li>
+              <li><span>04</span> Peça a resposta e a explicação quando quiser.</li>
+            </ol>
+            <a class="aside-back" [routerLink]="['/conceito', q.concept_id]">
+              ← Voltar ao conceito
+            </a>
+          </div>
+          <p class="aside-note">
+            A discussão e a resposta ficam liberadas apenas para quem já tentou. O gabarito nunca
+            aparece antes da tentativa.
+          </p>
+        </aside>
+      </div>
+    }
+  </div>
+</div>

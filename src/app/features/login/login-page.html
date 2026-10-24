@@ -1,0 +1,267 @@
+<section class="page login-page">
+  <div class="container auth-layout">
+    <aside class="auth-aside" aria-labelledby="auth-aside-title">
+      <svg class="auth-contours" viewBox="0 0 420 500" aria-hidden="true" focusable="false">
+        <g fill="none" stroke="currentColor" stroke-width="1.2">
+          <path d="M-20 92c80-55 157-32 217 2s119 28 174-16 92-22 118 5" />
+          <path d="M-12 128c78-53 150-31 208 2s116 27 170-15 91-21 116 5" />
+          <path d="M-30 173c86-59 164-35 226 0s125 30 183-17 98-23 126 6" />
+          <path d="M-24 429c83-39 143-20 201 8s120 30 192-13 96-23 122 2" />
+          <path d="M-30 463c90-42 154-22 217 6s129 32 207-14 103-25 131 2" />
+        </g>
+        <g fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="330" cy="292" r="42" />
+          <circle cx="330" cy="292" r="27" />
+          <path d="M330 232v-18M330 370v-18M270 292h-18M408 292h-18" />
+          <path d="M330 252l12 40-12-8-12 8z" fill="currentColor" stroke="none" />
+        </g>
+      </svg>
+
+      <p class="eyebrow">Caderno de campo</p>
+      <h1 id="auth-aside-title">Estude com o que é seu.</h1>
+      <p class="lede">
+        Currículo organizado, questões com discussão e o calendário oficial do ENEM. Sem
+        mensalidade, sem confirmação de e-mail e sem atalhos.
+      </p>
+
+      <ol class="auth-facts">
+        <li>
+          <span class="fact-number" aria-hidden="true">01</span>
+          <span
+            ><strong>Do conceito à questão</strong> — leia, pratique e retome o que ficou
+            difícil.</span
+          >
+        </li>
+        <li>
+          <span class="fact-number" aria-hidden="true">02</span>
+          <span
+            ><strong>Discussão depois da tentativa</strong> — compare raciocínios sem espiar o
+            gabarito antes da hora.</span
+          >
+        </li>
+        <li>
+          <span class="fact-number" aria-hidden="true">03</span>
+          <span
+            ><strong>Calendário em um só lugar</strong> — inscrições, provas, gabaritos e
+            resultados.</span
+          >
+        </li>
+      </ol>
+
+      <p class="auth-independent">Um projeto independente, sem vínculo com o INEP.</p>
+    </aside>
+
+    <div class="auth-panel card">
+      <div class="auth-tabs" role="tablist" aria-label="Entrar ou criar conta">
+        <button
+          id="tab-login"
+          type="button"
+          role="tab"
+          [attr.aria-selected]="tab() === 'login'"
+          [attr.tabindex]="tab() === 'login' ? 0 : -1"
+          aria-controls="panel-login"
+          [class.is-active]="tab() === 'login'"
+          (click)="selectTab('login')"
+          (keydown)="onTabKeydown($event, 'login')"
+        >
+          Entrar
+        </button>
+        <button
+          id="tab-register"
+          type="button"
+          role="tab"
+          [attr.aria-selected]="tab() === 'register'"
+          [attr.tabindex]="tab() === 'register' ? 0 : -1"
+          aria-controls="panel-register"
+          [class.is-active]="tab() === 'register'"
+          (click)="selectTab('register')"
+          (keydown)="onTabKeydown($event, 'register')"
+        >
+          Criar conta
+        </button>
+      </div>
+
+      <div
+        id="panel-login"
+        role="tabpanel"
+        aria-labelledby="tab-login"
+        [hidden]="tab() !== 'login'"
+        class="auth-form-wrap"
+      >
+        <div class="auth-form-head">
+          <h2>Bem-vindo de volta</h2>
+          <p class="muted">Continue exatamente de onde parou.</p>
+        </div>
+
+        @if (error() && tab() === 'login') {
+          <div class="alert alert--error auth-alert" role="alert">{{ error() }}</div>
+        }
+
+        <form class="form" [formGroup]="loginForm" (ngSubmit)="submitLogin()" novalidate>
+          <div class="field">
+            <label for="login-email">E-mail</label>
+            <input
+              id="login-email"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              inputmode="email"
+              placeholder="voce@exemplo.com"
+              aria-describedby="login-email-hint login-email-error"
+              [attr.aria-invalid]="
+                loginForm.controls.email.touched && loginForm.controls.email.invalid
+              "
+            />
+            <span id="login-email-hint" class="field-hint">O mesmo e-mail usado no cadastro.</span>
+            @if (
+              loginForm.controls.email.touched && loginForm.controls.email.hasError('required')
+            ) {
+              <span id="login-email-error" class="field-error">Informe seu e-mail.</span>
+            } @else if (
+              loginForm.controls.email.touched && loginForm.controls.email.hasError('email')
+            ) {
+              <span id="login-email-error" class="field-error"
+                >Digite um e-mail válido, como voce@exemplo.com.</span
+              >
+            }
+          </div>
+
+          <div class="field">
+            <label for="login-password">Senha</label>
+            <input
+              id="login-password"
+              type="password"
+              formControlName="password"
+              autocomplete="current-password"
+              placeholder="Sua senha"
+              aria-describedby="login-password-hint login-password-error"
+              [attr.aria-invalid]="
+                loginForm.controls.password.touched && loginForm.controls.password.invalid
+              "
+            />
+            <span id="login-password-hint" class="field-hint">Mínimo de 8 caracteres.</span>
+            @if (
+              loginForm.controls.password.touched &&
+              loginForm.controls.password.hasError('required')
+            ) {
+              <span id="login-password-error" class="field-error">Informe sua senha.</span>
+            } @else if (
+              loginForm.controls.password.touched &&
+              loginForm.controls.password.hasError('minlength')
+            ) {
+              <span id="login-password-error" class="field-error"
+                >A senha precisa ter pelo menos 8 caracteres.</span
+              >
+            }
+          </div>
+
+          <button class="btn btn--primary btn--block" type="submit" [disabled]="submitting()">
+            {{ submitting() && tab() === 'login' ? 'Entrando…' : 'Entrar' }}
+          </button>
+        </form>
+
+        <p class="auth-switch">
+          Ainda não tem conta?
+          <button class="btn--link" type="button" (click)="selectTab('register')">
+            Criar uma agora
+          </button>
+        </p>
+      </div>
+
+      <div
+        id="panel-register"
+        role="tabpanel"
+        aria-labelledby="tab-register"
+        [hidden]="tab() !== 'register'"
+        class="auth-form-wrap"
+      >
+        <div class="auth-form-head">
+          <h2>Comece a estudar</h2>
+          <p class="muted">Leva menos de um minuto. Sem confirmação por e-mail.</p>
+        </div>
+
+        @if (error() && tab() === 'register') {
+          <div class="alert alert--error auth-alert" role="alert">{{ error() }}</div>
+        }
+
+        <form class="form" [formGroup]="registerForm" (ngSubmit)="submitRegister()" novalidate>
+          <div class="field">
+            <label for="register-email">E-mail</label>
+            <input
+              id="register-email"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              inputmode="email"
+              placeholder="voce@exemplo.com"
+              aria-describedby="register-email-hint register-email-error"
+              [attr.aria-invalid]="
+                registerForm.controls.email.touched && registerForm.controls.email.invalid
+              "
+            />
+            <span id="register-email-hint" class="field-hint"
+              >Usaremos apenas para identificar sua conta.</span
+            >
+            @if (
+              registerForm.controls.email.touched &&
+              registerForm.controls.email.hasError('required')
+            ) {
+              <span id="register-email-error" class="field-error">Informe seu e-mail.</span>
+            } @else if (
+              registerForm.controls.email.touched && registerForm.controls.email.hasError('email')
+            ) {
+              <span id="register-email-error" class="field-error"
+                >Digite um e-mail válido, como voce@exemplo.com.</span
+              >
+            }
+          </div>
+
+          <div class="field">
+            <label for="register-password">Crie uma senha</label>
+            <input
+              id="register-password"
+              type="password"
+              formControlName="password"
+              autocomplete="new-password"
+              placeholder="Mínimo de 8 caracteres"
+              aria-describedby="register-password-hint register-password-error"
+              [attr.aria-invalid]="
+                registerForm.controls.password.touched && registerForm.controls.password.invalid
+              "
+            />
+            <span id="register-password-hint" class="field-hint">Use pelo menos 8 caracteres.</span>
+            @if (
+              registerForm.controls.password.touched &&
+              registerForm.controls.password.hasError('required')
+            ) {
+              <span id="register-password-error" class="field-error">Crie uma senha.</span>
+            } @else if (
+              registerForm.controls.password.touched &&
+              registerForm.controls.password.hasError('minlength')
+            ) {
+              <span id="register-password-error" class="field-error"
+                >A senha precisa ter pelo menos 8 caracteres.</span
+              >
+            }
+          </div>
+
+          <button class="btn btn--primary btn--block" type="submit" [disabled]="submitting()">
+            {{ submitting() && tab() === 'register' ? 'Criando conta…' : 'Criar conta e entrar' }}
+          </button>
+
+          <p class="auth-note">Sua conta é criada na hora. Não enviamos e-mail de confirmação.</p>
+        </form>
+
+        <p class="auth-switch">
+          Já tem uma conta?
+          <button class="btn--link" type="button" (click)="selectTab('login')">Entrar</button>
+        </p>
+      </div>
+
+      <p class="auth-privacy">
+        Sem anúncios e sem venda de dados. Leia mais
+        <a routerLink="/sobre">sobre o projeto</a>.
+      </p>
+    </div>
+  </div>
+</section>

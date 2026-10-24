@@ -1,0 +1,161 @@
+<div class="page study-page">
+  <div class="container">
+    <header class="page-head">
+      <p class="eyebrow">Mapa do currículo</p>
+      <h1>Estudar</h1>
+      <p class="lede">
+        Percorra as áreas do conhecimento, escolha uma disciplina e aproxime-se dos conceitos. Cada
+        conceito reúne sua explicação e as questões para praticar.
+      </p>
+    </header>
+
+    @if (areasLoading()) {
+      <app-loading label="Abrindo o mapa do currículo…" />
+    } @else if (areasError()) {
+      <div class="alert alert--error state-error" role="alert">
+        <span>{{ areasError() }}</span>
+        <button class="btn btn--outline btn--small" type="button" (click)="loadAreas()">
+          Tentar novamente
+        </button>
+      </div>
+    } @else if (areas().length === 0) {
+      <app-empty-state
+        heading="Currículo ainda não publicado"
+        message="Nenhuma área do conhecimento está disponível neste momento."
+      />
+    } @else {
+      <nav class="area-tabs" aria-label="Áreas do conhecimento">
+        @for (area of areas(); track area.id) {
+          <a
+            class="area-tab"
+            routerLink="/estudar"
+            [queryParams]="queryForArea(area)"
+            [style.--area-accent]="areaAccent(area)"
+            [class.is-selected]="selectedArea()?.id === area.id"
+            [attr.aria-current]="selectedArea()?.id === area.id ? 'true' : null"
+          >
+            <span class="area-dot" aria-hidden="true"></span>
+            {{ area.name }}
+          </a>
+        }
+      </nav>
+
+      @if (selectedArea(); as area) {
+        <section class="area-intro" aria-labelledby="area-title">
+          <div>
+            <p class="eyebrow">{{ area.subjects.length }} disciplinas nesta área</p>
+            <h2 id="area-title">{{ area.name }}</h2>
+            <p class="area-description">{{ area.description }}</p>
+          </div>
+          <p class="area-count">
+            <strong>{{ area.subjects.length }}</strong>
+            <span>disciplinas<br />para explorar</span>
+          </p>
+        </section>
+
+        @if (subjects().length === 0) {
+          <app-empty-state
+            heading="Nenhuma disciplina nesta área"
+            message="Ainda não há disciplinas publicadas para esta área."
+          />
+        } @else {
+          <section class="subjects-section" aria-labelledby="subjects-title">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Escolha uma frente</p>
+                <h2 id="subjects-title">Disciplinas</h2>
+              </div>
+              <p>Selecione uma disciplina para ver os conceitos disponíveis.</p>
+            </div>
+
+            <div class="subject-grid">
+              @for (subject of subjects(); track subject.id) {
+                <a
+                  class="subject-card"
+                  routerLink="/estudar"
+                  [queryParams]="queryForSubject(subject)"
+                  [style.--area-accent]="subjectAccent(area)"
+                  [class.is-selected]="selectedSubject()?.id === subject.id"
+                  [attr.aria-current]="selectedSubject()?.id === subject.id ? 'true' : null"
+                >
+                  <span class="subject-topline">
+                    <span class="subject-code">{{ subject.code }}</span>
+                    @if (selectedSubject()?.id === subject.id) {
+                      <span class="badge badge--forest">Selecionada</span>
+                    }
+                  </span>
+                  <h3>{{ subject.name }}</h3>
+                  <span class="subject-description">{{ subject.description }}</span>
+                  <span class="subject-footer">
+                    <span>{{ conceptCountLabel(subject.concept_count) }}</span>
+                    <span class="subject-open" aria-hidden="true">Ver conceitos →</span>
+                  </span>
+                </a>
+              }
+            </div>
+          </section>
+        }
+      }
+
+      @if (selectedSubject(); as subject) {
+        <section class="concepts-section" aria-labelledby="concepts-title">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">{{ selectedArea()?.name }} · {{ subject.code }}</p>
+              <h2 id="concepts-title">Conceitos de {{ subject.name }}</h2>
+            </div>
+            <p>{{ conceptCountLabel(subject.concept_count) }} nesta disciplina.</p>
+          </div>
+
+          @if (conceptsLoading()) {
+            <app-loading label="Reunindo os conceitos…" />
+          } @else if (conceptsError()) {
+            <div class="alert alert--error state-error" role="alert">
+              <span>{{ conceptsError() }}</span>
+              <button class="btn btn--outline btn--small" type="button" (click)="retryConcepts()">
+                Tentar novamente
+              </button>
+            </div>
+          } @else if (concepts().length === 0) {
+            <app-empty-state
+              heading="Nenhum conceito publicado"
+              message="Esta disciplina ainda não tem conceitos disponíveis. Explore outra frente."
+            />
+          } @else {
+            <ol class="concept-list">
+              @for (concept of concepts(); track concept.id; let index = $index) {
+                <li>
+                  <a class="concept-row" [routerLink]="['/conceito', concept.id]">
+                    <span class="concept-number" aria-hidden="true">{{
+                      (index + 1).toString().padStart(2, '0')
+                    }}</span>
+                    <span class="concept-content">
+                      <span class="concept-heading">
+                        <h3 class="concept-name">{{ concept.name }}</h3>
+                        <span [class]="difficultyClass(concept.difficulty)">
+                          {{ difficulty(concept.difficulty) }}
+                        </span>
+                      </span>
+                      <span class="concept-summary">{{ concept.summary }}</span>
+                      <span class="concept-meta">{{
+                        questionCountLabel(concept.question_count)
+                      }}</span>
+                    </span>
+                    <span class="concept-arrow" aria-hidden="true">→</span>
+                  </a>
+                </li>
+              }
+            </ol>
+          }
+        </section>
+      } @else {
+        <div class="concept-prompt">
+          <app-empty-state
+            heading="Escolha uma disciplina"
+            message="Os conceitos e as questões aparecem aqui depois que você selecionar uma disciplina acima."
+          />
+        </div>
+      }
+    }
+  </div>
+</div>

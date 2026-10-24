@@ -1,0 +1,199 @@
+<div class="page home-page">
+  <div class="container">
+    <section class="home-hero" aria-labelledby="home-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Seu caderno de campo</p>
+        <p class="greeting">{{ greeting }}, {{ displayName() }}.</p>
+        <h1 id="home-title">Um passo por vez até a prova.</h1>
+        <p class="lede">
+          Escolha uma área, retome um conceito e pratique com questões que abrem espaço para
+          discutir o raciocínio — não apenas marcar a resposta.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn--primary" routerLink="/estudar">
+            Continuar estudando <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="btn btn--outline" routerLink="/calendario">Ver calendário</a>
+        </div>
+      </div>
+
+      <aside class="exam-card" aria-label="Contagem para a primeira prova do ENEM">
+        <svg class="exam-compass" viewBox="0 0 180 180" aria-hidden="true" focusable="false">
+          <g fill="none" stroke="currentColor">
+            <circle cx="90" cy="90" r="62" />
+            <circle cx="90" cy="90" r="43" />
+            <path d="M90 12v18M90 150v18M12 90h18M150 90h18" />
+            <path d="M90 58l10 32-10-7-10 7z" fill="currentColor" stroke="none" />
+          </g>
+        </svg>
+        <p class="exam-eyebrow">Primeira prova · {{ firstExamYear }}</p>
+        @if (daysToExam >= 0) {
+          <p class="exam-count">
+            <strong>{{ daysToExam }}</strong>
+            <span>{{ examCountdownLabel() }}</span>
+          </p>
+        } @else {
+          <p class="exam-count exam-count--past">
+            <strong>{{ examDateShort }}</strong>
+            <span>{{ examCountdownLabel() }}</span>
+          </p>
+        }
+        <p class="exam-date">{{ examDateLabel }}</p>
+        <p class="exam-note">Datas oficiais podem mudar. Confira sempre a fonte no calendário.</p>
+        <a class="exam-link" routerLink="/calendario">
+          Abrir calendário <span aria-hidden="true">→</span>
+        </a>
+      </aside>
+    </section>
+
+    <section class="section" aria-labelledby="stats-title">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Seu ritmo</p>
+          <h2 id="stats-title">O que já foi percorrido</h2>
+        </div>
+        <p>Números do seu histórico de tentativas. Sem ranking, sem pressa.</p>
+      </div>
+
+      @if (statsLoading()) {
+        <app-loading label="Carregando suas estatísticas…" />
+      } @else if (statsError()) {
+        <div class="alert alert--error state-error" role="alert">
+          <span>{{ statsError() }}</span>
+          <button class="btn btn--outline btn--small" type="button" (click)="loadStats()">
+            Tentar novamente
+          </button>
+        </div>
+      } @else if (stats(); as data) {
+        <div class="stats-grid">
+          <article class="stat-card">
+            <p class="stat-label">Tentativas</p>
+            <p class="stat-value">{{ data.stats.total_attempts }}</p>
+            <p class="stat-note">respostas registradas</p>
+          </article>
+          <article class="stat-card">
+            <p class="stat-label">Acertos</p>
+            <p class="stat-value">{{ data.stats.correct_attempts }}</p>
+            <p class="stat-note">respostas corretas</p>
+          </article>
+          <article class="stat-card stat-card--accent">
+            <p class="stat-label">Aproveitamento</p>
+            <p class="stat-value">{{ accuracyLabel() }}</p>
+            <p class="stat-note">proporção de acertos</p>
+          </article>
+          <article class="stat-card">
+            <p class="stat-label">Questões</p>
+            <p class="stat-value">{{ data.stats.questions_answered }}</p>
+            <p class="stat-note">questões diferentes respondidas</p>
+          </article>
+        </div>
+      }
+    </section>
+
+    <div class="home-columns">
+      <section class="section home-areas" aria-labelledby="areas-title">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Mapa de estudo</p>
+            <h2 id="areas-title">Áreas do conhecimento</h2>
+          </div>
+          <a class="section-link" routerLink="/estudar">Explorar tudo</a>
+        </div>
+
+        @if (areasLoading()) {
+          <app-loading label="Carregando áreas…" />
+        } @else if (areasError()) {
+          <div class="alert alert--error state-error" role="alert">
+            <span>{{ areasError() }}</span>
+            <button class="btn btn--outline btn--small" type="button" (click)="loadAreas()">
+              Tentar novamente
+            </button>
+          </div>
+        } @else if (areas().length === 0) {
+          <app-empty-state
+            heading="Nenhuma área disponível"
+            message="O currículo ainda não foi publicado. Volte em breve."
+          />
+        } @else {
+          <div class="area-grid">
+            @for (area of areas(); track area.id; let index = $index) {
+              <a
+                class="area-card"
+                routerLink="/estudar"
+                [queryParams]="{ area: area.id }"
+                [style.--area-accent]="areaAccent(area)"
+              >
+                <span class="area-number" aria-hidden="true">{{
+                  (index + 1).toString().padStart(2, '0')
+                }}</span>
+                <span class="area-name">{{ area.name }}</span>
+                <span class="area-description">{{ area.description }}</span>
+                <span class="area-meta">
+                  {{ area.subjects.length }}
+                  {{ area.subjects.length === 1 ? 'disciplina' : 'disciplinas' }}
+                  <span aria-hidden="true">·</span>
+                  {{ areaConceptCount(area) }} conceitos
+                </span>
+              </a>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="section home-recent" aria-labelledby="recent-title">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Caderno aberto</p>
+            <h2 id="recent-title">Últimos estudos</h2>
+          </div>
+        </div>
+
+        @if (statsLoading()) {
+          <app-loading label="Carregando seu histórico…" />
+        } @else if (statsError()) {
+          <p class="muted small">O histórico não está disponível neste momento.</p>
+        } @else if (recentAttempts().length === 0) {
+          <app-empty-state
+            heading="Seu histórico começa aqui"
+            message="Responda sua primeira questão para acompanhar o que já estudou."
+          >
+            <a class="btn btn--outline btn--small" routerLink="/estudar">Encontrar uma questão</a>
+          </app-empty-state>
+        } @else {
+          <ul class="recent-list">
+            @for (
+              attempt of recentAttempts();
+              track attempt.question_id + '-' + attempt.created_at
+            ) {
+              <li>
+                <a class="recent-item" [routerLink]="['/questao', attempt.question_id]">
+                  <span class="recent-main">
+                    <span class="recent-concept">{{ attempt.concept_name }}</span>
+                    <span class="recent-preview">{{ attempt.statement_preview }}</span>
+                    <span class="recent-meta">
+                      {{ attempt.question_code }}
+                      <span aria-hidden="true">·</span>
+                      <time [attr.datetime]="attempt.created_at">{{
+                        dateTime(attempt.created_at)
+                      }}</time>
+                    </span>
+                  </span>
+                  <span
+                    class="badge"
+                    [class.badge--success]="attempt.is_correct"
+                    [class.badge--danger]="!attempt.is_correct"
+                  >
+                    {{ attempt.is_correct ? 'Acertou' : 'Errou' }}
+                  </span>
+                </a>
+              </li>
+            }
+          </ul>
+          <a class="btn btn--paper btn--block recent-cta" routerLink="/estudar">
+            Continuar estudando <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        }
+      </section>
+    </div>
+  </div>
+</div>
