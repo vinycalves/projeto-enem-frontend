@@ -62,6 +62,36 @@
   box-shadow: 0 14px 38px rgba(16, 37, 31, 0.16);
 }
 
+.viewport-card:fullscreen,
+.viewport-card.is-expanded {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  border: 0;
+  background: #10251f;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.viewport-card.is-expanded {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.viewport-card:fullscreen .canvas-host,
+.viewport-card.is-expanded .canvas-host {
+  min-height: 0;
+}
+
+.viewport-card:fullscreen .viewport-toolbar,
+.viewport-card.is-expanded .viewport-toolbar,
+.viewport-card:fullscreen .viewport-caption,
+.viewport-card.is-expanded .viewport-caption {
+  flex: 0 0 auto;
+}
+
 .viewport-toolbar {
   display: flex;
   justify-content: space-between;

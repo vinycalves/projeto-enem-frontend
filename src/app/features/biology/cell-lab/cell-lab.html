@@ -34,7 +34,7 @@
     </div>
 
     <div class="cell-layout">
-      <section class="viewport-card" aria-labelledby="viewer-title">
+      <section #viewportCard class="viewport-card" aria-labelledby="viewer-title">
         <div class="viewport-toolbar">
           <div>
             <p class="eyebrow">Modelo interativo</p>
@@ -63,6 +63,14 @@
               {{ isolate() ? 'Mostrar tudo' : 'Isolar estrutura' }}
             </button>
             <button class="tool-button" type="button" (click)="resetView()">Recentralizar</button>
+            <button
+              class="tool-button"
+              type="button"
+              [attr.aria-pressed]="fullscreen()"
+              (click)="toggleFullscreen()"
+            >
+              {{ fullscreen() ? 'Sair da tela cheia' : 'Tela cheia' }}
+            </button>
           </div>
         </div>
 

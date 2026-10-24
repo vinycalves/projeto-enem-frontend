@@ -57,12 +57,16 @@ export class CellLab implements AfterViewInit, OnDestroy {
   @ViewChild('canvasHost', { static: true })
   private canvasHost!: ElementRef<HTMLDivElement>;
 
+  @ViewChild('viewportCard', { static: true })
+  private viewportCard!: ElementRef<HTMLElement>;
+
   private readonly ngZone = inject(NgZone);
   protected readonly kind = signal<CellKind>('animal');
   protected readonly selectedId = signal('nucleus');
   protected readonly isolate = signal(false);
   protected readonly showLabels = signal(true);
   protected readonly webglError = signal(false);
+  protected readonly fullscreen = signal(false);
 
   protected readonly organelles = computed(() => organellesFor(this.kind()));
   protected readonly selected = computed<Organelle | undefined>(() => {
@@ -103,8 +107,12 @@ export class CellLab implements AfterViewInit, OnDestroy {
   private contextLost = false;
   private pointerDown?: { x: number; y: number; time: number };
   private pointerMoved = false;
+  private expanded = false;
+  private previousBodyOverflow = '';
 
   ngAfterViewInit(): void {
+    document.addEventListener('fullscreenchange', this.onFullscreenChange);
+    document.addEventListener('keydown', this.onKeyDown);
     this.ngZone.runOutsideAngular(() => this.initScene());
   }
 
@@ -116,6 +124,13 @@ export class CellLab implements AfterViewInit, OnDestroy {
     this.intersectionObserver = undefined;
     window.removeEventListener('resize', this.onWindowResize);
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
+    document.removeEventListener('fullscreenchange', this.onFullscreenChange);
+    document.removeEventListener('keydown', this.onKeyDown);
+    if (this.expanded) {
+      this.expanded = false;
+      this.viewportCard?.nativeElement.classList.remove('is-expanded');
+      document.body.style.overflow = this.previousBodyOverflow;
+    }
     this.controls?.dispose();
     this.disposeObject(this.cellGroup);
     this.bubbles?.geometry.dispose();
@@ -186,6 +201,99 @@ export class CellLab implements AfterViewInit, OnDestroy {
     this.controls.target.set(0, 0, 0);
     this.controls.update();
   }
+
+  protected toggleFullscreen(): void {
+    const card = this.viewportCard?.nativeElement;
+    if (!card) {
+      return;
+    }
+
+    if (this.expanded) {
+      this.setExpanded(false);
+      return;
+    }
+    if (document.fullscreenElement === card) {
+      if (typeof document.exitFullscreen === 'function') {
+        void document.exitFullscreen().catch(() => this.setExpanded(false));
+      } else {
+        this.setExpanded(false);
+      }
+      return;
+    }
+    if (document.fullscreenElement) {
+      if (typeof document.exitFullscreen === 'function') {
+        void document
+          .exitFullscreen()
+          .then(() => this.requestFullscreen(card))
+          .catch(() => this.setExpanded(true));
+      } else {
+        this.setExpanded(true);
+      }
+      return;
+    }
+    this.requestFullscreen(card);
+  }
+
+  private requestFullscreen(card: HTMLElement): void {
+    if (typeof card.requestFullscreen !== 'function') {
+      this.setExpanded(true);
+      return;
+    }
+    try {
+      const request = card.requestFullscreen();
+      if (request && typeof request.catch === 'function') {
+        request.catch(() => this.setExpanded(true));
+      }
+    } catch {
+      this.setExpanded(true);
+    }
+  }
+
+  private setExpanded(expanded: boolean): void {
+    const card = this.viewportCard?.nativeElement;
+    if (!card) {
+      return;
+    }
+    if (expanded && !this.expanded) {
+      this.previousBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+    } else if (!expanded && this.expanded) {
+      document.body.style.overflow = this.previousBodyOverflow;
+    }
+    this.expanded = expanded;
+    card.classList.toggle('is-expanded', expanded);
+    this.fullscreen.set(expanded || document.fullscreenElement === card);
+    this.refreshSize();
+  }
+
+  private refreshSize(): void {
+    this.lastWidth = 0;
+    this.lastHeight = 0;
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(() => {
+        if (this.canvasHost) {
+          this.resize(this.canvasHost.nativeElement);
+        }
+      });
+    } else if (this.canvasHost) {
+      this.resize(this.canvasHost.nativeElement);
+    }
+  }
+
+  private readonly onFullscreenChange = () => {
+    if (!this.viewportCard) {
+      return;
+    }
+    const nativeActive = document.fullscreenElement === this.viewportCard.nativeElement;
+    this.fullscreen.set(nativeActive || this.expanded);
+    this.refreshSize();
+  };
+
+  private readonly onKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && this.expanded) {
+      this.setExpanded(false);
+    }
+  };
 
   private initScene(): void {
     const host = this.canvasHost.nativeElement;
