@@ -153,6 +153,8 @@ frontend/
 - **Conceito**: explicação, pré-requisitos quando o backend enviar o campo opcional `prerequisites`, CTA “Praticar” (prioriza a primeira questão não respondida) e lista de questões.
 - **Questão**: enunciado, alternativas, tentativa, feedback de acerto/erro sem gabarito, discussão agrupada em comentários gerais e por alternativa, formulário de comentário e denúncia. O botão “Ver resposta e explicação” só fica disponível após a tentativa e busca `GET /questions/{id}/answer`; antes disso, a discussão e a resposta não são pedidas ao backend.
 - **Questões oficiais**: quando o backend envia `assets` e `image_url`, o frontend exibe imagens de contexto e de alternativas, além do idioma (Inglês/Espanhol) da questão importada.
+- **Provas**: arquivo oficial separado dos conceitos, com 60 provas (4 áreas × 15 anos), cards por área e página de prova com lista de questões.
+- **Laboratório de Biologia**: célula 3D procedimental em Three.js (animal e vegetal), seleção de organelas, isolamento, controles de câmera e alternativa textual; mapa de taxonomia com trilha de ranks, três domínios e exemplos.
 - **Calendário**: linha do tempo ordenada, datas confirmadas em destaque, itens “A definir” quando não há data, links para a fonte oficial e contagem para a primeira prova.
 - **Sobre**: pública, explica o projeto gratuito, de código aberto e sem IA. A chave Pix não é buscada no carregamento e só aparece nessa página depois do clique em “Apoiar o projeto”. Também há botão de copiar.
 - **Acessibilidade**: skip link, landmarks, labels, foco visível, contraste, feedback com `aria-live`, estado nunca comunicado apenas por cor, navegação por teclado nas abas e respeito a `prefers-reduced-motion`.
