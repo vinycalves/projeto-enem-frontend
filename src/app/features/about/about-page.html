@@ -1,0 +1,190 @@
+<div class="page about-page">
+  <div class="container">
+    <section class="about-hero" aria-labelledby="about-title">
+      <div class="about-hero-copy">
+        <p class="eyebrow">Sobre o projeto</p>
+        <h1 id="about-title">Conhecimento não deveria ter catraca.</h1>
+        <p class="lede">
+          O ENEM Aberto é uma plataforma gratuita e de código aberto para estudar com currículo,
+          questões, discussão e o calendário do exame. Sem redação, sem assinatura e sem
+          inteligência artificial.
+        </p>
+        <div class="about-values">
+          <span class="badge badge--forest">Gratuito</span>
+          <span class="badge badge--gold">Código aberto</span>
+          <span class="badge">Sem IA</span>
+          <span class="badge">Sem confirmação de e-mail</span>
+        </div>
+      </div>
+
+      <aside class="about-mark" aria-label="Projeto independente">
+        <svg viewBox="0 0 220 220" aria-hidden="true" focusable="false">
+          <g fill="none" stroke="currentColor">
+            <circle cx="110" cy="110" r="78" />
+            <circle cx="110" cy="110" r="54" />
+            <path d="M110 18v20M110 182v20M18 110h20M182 110h20" />
+            <path d="M110 66l16 44-16-10-16 10z" fill="currentColor" stroke="none" />
+            <path d="M47 173c30-22 55-21 63-63 31 12 42 37 63 63" />
+          </g>
+        </svg>
+        <p>Independente · sem vínculo com o INEP</p>
+      </aside>
+    </section>
+
+    <div class="about-layout">
+      <article class="about-body">
+        <section aria-labelledby="project-title">
+          <p class="eyebrow">Por que existe</p>
+          <h2 id="project-title">Estudar não precisa ser um labirinto de cobranças.</h2>
+          <div class="prose">
+            <p>
+              O projeto nasceu de uma ideia simples: reunir o essencial para quem se prepara para o
+              ENEM, sem transformar o estudo em um produto. Aqui você encontra o currículo
+              organizado por áreas e disciplinas, conceitos com explicações, questões para praticar
+              e um espaço para discutir cada tentativa.
+            </p>
+            <p>
+              O calendário reúne inscrições, provas, gabaritos e resultados, sempre com link para a
+              fonte oficial. Não há redação, ranking ou promessa de aprovação — apenas ferramentas
+              para estudar com clareza e autonomia.
+            </p>
+          </div>
+        </section>
+
+        <section class="about-principles" aria-labelledby="principles-title">
+          <p class="eyebrow">O que sustenta o projeto</p>
+          <h2 id="principles-title">Aberto, direto e sem atalhos.</h2>
+          <ul class="principle-list">
+            <li>
+              <span class="principle-number" aria-hidden="true">01</span>
+              <div>
+                <h3>Gratuito de verdade</h3>
+                <p>Sem mensalidade, sem anúncios e sem conteúdo bloqueado atrás de planos.</p>
+              </div>
+            </li>
+            <li>
+              <span class="principle-number" aria-hidden="true">02</span>
+              <div>
+                <h3>Código aberto</h3>
+                <p>O projeto é aberto para consulta, aprendizado e contribuição da comunidade.</p>
+              </div>
+            </li>
+            <li>
+              <span class="principle-number" aria-hidden="true">03</span>
+              <div>
+                <h3>Sem inteligência artificial</h3>
+                <p>
+                  Explicações, questões e discussões são feitas por pessoas. Nada é gerado
+                  automaticamente.
+                </p>
+              </div>
+            </li>
+            <li>
+              <span class="principle-number" aria-hidden="true">04</span>
+              <div>
+                <h3>Privacidade simples</h3>
+                <p>
+                  Login apenas com e-mail e senha, sem confirmação por e-mail e sem venda de dados.
+                </p>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="support-section" aria-labelledby="support-title">
+          <p class="eyebrow">Apoio opcional</p>
+          <h2 id="support-title">Se o projeto ajuda, você pode ajudar de volta.</h2>
+          <p>
+            A doação via Pix é a única forma de apoio financeiro e é totalmente opcional. Nenhum
+            conteúdo fica bloqueado para quem não doa. A chave é buscada no servidor apenas quando
+            você clica no botão.
+          </p>
+
+          <div class="support-panel">
+            @if (pixState() === 'idle') {
+              <button class="btn btn--primary" type="button" (click)="requestPixKey()">
+                Apoiar o projeto <span class="arrow" aria-hidden="true">→</span>
+              </button>
+              <p class="support-note">
+                Nenhum valor é cobrado automaticamente. O Pix é uma transferência única.
+              </p>
+            } @else if (pixState() === 'loading') {
+              <div class="support-loading" role="status" aria-live="polite">
+                <span class="spinner" aria-hidden="true"></span>
+                Buscando a chave Pix…
+              </div>
+            } @else if (pixState() === 'loaded') {
+              <p class="pix-label">Chave Pix para doação</p>
+              <div class="pix-key-row">
+                <code class="pix-key">{{ pixKey() }}</code>
+                <button class="btn btn--outline btn--small" type="button" (click)="copyPixKey()">
+                  Copiar chave
+                </button>
+              </div>
+              <div aria-live="polite">
+                @if (copyState() === 'copied') {
+                  <p class="copy-feedback copy-feedback--success" role="status">
+                    Chave copiada. Obrigado por apoiar!
+                  </p>
+                } @else if (copyState() === 'error') {
+                  <p class="copy-feedback copy-feedback--error" role="alert">
+                    Não foi possível copiar automaticamente. Selecione a chave acima e copie.
+                  </p>
+                }
+              </div>
+              <p class="support-note">
+                A chave é a mesma para qualquer valor. Confira os dados no seu aplicativo bancário
+                antes de concluir.
+              </p>
+            } @else if (pixState() === 'empty') {
+              <div class="alert alert--info" role="status">
+                A chave Pix ainda não foi configurada. O projeto continua gratuito e disponível para
+                todos.
+              </div>
+            } @else {
+              <div class="alert alert--error state-error" role="alert">
+                <span>{{ pixError() }}</span>
+                <button class="btn btn--outline btn--small" type="button" (click)="requestPixKey()">
+                  Tentar novamente
+                </button>
+              </div>
+            }
+          </div>
+        </section>
+      </article>
+
+      <aside class="about-aside">
+        <div class="about-fact-card">
+          <p class="eyebrow">Em resumo</p>
+          <dl class="about-facts">
+            <div>
+              <dt>Preço</dt>
+              <dd>R$ 0</dd>
+            </div>
+            <div>
+              <dt>Conteúdo</dt>
+              <dd>Currículo, questões e discussão</dd>
+            </div>
+            <div>
+              <dt>Calendário</dt>
+              <dd>Datas oficiais com fonte</dd>
+            </div>
+            <div>
+              <dt>Cadastro</dt>
+              <dd>E-mail e senha</dd>
+            </div>
+          </dl>
+        </div>
+
+        <blockquote class="about-quote">
+          <p>“Um caderno de campo não guarda respostas prontas. Guarda o caminho.”</p>
+        </blockquote>
+
+        <p class="about-disclaimer">
+          Projeto independente. Sem vínculo com o INEP ou o Ministério da Educação. Datas e
+          informações oficiais devem ser confirmadas nos canais do governo.
+        </p>
+      </aside>
+    </div>
+  </div>
+</div>
