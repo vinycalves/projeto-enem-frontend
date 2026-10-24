@@ -1,0 +1,69 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" routerLink="/" aria-label="ENEM Aberto — página inicial" (click)="closeMenu()">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true" focusable="false">
+        <path d="M5 10.5c4.6-1.8 9.6-1.6 15 1.3v22.5c-5.4-2.9-10.4-3.1-15-1.3z" />
+        <path d="M39 10.5c-4.6-1.8-9.6-1.6-15 1.3v22.5c5.4-2.9 10.4-3.1 15-1.3z" />
+        <path d="M22 11.8v22.5" />
+        <circle class="brand-accent" cx="22" cy="6.4" r="2.7" />
+      </svg>
+      <span class="brand-text">
+        <span class="brand-name">ENEM Aberto</span>
+        <span class="brand-tagline">caderno de estudos</span>
+      </span>
+    </a>
+
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-controls="primary-nav"
+      [attr.aria-expanded]="menuOpen()"
+      [attr.aria-label]="menuOpen() ? 'Fechar menu' : 'Abrir menu'"
+      (click)="toggleMenu()"
+    >
+      @if (menuOpen()) {
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      } @else {
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      }
+    </button>
+
+    <div class="nav-wrap" id="primary-nav" [class.is-open]="menuOpen()">
+      <nav class="main-nav" aria-label="Navegação principal">
+        <a
+          routerLink="/"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeMenu()"
+          >Início</a
+        >
+        <a routerLink="/estudar" routerLinkActive="is-active" (click)="closeMenu()">Estudar</a>
+        <a routerLink="/calendario" routerLinkActive="is-active" (click)="closeMenu()"
+          >Calendário</a
+        >
+        <a routerLink="/sobre" routerLinkActive="is-active" (click)="closeMenu()">Sobre</a>
+      </nav>
+
+      <div class="session">
+        @if (auth.user(); as user) {
+          <span class="user-name">
+            Olá, <strong>{{ firstName(user.display_name, user.email) }}</strong>
+          </span>
+          <button class="logout-button" type="button" [disabled]="signingOut()" (click)="signOut()">
+            {{ signingOut() ? 'Saindo…' : 'Sair' }}
+          </button>
+        } @else {
+          <a class="login-link" routerLink="/login" (click)="closeMenu()">Entrar</a>
+        }
+      </div>
+
+      @if (logoutError()) {
+        <p class="logout-error" role="alert">{{ logoutError() }}</p>
+      }
+    </div>
+  </div>
+</header>

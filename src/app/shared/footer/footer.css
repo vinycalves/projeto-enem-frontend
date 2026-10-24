@@ -1,0 +1,61 @@
+.site-footer {
+  margin-top: 4rem;
+  border-top: 1px solid var(--line);
+  background: var(--paper-deep);
+}
+
+.footer-inner {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.8fr) minmax(16rem, 1.6fr) auto;
+  gap: 2rem;
+  align-items: start;
+  padding-block: 2.2rem;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.footer-brand p {
+  margin: 0;
+}
+
+.footer-name {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.footer-line {
+  margin-top: 0.2rem;
+}
+
+.disclaimer {
+  max-width: 48ch;
+  margin: 0;
+  line-height: 1.55;
+}
+
+.footer-meta {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.footer-meta a {
+  color: var(--forest);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-meta a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding-block: 1.6rem;
+  }
+}
