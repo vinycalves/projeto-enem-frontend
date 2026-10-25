@@ -131,13 +131,6 @@
   color: var(--gold);
 }
 
-.home-columns {
-  display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr);
-  gap: clamp(2rem, 5vw, 4rem);
-  align-items: start;
-}
-
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -182,69 +175,6 @@
   color: var(--ink-faint);
   font-size: 0.72rem;
   line-height: 1.4;
-}
-
-.area-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.9rem;
-}
-
-.area-card {
-  --area-accent: var(--forest);
-  display: flex;
-  flex-direction: column;
-  min-height: 13.5rem;
-  padding: 1.15rem 1.2rem;
-  border: 1px solid var(--line);
-  border-left: 4px solid var(--area-accent);
-  border-radius: 2px;
-  background: var(--card);
-  color: var(--ink);
-  text-decoration: none;
-  transition:
-    border-color 150ms ease,
-    box-shadow 150ms ease;
-}
-
-.area-card:hover {
-  border-color: var(--line-strong);
-  border-left-color: var(--area-accent);
-  box-shadow: var(--shadow-paper);
-}
-
-.area-number {
-  color: var(--ink-faint);
-  font-family: var(--serif);
-  font-size: 0.78rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.area-name {
-  margin-top: 0.4rem;
-  font-family: var(--serif);
-  font-size: 1.27rem;
-  font-weight: 700;
-  line-height: 1.15;
-}
-
-.area-description {
-  display: -webkit-box;
-  overflow: hidden;
-  margin-top: 0.45rem;
-  color: var(--ink-soft);
-  font-size: 0.82rem;
-  line-height: 1.5;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-}
-
-.area-meta {
-  margin-top: auto;
-  padding-top: 0.9rem;
-  color: var(--ink-faint);
-  font-size: 0.72rem;
-  font-weight: 600;
 }
 
 .recent-list {
@@ -314,15 +244,6 @@
     gap: 2rem;
   }
 
-  .home-columns {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-
-  .home-recent {
-    max-width: 40rem;
-  }
-
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -347,14 +268,6 @@
 }
 
 @media (max-width: 520px) {
-  .area-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .area-card {
-    min-height: 10rem;
-  }
-
   .stats-grid {
     gap: 0.6rem;
   }
@@ -371,7 +284,7 @@
 .biology-spotlight {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(13rem, 0.75fr);
+  grid-template-columns: minmax(0, 1.25fr) minmax(14rem, 0.75fr);
   gap: clamp(1.5rem, 4vw, 3rem);
   align-items: center;
   margin-top: clamp(2rem, 4vw, 3rem);
@@ -379,8 +292,8 @@
   overflow: hidden;
   border: 1px solid #24483b;
   background:
-    radial-gradient(circle at 78% 45%, rgba(127, 183, 201, 0.2), transparent 30%),
-    #10251f;
+    radial-gradient(circle at 76% 38%, rgba(127, 183, 201, 0.2), transparent 34%),
+    radial-gradient(circle at 94% 92%, rgba(217, 164, 65, 0.09), transparent 32%), #10251f;
   color: #edf6f0;
 }
 
@@ -444,218 +357,302 @@
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 13rem;
+  min-height: 17rem;
 }
 
-.spot-cell {
-  position: relative;
-  display: block;
-  width: min(12rem, 70%);
-  aspect-ratio: 1;
-  border: 1.5px solid #9cc9b7;
-  border-radius: 46% 54% 52% 48%;
-  background: radial-gradient(circle at 40% 40%, rgba(127, 183, 201, 0.25), transparent 50%);
-  box-shadow: 0 0 0 0.35rem rgba(159, 227, 194, 0.06);
-  animation: spot-breathe 9s ease-in-out infinite;
-}
-
-.spot-cell::after {
+.biology-spotlight-visual::before {
   position: absolute;
-  inset: 8%;
-  border-radius: inherit;
-  background: radial-gradient(circle at 58% 42%, rgba(159, 227, 194, 0.18), transparent 52%);
+  width: min(20rem, 92%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(159, 227, 194, 0.09), transparent 68%);
   content: '';
-  animation: spot-glow 6s ease-in-out infinite;
   pointer-events: none;
 }
 
+.spot-art {
+  position: relative;
+  width: min(100%, 22rem);
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 1.2rem 2.4rem rgba(4, 12, 9, 0.28));
+}
+
+.spot-layer {
+  transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.biology-spotlight-visual:hover .spot-layer--back {
+  transform: translate(-4px, 4px);
+}
+
+.biology-spotlight-visual:hover .spot-layer--mid {
+  transform: translate(0, -2px);
+}
+
+.biology-spotlight-visual:hover .spot-layer--front {
+  transform: translate(5px, -6px);
+}
+
+.spot-aura {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: spot-aura-breathe 14s ease-in-out infinite;
+}
+
+.spot-orbit {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+
+.spot-orbit--outer {
+  animation: spot-orbit 74s linear infinite;
+}
+
+.spot-orbit--inner {
+  animation: spot-orbit-reverse 98s linear infinite;
+}
+
+.spot-cell {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: spot-cell-breathe 18s ease-in-out infinite;
+}
+
+.spot-cyto-light {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: spot-cyto-drift 24s ease-in-out infinite alternate;
+}
+
+.spot-nucleus-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: spot-halo 9s ease-in-out infinite;
+}
+
 .spot-nucleus {
-  position: absolute;
-  top: 35%;
-  left: 31%;
-  width: 32%;
-  height: 32%;
-  border-radius: 50%;
-  background: #8f6caf;
-  box-shadow: 0 0 0 0 rgba(143, 108, 175, 0.35);
-  animation: nucleus-pulse 5.5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: spot-nucleus-breathe 11s ease-in-out infinite;
 }
 
-.spot-organelle {
-  position: absolute;
-  width: 15%;
-  height: 9%;
-  border-radius: 999px;
-  background: var(--terracotta);
+.spot-mito,
+.spot-golgi,
+.spot-vesicle,
+.spot-dust,
+.spot-sparkle {
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
-.spot-organelle--one {
-  top: 25%;
-  right: 14%;
-  transform: rotate(30deg);
-  animation: organelle-drift-one 7s ease-in-out infinite;
+.spot-mito {
+  animation: spot-organelle-drift 15s ease-in-out infinite;
 }
 
-.spot-organelle--two {
-  bottom: 22%;
-  left: 13%;
-  background: var(--gold);
-  transform: rotate(-22deg);
-  animation: organelle-drift-two 8s ease-in-out infinite;
+.spot-mito--two {
+  animation-duration: 19s;
+  animation-delay: -6s;
 }
 
-.spot-organelle--three {
-  right: 18%;
-  bottom: 17%;
-  background: #7fb7c9;
-  transform: rotate(65deg);
-  animation: organelle-drift-three 6.5s ease-in-out infinite;
+.spot-mito--three {
+  animation-duration: 17s;
+  animation-delay: -2.5s;
 }
 
-.spot-node {
-  position: absolute;
-  width: 0.55rem;
-  height: 0.55rem;
-  border: 1.5px solid #9fe3c2;
-  border-radius: 50%;
-  background: #10251f;
-  animation: node-pulse 4s ease-in-out infinite;
+.spot-golgi {
+  animation: spot-organelle-drift 21s ease-in-out infinite;
+  animation-delay: -8s;
 }
 
-.spot-node--one {
-  top: 18%;
-  left: 18%;
+.spot-vesicle {
+  animation: spot-vesicle-float 11s ease-in-out infinite;
 }
 
-.spot-node--two {
-  top: 30%;
-  right: 10%;
-  animation-delay: 1.2s;
+.spot-vesicle--two {
+  animation-duration: 13s;
+  animation-delay: -4s;
 }
 
-.spot-node--three {
-  right: 20%;
-  bottom: 12%;
-  animation-delay: 2.1s;
+.spot-vesicle--three {
+  animation-duration: 12s;
+  animation-delay: -7s;
 }
 
-.spot-line {
-  position: absolute;
-  height: 1px;
-  background: rgba(159, 227, 194, 0.35);
-  transform-origin: left center;
-  animation: line-glow 5s ease-in-out infinite;
+.spot-vesicle--four {
+  animation-duration: 14s;
+  animation-delay: -2s;
 }
 
-.spot-line--one {
-  top: 20%;
-  left: 20%;
-  width: 7rem;
-  transform: rotate(18deg);
+.spot-dust {
+  animation: spot-dust-float 10s ease-in-out infinite;
 }
 
-.spot-line--two {
-  right: 12%;
-  bottom: 17%;
-  width: 5rem;
-  transform: rotate(-52deg);
+.spot-dust--one {
+  animation-delay: -1s;
 }
 
+.spot-dust--two {
+  animation-duration: 12s;
+  animation-delay: -5s;
+}
 
-@keyframes spot-breathe {
+.spot-dust--three {
+  animation-duration: 13s;
+  animation-delay: -8s;
+}
+
+.spot-dust--four {
+  animation-duration: 9s;
+  animation-delay: -3s;
+}
+
+.spot-sparkle {
+  animation: spot-sparkle-twinkle 7s ease-in-out infinite;
+}
+
+.spot-sparkle--two {
+  animation-duration: 9s;
+  animation-delay: -3.5s;
+}
+
+@keyframes spot-aura-breathe {
   0%,
   100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.025);
-  }
-}
-
-@keyframes spot-glow {
-  0%,
-  100% {
-    opacity: 0.45;
-    transform: scale(0.96);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.04);
-  }
-}
-
-@keyframes nucleus-pulse {
-  0%,
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(143, 108, 175, 0.28);
-  }
-  50% {
-    transform: scale(1.06);
-    box-shadow: 0 0 0 0.22rem rgba(143, 108, 175, 0.08);
-  }
-}
-
-@keyframes organelle-drift-one {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(30deg);
-  }
-  50% {
-    transform: translate(-0.3rem, 0.4rem) rotate(37deg);
-  }
-}
-
-@keyframes organelle-drift-two {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(-22deg);
-  }
-  50% {
-    transform: translate(0.38rem, -0.3rem) rotate(-15deg);
-  }
-}
-
-@keyframes organelle-drift-three {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(65deg);
-  }
-  50% {
-    transform: translate(-0.25rem, -0.35rem) rotate(72deg);
-  }
-}
-
-@keyframes node-pulse {
-  0%,
-  100% {
-    opacity: 0.45;
-    transform: scale(0.82);
+    opacity: 0.62;
+    transform: scale(0.97);
   }
   50% {
     opacity: 1;
-    transform: scale(1.08);
+    transform: scale(1.035);
   }
 }
 
-@keyframes line-glow {
+@keyframes spot-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spot-orbit-reverse {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes spot-cell-breathe {
+  0%,
+  100% {
+    transform: rotate(-0.35deg) scale(1);
+  }
+  50% {
+    transform: rotate(0.45deg) scale(1.012);
+  }
+}
+
+@keyframes spot-cyto-drift {
+  from {
+    opacity: 0.7;
+    transform: translate(-5px, 4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate(7px, -5px) scale(1.05);
+  }
+}
+
+@keyframes spot-halo {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes spot-nucleus-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.018);
+  }
+}
+
+@keyframes spot-organelle-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(3px, -4px) rotate(1.8deg);
+  }
+  66% {
+    transform: translate(-2px, 3px) rotate(-1.1deg);
+  }
+}
+
+@keyframes spot-vesicle-float {
+  0%,
+  100% {
+    opacity: 0.62;
+    transform: translate(0, 0);
+  }
+  50% {
+    opacity: 0.92;
+    transform: translate(2px, -5px);
+  }
+}
+
+@keyframes spot-dust-float {
   0%,
   100% {
     opacity: 0.28;
+    transform: translate(0, 0);
   }
   50% {
     opacity: 0.8;
+    transform: translate(-3px, -7px);
+  }
+}
+
+@keyframes spot-sparkle-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.9) rotate(0deg);
+  }
+  45% {
+    opacity: 0.85;
+    transform: scale(1.05) rotate(8deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .spot-aura,
+  .spot-orbit,
   .spot-cell,
-  .spot-cell::after,
+  .spot-cyto-light,
+  .spot-nucleus-halo,
   .spot-nucleus,
-  .spot-organelle,
-  .spot-node,
-  .spot-line {
-    animation: none;
+  .spot-mito,
+  .spot-golgi,
+  .spot-vesicle,
+  .spot-dust,
+  .spot-sparkle {
+    animation: none !important;
+  }
+
+  .spot-layer {
+    transition: none !important;
+  }
+
+  .biology-spotlight-visual:hover .spot-layer {
+    transform: none !important;
   }
 }
 
@@ -665,6 +662,21 @@
   }
 
   .biology-spotlight-visual {
-    display: none;
+    min-height: 15rem;
+    margin-top: 0.3rem;
+  }
+
+  .spot-art {
+    width: min(100%, 18rem);
+  }
+}
+
+@media (max-width: 520px) {
+  .biology-spotlight-visual {
+    min-height: 13rem;
+  }
+
+  .spot-art {
+    width: min(100%, 15.5rem);
   }
 }

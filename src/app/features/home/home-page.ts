@@ -12,7 +12,6 @@ import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { getApiErrorMessage } from '../../core/api-error';
 import { AuthService } from '../../core/auth.service';
-import { CurriculumService } from '../../core/curriculum.service';
 import {
   FIRST_EXAM_DATE,
   daysUntilFirstExam,
@@ -21,7 +20,7 @@ import {
   formatLongDateBR,
 } from '../../core/dates';
 import { formatAccuracy } from '../../core/labels';
-import { Area, StatsResponse } from '../../core/models';
+import { StatsResponse } from '../../core/models';
 import { StatsService } from '../../core/stats.service';
 import { EmptyState } from '../../shared/empty-state/empty-state';
 import { Loading } from '../../shared/loading/loading';
@@ -36,12 +35,7 @@ import { Loading } from '../../shared/loading/loading';
 export class HomePage implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly statsService = inject(StatsService);
-  private readonly curriculumService = inject(CurriculumService);
   private readonly destroyRef = inject(DestroyRef);
-
-  protected readonly areas = signal<Area[]>([]);
-  protected readonly areasLoading = signal(true);
-  protected readonly areasError = signal<string | null>(null);
 
   protected readonly stats = signal<StatsResponse | null>(null);
   protected readonly statsLoading = signal(true);
@@ -67,7 +61,6 @@ export class HomePage implements OnInit {
 
   ngOnInit(): void {
     this.loadStats();
-    this.loadAreas();
   }
 
   protected loadStats(): void {
@@ -88,31 +81,6 @@ export class HomePage implements OnInit {
           );
         },
       });
-  }
-
-  protected loadAreas(): void {
-    this.areasLoading.set(true);
-    this.areasError.set(null);
-
-    this.curriculumService
-      .getAreas()
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.areasLoading.set(false)),
-      )
-      .subscribe({
-        next: (response) => this.areas.set(response.areas),
-        error: (error: unknown) => {
-          this.areasError.set(
-            getApiErrorMessage(error, 'Não foi possível carregar as áreas do conhecimento.'),
-          );
-        },
-      });
-  }
-
-  protected areaAccent(area: Area): string {
-    const color = area.color?.trim();
-    return color && /^(#[0-9a-f]{3,8}|[a-z]+)$/i.test(color) ? color : 'var(--forest)';
   }
 
   protected accuracyLabel(): string {
