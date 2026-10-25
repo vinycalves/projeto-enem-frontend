@@ -98,6 +98,13 @@ export const routes: Routes = [
       import('./features/biology/biology-page').then((module) => module.BiologyPage),
   },
   {
+    path: 'biologia/laboratorio',
+    title: 'Laboratório de Biologia · ENEM Aberto',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/biology/lab/biology-lab').then((module) => module.BiologyLab),
+  },
+  {
     path: 'biologia/celula',
     title: 'Célula 3D · ENEM Aberto',
     canActivate: [authGuard],

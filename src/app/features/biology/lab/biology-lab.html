@@ -1,0 +1,242 @@
+<div class="page biology-lab-page">
+  <div class="container">
+    <header class="bio-lab-head">
+      <div>
+        <p class="eyebrow">Laboratório de Biologia</p>
+        <h1>Genética, evolução, ecologia e fisiologia.</h1>
+        <p class="lede">
+          Modelos interativos para testar hipóteses, variar parâmetros e interpretar resultados.
+          Cada módulo declara o que é modelo, o que é simplificação e quais são os limites.
+        </p>
+      </div>
+      <div class="bio-lab-actions">
+        <a class="btn btn--outline btn--small" routerLink="/guias/biologia">Guia completo</a>
+        <a class="btn btn--outline btn--small" routerLink="/biologia/celula">Célula 3D</a>
+      </div>
+    </header>
+
+    <div class="bio-tabs" role="tablist" aria-label="Módulos do laboratório de Biologia">
+      @for (tab of tabs; track tab.id) {
+        <button
+          type="button"
+          role="tab"
+          [attr.aria-selected]="activeTab() === tab.id"
+          [class.is-active]="activeTab() === tab.id"
+          (click)="setTab(tab.id)"
+        >
+          <ng-icon [name]="tab.icon" size="1rem" aria-hidden="true" />
+          {{ tab.label }}
+        </button>
+      }
+    </div>
+
+    @switch (activeTab()) {
+      @case ('genetics') {
+        <div class="bio-layout">
+          <section class="bio-card" aria-labelledby="punnett-title">
+            <div class="bio-card-head">
+              <div><p class="eyebrow">Genética mendeliana</p><h2 id="punnett-title">Quadrado de Punnett</h2></div>
+              <span class="bio-badge">Modelo determinístico</span>
+            </div>
+            <div class="bio-fields bio-fields--two">
+              <label class="bio-field"><span>Genótipo do parental 1</span><select [value]="parentA()" (change)="setParent('a', $any($event.target).value)"><option value="AA">AA — homozigoto dominante</option><option value="Aa">Aa — heterozigoto</option><option value="aa">aa — homozigoto recessivo</option></select></label>
+              <label class="bio-field"><span>Genótipo do parental 2</span><select [value]="parentB()" (change)="setParent('b', $any($event.target).value)"><option value="AA">AA — homozigoto dominante</option><option value="Aa">Aa — heterozigoto</option><option value="aa">aa — homozigoto recessivo</option></select></label>
+            </div>
+
+            <div class="punnett-wrap" aria-label="Quadrado de Punnett">
+              <div class="punnett-grid">
+                <span class="punnett-corner"></span>
+                @for (gamete of punnett().gametesB; track $index) {
+                  <span class="punnett-header">{{ gamete }}</span>
+                }
+                @for (row of punnettRows(); track $index) {
+                  <span class="punnett-header">{{ row.gameteA }}</span>
+                  @for (cell of row.cells; track $index) {
+                    <span class="punnett-cell">{{ cell }}</span>
+                  }
+                }
+              </div>
+            </div>
+
+            <div class="bio-result-grid">
+              @for (row of genotypeRows(); track row.genotype) {
+                <div>
+                  <span>{{ row.genotype }}</span>
+                  <strong>{{ row.count }} / 4</strong>
+                  <small>{{ format(row.percent, 0) }}%</small>
+                </div>
+              }
+            </div>
+            <div class="bio-phenotypes">
+              <span><strong>A_</strong> dominante: {{ punnett().phenotypes.dominant }}/4 · {{ format(punnett().phenotypePercent.dominant, 0) }}%</span>
+              <span><strong>aa</strong> recessivo: {{ punnett().phenotypes.recessive }}/4 · {{ format(punnett().phenotypePercent.recessive, 0) }}%</span>
+            </div>
+            <p class="bio-hint">Modelo de um gene autossômico, segregação mendeliana e dominância completa. Não considera ligação gênica, epistasia, mutação ou seleção.</p>
+          </section>
+
+          <aside class="bio-aside">
+            <div class="bio-card bio-card--soft">
+              <p class="eyebrow">Leitura</p>
+              <h3>O que observar</h3>
+              <ul>
+                <li>AA × aa produz 100% Aa.</li>
+                <li>Aa × Aa produz a proporção 3:1 em fenótipos com dominância completa.</li>
+                <li>Genótipo e fenótipo não são a mesma coisa.</li>
+              </ul>
+            </div>
+            <div class="bio-card bio-card--soft">
+              <p class="eyebrow">Conexões ENEM</p>
+              <p>Cruzamentos-teste, heredogramas, probabilidade genética e doenças monogênicas.</p>
+            </div>
+          </aside>
+        </div>
+      }
+
+      @case ('evolution') {
+        <div class="bio-layout">
+          <section class="bio-card" aria-labelledby="hwe-title">
+            <div class="bio-card-head">
+              <div><p class="eyebrow">Genética de populações</p><h2 id="hwe-title">Equilíbrio de Hardy-Weinberg</h2></div>
+              <span class="bio-badge">Modelo populacional</span>
+            </div>
+            <p class="bio-hint">A frequência alélica é p para A e q para a. No equilíbrio, AA = p², Aa = 2pq e aa = q².</p>
+            <div class="bio-fields bio-fields--two">
+              <label class="bio-field"><span>Frequência de A: p = {{ format(alleleP(), 2) }}</span><input type="range" min="0" max="1" step="0.01" [value]="alleleP()" (input)="setAlleleP($event)" /></label>
+              <label class="bio-field"><span>Tamanho da população</span><input type="number" min="1" step="1" [value]="populationSize()" (input)="setPopulation($event)" /></label>
+            </div>
+            <div class="allele-bars">
+              @for (item of [
+                { label: 'AA', value: (hwe()?.aa ?? 0) * 100, color: '#2f6f5e' },
+                { label: 'Aa', value: (hwe()?.ab ?? 0) * 100, color: '#c96f4a' },
+                { label: 'aa', value: (hwe()?.bb ?? 0) * 100, color: '#8a6a2f' }
+              ]; track item.label) {
+                <div class="allele-row">
+                  <span class="allele-name">{{ item.label }}</span>
+                  <span class="allele-track"><span [style.width.%]="item.value" [style.background]="item.color"></span></span>
+                  <span class="allele-value">{{ format(item.value, 1) }}%</span>
+                </div>
+              }
+            </div>
+            @if (hwe(); as result) {
+              <div class="bio-result-grid bio-result-grid--three">
+                <div><span>p² prob.</span><strong>{{ format(result.aa, 4) }}</strong><small>{{ formatInt(hweCounts()?.aa) }} indivíduos</small></div>
+                <div><span>2pq prob.</span><strong>{{ format(result.ab, 4) }}</strong><small>{{ formatInt(hweCounts()?.ab) }} indivíduos</small></div>
+                <div><span>q² prob.</span><strong>{{ format(result.bb, 4) }}</strong><small>{{ formatInt(hweCounts()?.bb) }} indivíduos</small></div>
+              </div>
+            }
+            <p class="bio-hint">Pressupõe população grande, acasalamento aleatório, ausência de seleção, mutação e migração, e locus autossômico com dois alelos.</p>
+          </section>
+          <aside class="bio-aside">
+            <div class="bio-card bio-card--soft">
+              <p class="eyebrow">Interpretação</p>
+              <h3>Ferramenta de comparação</h3>
+              <p>O equilíbrio de Hardy-Weinberg é um modelo nulo. Se as frequências observadas na população real se afastam dele, algo pode estar alterando o pool gênico.</p>
+            </div>
+            <div class="bio-card bio-card--soft">
+              <p class="eyebrow">Conexões ENEM</p>
+              <p>Seleção natural, deriva genética, fluxo gênico e frequências alélicas.</p>
+            </div>
+          </aside>
+        </div>
+      }
+
+      @case ('ecology') {
+        <div class="bio-layout bio-layout--stack">
+          <section class="bio-card" aria-labelledby="population-title">
+            <div class="bio-card-head">
+              <div><p class="eyebrow">Ecologia de populações</p><h2 id="population-title">Crescimento logístico</h2></div>
+              <span class="bio-badge">Simulação</span>
+            </div>
+            <div class="bio-fields bio-fields--four">
+              <label class="bio-field"><span>População inicial</span><input type="number" min="0" step="1" [value]="initialPopulation()" (input)="setNumber('initialPopulation', $event)" /></label>
+              <label class="bio-field"><span>Taxa intrínseca r</span><input type="number" step="0.01" [value]="growthRate()" (input)="setNumber('growthRate', $event)" /></label>
+              <label class="bio-field"><span>Capacidade K</span><input type="number" min="1" step="1" [value]="capacity()" (input)="setNumber('capacity', $event)" /></label>
+              <label class="bio-field"><span>Tempo</span><input type="number" min="0" step="1" [value]="simulationTime()" (input)="setNumber('simulationTime', $event)" /></label>
+            </div>
+            <app-bio-chart [points]="populationPoints()" xLabel="tempo" yLabel="indivíduos" title="Crescimento logístico" color="var(--forest)" />
+            <div class="bio-result-grid bio-result-grid--two">
+              <div><span>População final simulada</span><strong>{{ formatInt(finalPopulation()) }}</strong></div>
+              <div><span>Capacidade de suporte</span><strong>{{ formatInt(capacity()) }}</strong></div>
+            </div>
+            <p class="bio-hint">Modelo logístico dN/dt = rN(1 − N/K), integrado por Euler com passo fixo. Não representa flutuações ambientais, estrutura etária ou migração.</p>
+          </section>
+
+          <section class="bio-card" aria-labelledby="trophic-title">
+            <div class="bio-card-head">
+              <div><p class="eyebrow">Fluxo de energia</p><h2 id="trophic-title">Pirâmide trófica</h2></div>
+              <span class="bio-badge">Diagrama quantitativo</span>
+            </div>
+            <div class="bio-fields bio-fields--three">
+              <label class="bio-field"><span>Energia dos produtores</span><input type="number" min="1" step="1" [value]="initialEnergy()" (input)="setNumber('initialEnergy', $event)" /></label>
+              <label class="bio-field"><span>Eficiência entre níveis (%)</span><input type="number" min="1" max="100" step="1" [value]="transferEfficiency()" (input)="setNumber('transferEfficiency', $event)" /></label>
+              <label class="bio-field"><span>Níveis tróficos</span><input type="number" min="2" max="5" step="1" [value]="trophicLevels()" (input)="setNumber('trophicLevels', $event)" /></label>
+            </div>
+            @if (trophic(); as pyramid) {
+              <div class="trophic-list">
+                @for (level of pyramid.levels; track level.level) {
+                  <div class="trophic-row">
+                    <span class="trophic-label">{{ level.label }}</span>
+                    <span class="trophic-track"><span [style.width.%]="barWidth(level.energy, initialEnergy())"></span></span>
+                    <span class="trophic-value">{{ formatInt(level.energy) }} u</span>
+                  </div>
+                }
+              </div>
+            }
+            <p class="bio-hint">A transferência de energia é uma simplificação didática; 10% é uma referência comum, não uma constante universal. A produtividade e as perdas variam entre ecossistemas.</p>
+          </section>
+        </div>
+      }
+
+      @case ('physiology') {
+        <div class="bio-layout">
+          <section class="bio-card" aria-labelledby="enzyme-title">
+            <div class="bio-card-head">
+              <div><p class="eyebrow">Fisiologia e bioquímica</p><h2 id="enzyme-title">Cinética enzimática</h2></div>
+              <span class="bio-badge">Modelo de Michaelis-Menten</span>
+            </div>
+            <div class="bio-fields bio-fields--three">
+              <label class="bio-field"><span>Vmax (µmol/min)</span><input type="number" min="0.01" step="0.1" [value]="vmax()" (input)="setNumber('vmax', $event)" /></label>
+              <label class="bio-field"><span>Km (mmol/L)</span><input type="number" min="0.01" step="0.1" [value]="km()" (input)="setNumber('km', $event)" /></label>
+              <label class="bio-field"><span>[S] (mmol/L)</span><input type="number" min="0" step="0.1" [value]="substrate()" (input)="setNumber('substrate', $event)" /></label>
+            </div>
+            <app-bio-chart [points]="enzymePoints()" xLabel="[S] (mmol/L)" yLabel="v (µmol/min)" title="Curva de Michaelis-Menten" color="var(--terracotta)" />
+            <div class="bio-result-grid bio-result-grid--two">
+              <div><span>Velocidade no substrato atual</span><strong>{{ format(enzymeRate(), 2) }} µmol/min</strong></div>
+              <div><span>Km</span><strong>{{ format(km(), 2) }} mmol/L</strong></div>
+            </div>
+            <p class="bio-hint">v = Vmax[S]/(Km + [S]). Modelo de velocidade inicial, enzima em condições ideais, sem inibição, cooperatividade ou saturação por outros fatores.</p>
+          </section>
+          <aside class="bio-aside">
+            <div class="bio-card bio-card--soft">
+              <p class="eyebrow">Leitura</p>
+              <h3>Km e afinidade</h3>
+              <p>No gráfico, quando [S] = Km, a velocidade é metade da Vmax. Quanto menor o Km, maior a afinidade aparente da enzima pelo substrato.</p>
+            </div>
+            <div class="bio-card bio-card--soft">
+              <p class="eyebrow">Conexões ENEM</p>
+              <p>Atividade enzimática, temperatura, pH, concentração de substrato e metabolismo.</p>
+            </div>
+          </aside>
+        </div>
+      }
+    }
+
+    <section class="bio-links" aria-labelledby="bio-links-title">
+      <div>
+        <p class="eyebrow">Continue explorando</p>
+        <h2 id="bio-links-title">Do modelo à célula real</h2>
+        <p>Abra o laboratório 3D para relacionar esses modelos à estrutura celular e à classificação dos seres vivos.</p>
+      </div>
+      <div class="bio-links-actions">
+        <a class="btn btn--primary btn--small" routerLink="/biologia/celula">Abrir célula 3D</a>
+        <a class="btn btn--outline btn--small" routerLink="/biologia/taxonomia">Ver taxonomia</a>
+      </div>
+    </section>
+
+    <p class="bio-footnote">
+      <strong>Escopo desta versão:</strong> genética mendeliana, Hardy-Weinberg, crescimento
+      logístico, pirâmide trófica e cinética de Michaelis-Menten. Os modelos são didáticos e
+      explicitam suas premissas; não substituem dados experimentais nem simulações de pesquisa.
+    </p>
+  </div>
+</div>

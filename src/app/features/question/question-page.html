@@ -138,13 +138,9 @@
                 >
                   {{ submitting() ? 'Enviando…' : 'Responder' }}
                 </button>
-                <span class="action-hint">
-                  @if (selectedOption()) {
-                    Alternativa {{ selectedOption() }} selecionada.
-                  } @else {
-                    Selecione uma alternativa para responder.
-                  }
-                </span>
+                @if (selectedOption()) {
+                  <span class="action-hint">Alternativa {{ selectedOption() }} selecionada.</span>
+                }
               } @else if (attempt(); as result) {
                 <div
                   class="attempt-result"
@@ -187,10 +183,6 @@
                   } @else {
                     <span class="badge badge--gold">Resposta revelada</span>
                   }
-                } @else {
-                  <p class="locked-hint">
-                    Depois de responder, você pode ver a resposta e participar da discussão.
-                  </p>
                 }
               </div>
             </div>
@@ -235,7 +227,6 @@
                 <p class="eyebrow">Depois da tentativa</p>
                 <h2 id="discussion-title">Discussão da questão</h2>
               </div>
-              <p>Compare raciocínios e comente a alternativa que escolheu.</p>
             </div>
 
             @if (!hasAttempted()) {
@@ -447,10 +438,6 @@
               ← Voltar à prova
             </a>
           </div>
-          <p class="aside-note">
-            A discussão e a resposta ficam liberadas apenas para quem já tentou. O gabarito nunca
-            aparece antes da tentativa.
-          </p>
         </aside>
       </div>
     }

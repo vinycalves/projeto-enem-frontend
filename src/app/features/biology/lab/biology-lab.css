@@ -1,0 +1,403 @@
+.biology-lab-page {
+  padding-top: 1.2rem;
+}
+
+.bio-lab-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  align-items: end;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.bio-lab-head h1 {
+  max-width: 19ch;
+  margin-bottom: 0.5rem;
+}
+
+.bio-lab-head .lede {
+  max-width: 70ch;
+  margin-bottom: 0;
+}
+
+.bio-lab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.bio-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 1rem 0 0;
+}
+
+.bio-tabs button {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.bio-tabs button:hover,
+.bio-tabs button.is-active {
+  border-color: var(--forest);
+  background: var(--forest);
+  color: #fffdf6;
+}
+
+.bio-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(15rem, 0.55fr);
+  gap: 0.9rem;
+  align-items: start;
+  padding-top: 1rem;
+}
+
+.bio-layout--stack {
+  grid-template-columns: 1fr;
+}
+
+.bio-card {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+
+.bio-card--soft {
+  background: var(--paper-deep);
+}
+
+.bio-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.bio-card-head h2 {
+  margin: 0.1rem 0 0;
+  font-size: 1.2rem;
+}
+
+.bio-card-head h3 {
+  margin: 0.1rem 0 0.4rem;
+  font-size: 0.95rem;
+}
+
+.bio-badge {
+  flex-shrink: 0;
+  padding: 0.22rem 0.4rem;
+  border: 1px solid var(--forest);
+  color: var(--forest);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.bio-aside {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.bio-aside p,
+.bio-aside ul {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.bio-aside ul {
+  display: grid;
+  gap: 0.3rem;
+  padding-left: 1rem;
+}
+
+.bio-fields {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.bio-fields--two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.bio-fields--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.bio-fields--four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.bio-field {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--ink-soft);
+  font-size: 0.7rem;
+}
+
+.bio-field input,
+.bio-field select {
+  width: 100%;
+  min-height: 2.2rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.78rem;
+}
+
+.bio-field input:focus,
+.bio-field select:focus {
+  outline: 2px solid var(--forest);
+  outline-offset: 1px;
+}
+
+.punnett-wrap {
+  display: grid;
+  place-items: center;
+  padding: 0.7rem;
+  border: 1px solid var(--line);
+  background: var(--paper-deep);
+}
+
+.punnett-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(4.5rem, 1fr));
+  gap: 0.18rem;
+  width: min(100%, 25rem);
+}
+
+.punnett-corner,
+.punnett-header,
+.punnett-cell {
+  display: grid;
+  place-items: center;
+  min-height: 3rem;
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.punnett-header {
+  background: var(--forest-wash);
+  color: var(--forest);
+}
+
+.punnett-cell {
+  background: var(--card);
+  color: var(--ink);
+}
+
+.bio-result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.bio-result-grid--two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.bio-result-grid--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.bio-result-grid > div {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.5rem;
+  border-left: 2px solid var(--forest);
+  background: var(--paper-deep);
+}
+
+.bio-result-grid span {
+  color: var(--ink-faint);
+  font-size: 0.62rem;
+}
+
+.bio-result-grid strong {
+  color: var(--forest);
+  font-size: 0.82rem;
+}
+
+.bio-result-grid small {
+  color: var(--ink-faint);
+  font-size: 0.6rem;
+}
+
+.bio-phenotypes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  padding: 0.55rem;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.7rem;
+}
+
+.bio-phenotypes strong {
+  color: var(--terracotta-deep);
+}
+
+.bio-hint {
+  margin: 0;
+  color: var(--ink-faint);
+  font-size: 0.66rem;
+  line-height: 1.5;
+}
+
+.allele-bars,
+.trophic-list {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.allele-row,
+.trophic-row {
+  display: grid;
+  grid-template-columns: 3.2rem minmax(0, 1fr) 4.5rem;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.allele-name,
+.trophic-label {
+  color: var(--ink-soft);
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+.allele-track,
+.trophic-track {
+  height: 0.65rem;
+  background: var(--paper-deep);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.allele-track span,
+.trophic-track span {
+  display: block;
+  height: 100%;
+  background: var(--forest);
+  transition: width 180ms ease;
+}
+
+.allele-value,
+.trophic-value {
+  color: var(--ink-faint);
+  font-size: 0.64rem;
+  text-align: right;
+}
+
+.trophic-track span {
+  background: var(--terracotta);
+}
+
+.bio-links {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1.2rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  background: var(--paper-deep);
+}
+
+.bio-links h2 {
+  margin: 0.1rem 0 0.3rem;
+  font-size: 1.1rem;
+}
+
+.bio-links p {
+  margin: 0;
+  max-width: 65ch;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.bio-links-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.bio-footnote {
+  margin: 1rem 0 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line);
+  color: var(--ink-faint);
+  font-size: 0.68rem;
+  line-height: 1.55;
+}
+
+.bio-footnote strong {
+  color: var(--ink-soft);
+}
+
+@media (max-width: 980px) {
+  .bio-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .bio-lab-head {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .bio-lab-actions {
+    justify-content: start;
+  }
+
+  .bio-fields--four {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .bio-fields--two,
+  .bio-fields--three,
+  .bio-fields--four,
+  .bio-result-grid,
+  .bio-result-grid--two,
+  .bio-result-grid--three {
+    grid-template-columns: 1fr;
+  }
+
+  .bio-links {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .bio-card-head {
+    flex-direction: column;
+  }
+
+  .allele-row,
+  .trophic-row {
+    grid-template-columns: 3rem minmax(0, 1fr) 3.5rem;
+  }
+}

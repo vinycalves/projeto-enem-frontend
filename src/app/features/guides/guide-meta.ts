@@ -57,6 +57,7 @@ export const GUIDE_META: GuideMeta[] = [
     priority: 'Ecologia, fisiologia, genética e evolução',
     description: 'Ecologia, citologia, genética, evolução, fisiologia e saúde.',
     icon: 'lucideDna',
+    interactiveRoute: '/biologia/laboratorio',
   },
   {
     slug: 'quimica',

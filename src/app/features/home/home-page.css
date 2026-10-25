@@ -456,6 +456,17 @@
   border-radius: 46% 54% 52% 48%;
   background: radial-gradient(circle at 40% 40%, rgba(127, 183, 201, 0.25), transparent 50%);
   box-shadow: 0 0 0 0.35rem rgba(159, 227, 194, 0.06);
+  animation: spot-breathe 9s ease-in-out infinite;
+}
+
+.spot-cell::after {
+  position: absolute;
+  inset: 8%;
+  border-radius: inherit;
+  background: radial-gradient(circle at 58% 42%, rgba(159, 227, 194, 0.18), transparent 52%);
+  content: '';
+  animation: spot-glow 6s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .spot-nucleus {
@@ -466,6 +477,8 @@
   height: 32%;
   border-radius: 50%;
   background: #8f6caf;
+  box-shadow: 0 0 0 0 rgba(143, 108, 175, 0.35);
+  animation: nucleus-pulse 5.5s ease-in-out infinite;
 }
 
 .spot-organelle {
@@ -480,6 +493,7 @@
   top: 25%;
   right: 14%;
   transform: rotate(30deg);
+  animation: organelle-drift-one 7s ease-in-out infinite;
 }
 
 .spot-organelle--two {
@@ -487,6 +501,7 @@
   left: 13%;
   background: var(--gold);
   transform: rotate(-22deg);
+  animation: organelle-drift-two 8s ease-in-out infinite;
 }
 
 .spot-organelle--three {
@@ -494,6 +509,7 @@
   bottom: 17%;
   background: #7fb7c9;
   transform: rotate(65deg);
+  animation: organelle-drift-three 6.5s ease-in-out infinite;
 }
 
 .spot-node {
@@ -503,6 +519,7 @@
   border: 1.5px solid #9fe3c2;
   border-radius: 50%;
   background: #10251f;
+  animation: node-pulse 4s ease-in-out infinite;
 }
 
 .spot-node--one {
@@ -513,11 +530,13 @@
 .spot-node--two {
   top: 30%;
   right: 10%;
+  animation-delay: 1.2s;
 }
 
 .spot-node--three {
   right: 20%;
   bottom: 12%;
+  animation-delay: 2.1s;
 }
 
 .spot-line {
@@ -525,6 +544,7 @@
   height: 1px;
   background: rgba(159, 227, 194, 0.35);
   transform-origin: left center;
+  animation: line-glow 5s ease-in-out infinite;
 }
 
 .spot-line--one {
@@ -539,6 +559,104 @@
   bottom: 17%;
   width: 5rem;
   transform: rotate(-52deg);
+}
+
+
+@keyframes spot-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+
+@keyframes spot-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes nucleus-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(143, 108, 175, 0.28);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 0.22rem rgba(143, 108, 175, 0.08);
+  }
+}
+
+@keyframes organelle-drift-one {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(30deg);
+  }
+  50% {
+    transform: translate(-0.3rem, 0.4rem) rotate(37deg);
+  }
+}
+
+@keyframes organelle-drift-two {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-22deg);
+  }
+  50% {
+    transform: translate(0.38rem, -0.3rem) rotate(-15deg);
+  }
+}
+
+@keyframes organelle-drift-three {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(65deg);
+  }
+  50% {
+    transform: translate(-0.25rem, -0.35rem) rotate(72deg);
+  }
+}
+
+@keyframes node-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes line-glow {
+  0%,
+  100% {
+    opacity: 0.28;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spot-cell,
+  .spot-cell::after,
+  .spot-nucleus,
+  .spot-organelle,
+  .spot-node,
+  .spot-line {
+    animation: none;
+  }
 }
 
 @media (max-width: 820px) {
