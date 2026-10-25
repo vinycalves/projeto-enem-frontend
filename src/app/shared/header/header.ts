@@ -122,7 +122,7 @@ export class Header implements OnDestroy {
     this.closeStudyTimer = setTimeout(() => {
       this.studyMenuOpen.set(false);
       this.closeStudyTimer = undefined;
-    }, 350);
+    }, 450);
   }
 
   protected cancelStudyMenuClose(): void {
