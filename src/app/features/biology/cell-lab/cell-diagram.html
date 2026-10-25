@@ -1,0 +1,140 @@
+<div class="cell-diagram">
+  <svg
+    class="cell-diagram-svg"
+    [attr.viewBox]="layout().viewBox"
+    role="group"
+    [attr.aria-labelledby]="titleId() + ' ' + descriptionId()"
+  >
+    <title [attr.id]="titleId()">
+      Diagrama bidimensional de uma célula {{ kind() === 'animal' ? 'animal' : 'vegetal' }}
+    </title>
+    <desc [attr.id]="descriptionId()">
+      Estruturas numeradas de 1 a {{ items().length }}. Use Tab para percorrer as organelas e Enter
+      ou Espaço para selecionar. Os números correspondem à lista de estruturas ao lado.
+    </desc>
+
+    @for (item of items(); track item.id) {
+      <g
+        class="diagram-organelle"
+        [class.is-selected]="selectedId() === item.id"
+        [class.is-dimmed]="isDimmed(item.id)"
+        role="button"
+        tabindex="0"
+        [attr.aria-pressed]="selectedId() === item.id"
+        [attr.aria-label]="item.index + '. ' + item.organelle.name + ': ' + item.organelle.function"
+        (click)="selected.emit(item.id)"
+        (keydown)="onKeydown($event, item.id)"
+      >
+        <title>{{ item.organelle.name }} — {{ item.organelle.function }}</title>
+
+        @for (shape of item.shapes; track $index) {
+          @switch (shape.kind) {
+            @case ('path') {
+              <path
+                [attr.d]="shape.d"
+                [attr.fill]="fill(shape, item)"
+                [attr.stroke]="stroke(shape, item)"
+                [attr.stroke-width]="shape.strokeWidth ?? null"
+                [attr.stroke-linecap]="shape.strokeLinecap ?? null"
+                [attr.stroke-dasharray]="shape.strokeDasharray ?? null"
+                [attr.opacity]="shape.opacity ?? null"
+                [attr.transform]="shape.transform ?? null"
+                [class]="shape.className ?? ''"
+                vector-effect="non-scaling-stroke"
+              />
+            }
+            @case ('circle') {
+              <circle
+                [attr.cx]="shape.cx"
+                [attr.cy]="shape.cy"
+                [attr.r]="shape.r"
+                [attr.fill]="fill(shape, item)"
+                [attr.stroke]="stroke(shape, item)"
+                [attr.stroke-width]="shape.strokeWidth ?? null"
+                [attr.stroke-dasharray]="shape.strokeDasharray ?? null"
+                [attr.opacity]="shape.opacity ?? null"
+                [attr.transform]="shape.transform ?? null"
+                [class]="shape.className ?? ''"
+                vector-effect="non-scaling-stroke"
+              />
+            }
+            @case ('ellipse') {
+              <ellipse
+                [attr.cx]="shape.cx"
+                [attr.cy]="shape.cy"
+                [attr.rx]="shape.rx"
+                [attr.ry]="shape.ry"
+                [attr.fill]="fill(shape, item)"
+                [attr.stroke]="stroke(shape, item)"
+                [attr.stroke-width]="shape.strokeWidth ?? null"
+                [attr.stroke-dasharray]="shape.strokeDasharray ?? null"
+                [attr.opacity]="shape.opacity ?? null"
+                [attr.transform]="shape.transform ?? null"
+                [class]="shape.className ?? ''"
+                vector-effect="non-scaling-stroke"
+              />
+            }
+            @case ('rect') {
+              <rect
+                [attr.x]="shape.x"
+                [attr.y]="shape.y"
+                [attr.width]="shape.width"
+                [attr.height]="shape.height"
+                [attr.rx]="shape.rx ?? null"
+                [attr.fill]="fill(shape, item)"
+                [attr.stroke]="stroke(shape, item)"
+                [attr.stroke-width]="shape.strokeWidth ?? null"
+                [attr.stroke-dasharray]="shape.strokeDasharray ?? null"
+                [attr.opacity]="shape.opacity ?? null"
+                [attr.transform]="shape.transform ?? null"
+                [class]="shape.className ?? ''"
+                vector-effect="non-scaling-stroke"
+              />
+            }
+            @case ('line') {
+              <line
+                [attr.x1]="shape.x1"
+                [attr.y1]="shape.y1"
+                [attr.x2]="shape.x2"
+                [attr.y2]="shape.y2"
+                [attr.stroke]="stroke(shape, item)"
+                [attr.stroke-width]="shape.strokeWidth ?? null"
+                [attr.stroke-linecap]="shape.strokeLinecap ?? null"
+                [attr.stroke-dasharray]="shape.strokeDasharray ?? null"
+                [attr.opacity]="shape.opacity ?? null"
+                [attr.transform]="shape.transform ?? null"
+                [class]="shape.className ?? ''"
+                vector-effect="non-scaling-stroke"
+              />
+            }
+          }
+        }
+
+        <g
+          class="diagram-marker"
+          [attr.transform]="'translate(' + item.marker.x + ' ' + item.marker.y + ')'"
+        >
+          <circle r="13" [attr.fill]="item.color" stroke="#081b19" stroke-width="2.5" />
+          <text y="0.5" text-anchor="middle" dominant-baseline="middle">{{ item.index }}</text>
+        </g>
+
+        @if (showLabels()) {
+          <text
+            class="diagram-label"
+            [attr.x]="item.marker.labelX"
+            [attr.y]="item.marker.labelY"
+            [attr.text-anchor]="item.marker.labelAnchor ?? 'middle'"
+          >
+            {{ item.organelle.name }}
+          </text>
+        }
+      </g>
+    }
+  </svg>
+
+  <p class="diagram-hint">
+    Clique em uma estrutura ou use <kbd>Tab</kbd> e <kbd>Enter</kbd> (ou <kbd>Espaço</kbd>) para
+    selecionar. Os números correspondem à lista ao lado. Tamanhos, posições e proporções são
+    esquemáticos.
+  </p>
+</div>

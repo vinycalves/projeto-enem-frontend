@@ -15,6 +15,7 @@ import { Api } from '../../core/api/api';
 import { getVisualization } from '../../core/api/fn/crate-visualizations/get-visualization';
 import { VisualizationDetail } from '../../core/api/models/visualization-detail';
 import { getApiErrorMessage } from '../../core/api-error';
+import { dnaVisualizationParams } from '../biology/dna-3d/dna-parameters';
 import { MiniQuiz } from '../chemistry/shared/mini-quiz';
 import {
   ParamDefinition,
@@ -135,7 +136,7 @@ export class VisualizationHost implements OnInit {
     try {
       const response = await this.api.invoke(getVisualization, { slug });
       const visualization = response.visualization;
-      const params: ParamDefinition[] = visualization.params.map((param) => ({
+      const seedParams: ParamDefinition[] = visualization.params.map((param) => ({
         id: param.id,
         label: param.label,
         kind: param.kind,
@@ -146,6 +147,8 @@ export class VisualizationHost implements OnInit {
         unit: param.unit,
         options: param.options,
       }));
+      const params =
+        visualization.component_key === 'dna-3d' ? dnaVisualizationParams(seedParams) : seedParams;
       const defaults: Record<string, unknown> = {};
       for (const param of params) {
         defaults[param.id] = param.default;

@@ -23,8 +23,10 @@ import {
   CellKind,
   Organelle,
   organelleById,
+  organelleColor as cellOrganelleColor,
   organellesFor,
 } from '../../../core/biology-data';
+import { CellDiagram } from './cell-diagram';
 
 interface Floater {
   object: THREE.Object3D;
@@ -43,12 +45,22 @@ interface Callout {
 
 const LABEL_IDS: Record<CellKind, string[]> = {
   animal: ['membrane', 'nucleus', 'mitochondrion', 'rer', 'golgi', 'lysosome', 'centrosome'],
-  vegetal: ['cellwall', 'nucleus', 'chloroplast', 'vacuole', 'mitochondrion', 'golgi', 'peroxisome'],
+  vegetal: [
+    'cellwall',
+    'nucleus',
+    'chloroplast',
+    'vacuole',
+    'mitochondrion',
+    'golgi',
+    'peroxisome',
+  ],
 };
+
+type CellViewMode = '3d' | '2d';
 
 @Component({
   selector: 'app-cell-lab',
-  imports: [RouterLink],
+  imports: [RouterLink, CellDiagram],
   templateUrl: './cell-lab.html',
   styleUrl: './cell-lab.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,6 +74,7 @@ export class CellLab implements AfterViewInit, OnDestroy {
 
   private readonly ngZone = inject(NgZone);
   protected readonly kind = signal<CellKind>('animal');
+  protected readonly viewMode = signal<CellViewMode>('3d');
   protected readonly selectedId = signal('nucleus');
   protected readonly isolate = signal(false);
   protected readonly showLabels = signal(true);
@@ -167,10 +180,33 @@ export class CellLab implements AfterViewInit, OnDestroy {
     this.resetFocus();
   }
 
+  protected setViewMode(mode: CellViewMode): void {
+    if (this.viewMode() === mode) {
+      return;
+    }
+    this.viewMode.set(mode);
+    if (this.calloutLayer) {
+      this.calloutLayer.style.display = mode === '3d' && this.showLabels() ? 'block' : 'none';
+    }
+    if (mode === '3d') {
+      this.visible = true;
+      this.clock.getDelta();
+      this.refreshSize();
+      this.updateCallouts();
+      if (!this.contextLost) {
+        this.renderer?.setAnimationLoop(this.animate);
+      }
+    } else {
+      this.renderer?.setAnimationLoop(null);
+    }
+  }
+
   protected selectOrganelle(id: string): void {
     this.selectedId.set(id);
     this.applySelection();
-    this.focusOn(id);
+    if (this.viewMode() === '3d') {
+      this.focusOn(id);
+    }
   }
 
   protected toggleIsolate(): void {
@@ -182,15 +218,15 @@ export class CellLab implements AfterViewInit, OnDestroy {
     const next = !this.showLabels();
     this.showLabels.set(next);
     if (this.calloutLayer) {
-      this.calloutLayer.style.display = next ? 'block' : 'none';
+      this.calloutLayer.style.display = next && this.viewMode() === '3d' ? 'block' : 'none';
     }
-    if (next) {
+    if (next && this.viewMode() === '3d') {
       this.updateCallouts();
     }
   }
 
   protected resetView(): void {
-    if (!this.camera || !this.controls) {
+    if (this.viewMode() !== '3d' || !this.camera || !this.controls) {
       return;
     }
     this.focusTarget = undefined;
@@ -269,6 +305,9 @@ export class CellLab implements AfterViewInit, OnDestroy {
   private refreshSize(): void {
     this.lastWidth = 0;
     this.lastHeight = 0;
+    if (this.viewMode() !== '3d') {
+      return;
+    }
     if (typeof requestAnimationFrame === 'function') {
       requestAnimationFrame(() => {
         if (this.canvasHost) {
@@ -302,7 +341,10 @@ export class CellLab implements AfterViewInit, OnDestroy {
     try {
       this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
     } catch {
-      this.webglError.set(true);
+      this.ngZone.run(() => {
+        this.webglError.set(true);
+        this.viewMode.set('2d');
+      });
       return;
     }
 
@@ -542,7 +584,13 @@ export class CellLab implements AfterViewInit, OnDestroy {
         emissiveIntensity?: number;
       },
     ) => THREE.MeshStandardMaterial,
-    register: (id: string, object: THREE.Object3D, float?: boolean, amplitude?: number, spin?: number) => void,
+    register: (
+      id: string,
+      object: THREE.Object3D,
+      float?: boolean,
+      amplitude?: number,
+      spin?: number,
+    ) => void,
   ): void {
     const membrane = new THREE.Group();
     const shellGeometry = new THREE.SphereGeometry(2.35, 72, 40, 0, Math.PI * 2, 0, Math.PI / 2);
@@ -604,7 +652,13 @@ export class CellLab implements AfterViewInit, OnDestroy {
         emissiveIntensity?: number;
       },
     ) => THREE.MeshStandardMaterial,
-    register: (id: string, object: THREE.Object3D, float?: boolean, amplitude?: number, spin?: number) => void,
+    register: (
+      id: string,
+      object: THREE.Object3D,
+      float?: boolean,
+      amplitude?: number,
+      spin?: number,
+    ) => void,
   ): void {
     const wall = new THREE.Group();
 
@@ -742,9 +796,20 @@ export class CellLab implements AfterViewInit, OnDestroy {
     ) => THREE.MeshStandardMaterial,
     physical: (
       color: string,
-      options?: { roughness?: number; clearcoat?: number; emissive?: string; emissiveIntensity?: number },
+      options?: {
+        roughness?: number;
+        clearcoat?: number;
+        emissive?: string;
+        emissiveIntensity?: number;
+      },
     ) => THREE.MeshPhysicalMaterial,
-    register: (id: string, object: THREE.Object3D, float?: boolean, amplitude?: number, spin?: number) => void,
+    register: (
+      id: string,
+      object: THREE.Object3D,
+      float?: boolean,
+      amplitude?: number,
+      spin?: number,
+    ) => void,
   ): void {
     const nucleusPosition =
       this.kind() === 'animal'
@@ -823,11 +888,7 @@ export class CellLab implements AfterViewInit, OnDestroy {
       emissive: plant ? '#854d0e' : '#6b21a8',
       emissiveIntensity: 0.22,
     });
-    const ribosomes = new THREE.InstancedMesh(
-      ribosomeGeometry,
-      ribosomeMaterial,
-      ribosomeCount,
-    );
+    const ribosomes = new THREE.InstancedMesh(ribosomeGeometry, ribosomeMaterial, ribosomeCount);
     const ribosomeMatrix = new THREE.Matrix4();
     for (let index = 0; index < ribosomeCount; index += 1) {
       const angle = index * 2.399;
@@ -984,13 +1045,7 @@ export class CellLab implements AfterViewInit, OnDestroy {
   }
 
   protected organelleColor(organelle: Organelle): string {
-    if (this.kind() === 'vegetal') {
-      if (organelle.id === 'nucleus') return '#fbbf24';
-      if (organelle.id === 'nucleolus') return '#2563eb';
-      if (organelle.id === 'ribosome') return '#facc15';
-      if (organelle.id === 'rer') return '#4ade80';
-    }
-    return organelle.color;
+    return cellOrganelleColor(this.kind(), organelle);
   }
 
   private representativeChild(group: THREE.Object3D): THREE.Object3D {
@@ -1075,7 +1130,7 @@ export class CellLab implements AfterViewInit, OnDestroy {
   }
 
   private updateCallouts(): void {
-    if (!this.showLabels() || !this.calloutLayer || !this.camera) {
+    if (this.viewMode() !== '3d' || !this.showLabels() || !this.calloutLayer || !this.camera) {
       return;
     }
     const host = this.canvasHost.nativeElement;
@@ -1201,7 +1256,7 @@ export class CellLab implements AfterViewInit, OnDestroy {
     const dt = Math.min(this.clock.getDelta(), 0.05);
     const elapsed = this.clock.elapsedTime;
 
-    if (!this.visible || document.hidden || this.contextLost) {
+    if (this.viewMode() !== '3d' || !this.visible || document.hidden || this.contextLost) {
       return;
     }
 
@@ -1335,14 +1390,16 @@ export class CellLab implements AfterViewInit, OnDestroy {
         }
         const materials = Array.isArray(child.material) ? child.material : [child.material];
         for (const material of materials) {
-          if (material instanceof THREE.MeshStandardMaterial || material instanceof THREE.MeshPhysicalMaterial) {
+          if (
+            material instanceof THREE.MeshStandardMaterial ||
+            material instanceof THREE.MeshPhysicalMaterial
+          ) {
             material.emissive.set(id === selected ? material.color : '#000000');
             material.emissiveIntensity = id === selected ? 0.24 : 0;
           }
         }
       });
     }
-
   }
 
   private observe(host: HTMLDivElement): void {
@@ -1456,12 +1513,20 @@ export class CellLab implements AfterViewInit, OnDestroy {
     event.preventDefault();
     this.contextLost = true;
     this.renderer?.setAnimationLoop(null);
-    this.webglError.set(true);
+    this.ngZone.run(() => {
+      this.webglError.set(true);
+      this.viewMode.set('2d');
+      if (this.calloutLayer) {
+        this.calloutLayer.style.display = 'none';
+      }
+    });
   };
 
   private readonly onContextRestored = () => {
     this.contextLost = false;
-    this.webglError.set(false);
+    this.ngZone.run(() => {
+      this.webglError.set(false);
+    });
     this.clock.getDelta();
     this.renderer?.setAnimationLoop(this.animate);
   };

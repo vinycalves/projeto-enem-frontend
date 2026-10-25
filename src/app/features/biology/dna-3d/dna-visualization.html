@@ -1,32 +1,92 @@
 <div class="dna-visualization">
+  <div class="dna-toolbar">
+    <div class="molecule-switch" role="group" aria-label="Escolha a molécula">
+      <button
+        type="button"
+        class="molecule-button"
+        [class.is-active]="!isRna()"
+        [attr.aria-pressed]="!isRna()"
+        (click)="setMolecule('dna')"
+      >
+        DNA
+      </button>
+      <button
+        type="button"
+        class="molecule-button"
+        [class.is-active]="isRna()"
+        [attr.aria-pressed]="isRna()"
+        (click)="setMolecule('rna')"
+      >
+        RNA
+      </button>
+    </div>
+    <p class="molecule-caption" aria-live="polite">
+      @if (isRna()) {
+        Fita simples com bases A, U, C e G
+      } @else {
+        Dupla hélice com pares A–T e C–G
+      }
+    </p>
+    <button class="dna-reset" type="button" (click)="resetView()">Recentralizar</button>
+  </div>
+
   <div
     #canvasHost
     class="dna-canvas"
     [class.is-hidden]="webglError()"
     role="img"
-    aria-label="Modelo tridimensional da dupla hélice do DNA, com pares de bases entre as duas fitas."
+    tabindex="0"
+    aria-roledescription="gráfico 3D interativo"
+    [attr.aria-label]="canvasLabel()"
+    aria-describedby="dna-canvas-hint"
+    (keydown)="onCanvasKeydown($event)"
   ></div>
 
   @if (webglError()) {
-    <div class="dna-fallback" role="img" aria-label="Representação esquemática da dupla hélice">
+    <div class="dna-fallback" role="img" [attr.aria-label]="canvasLabel()">
       <div class="fallback-helix" aria-hidden="true">
         <span></span><span></span><span></span><span></span>
       </div>
       <p>
-        Seu navegador não conseguiu iniciar o WebGL. A dupla hélice é formada por duas fitas
-        antiparalelas de nucleotídeos unidas por pares A-T e C-G.
+        Seu navegador não conseguiu iniciar o WebGL.
+        @if (isRna()) {
+          O RNA é uma fita simples de nucleotídeos com as bases A, U, C e G; nesta representação
+          didática não há pareamento de bases.
+        } @else {
+          A dupla hélice é formada por duas fitas antiparalelas de nucleotídeos unidas por pares A–T
+          e C–G.
+        }
       </p>
     </div>
   }
 
-  <div class="dna-legend" aria-label="Legenda dos pares de bases">
-    <span><i class="legend-dot legend-dot--at"></i> Adenina–Timina</span>
-    <span><i class="legend-dot legend-dot--cg"></i> Citosina–Guanina</span>
-    <span class="dna-hint">Arraste para girar · roda para zoom</span>
+  <div class="dna-legend" aria-label="Legenda das bases nitrogenadas">
+    <span><i class="legend-dot legend-dot--a"></i> Adenina (A)</span>
+    @if (isRna()) {
+      <span><i class="legend-dot legend-dot--u"></i> Uracila (U)</span>
+    } @else {
+      <span><i class="legend-dot legend-dot--t"></i> Timina (T)</span>
+    }
+    <span><i class="legend-dot legend-dot--c"></i> Citosina (C)</span>
+    <span><i class="legend-dot legend-dot--g"></i> Guanina (G)</span>
+    <span class="dna-mode">{{ isRna() ? 'Fita única' : 'Fitas antiparalelas' }}</span>
   </div>
 
+  <p class="dna-hint" id="dna-canvas-hint">
+    Arraste ou use ←/→ para girar · setas ↑/↓, roda ou +/− para zoom · Home recentraliza. Sem
+    rotação automática.
+  </p>
+
   <p class="dna-note">
-    Modelo didático simplificado. As duas fitas são antiparalelas e os pares de bases ocupam o
-    interior da hélice.
+    @if (isRna()) {
+      Modelo didático de RNA de fita simples: bases A, U, C e G, sem pareamento nesta representação.
+      A sequência exibida é arbitrária e não corresponde a um transcrito real. As cores apenas
+      diferenciam as bases. Alguns vírus possuem RNA de fita dupla, forma não mostrada aqui.
+    } @else {
+      Modelo didático de DNA: duas fitas antiparalelas (5′→3′ e 3′→5′), com pares A–T e C–G no
+      interior da hélice. A sequência exibida é arbitrária. As cores apenas diferenciam as bases;
+      tamanhos e distâncias não estão em escala atômica. A abertura visual altera o raio do modelo
+      para leitura e não representa separação das fitas.
+    }
   </p>
 </div>

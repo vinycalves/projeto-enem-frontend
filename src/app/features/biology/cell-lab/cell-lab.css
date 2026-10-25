@@ -15,6 +15,15 @@
   margin-bottom: 0.6rem;
 }
 
+.lab-switches {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 1.2rem 0;
+}
+
 .cell-switch {
   display: inline-flex;
   gap: 0.25rem;
@@ -22,6 +31,10 @@
   padding: 0.22rem;
   border: 1px solid var(--line);
   background: var(--paper-deep);
+}
+
+.lab-switches .cell-switch {
+  margin: 0;
 }
 
 .switch-button {
@@ -166,8 +179,7 @@
   min-height: 27rem;
   background:
     radial-gradient(circle at 48% 46%, rgba(127, 183, 201, 0.18), transparent 34%),
-    radial-gradient(circle at 50% 52%, rgba(159, 227, 194, 0.1), transparent 62%),
-    #10251f;
+    radial-gradient(circle at 50% 52%, rgba(159, 227, 194, 0.1), transparent 62%), #10251f;
   cursor: grab;
 }
 
@@ -177,6 +189,26 @@
 
 .canvas-host.is-hidden {
   display: none;
+}
+
+.view-warning {
+  margin: 0;
+  padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid rgba(237, 246, 240, 0.16);
+  background: rgba(217, 164, 65, 0.12);
+  color: #f2d49a;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.tool-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.viewport-card:fullscreen app-cell-diagram,
+.viewport-card.is-expanded app-cell-diagram {
+  min-height: 0;
 }
 
 .viewport-caption {

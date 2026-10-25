@@ -97,35 +97,23 @@
             <text class="node-note" x="258" y="247">células com núcleo</text>
           </g>
 
-          <g
-            class="tree-node tree-node--group"
-            [class.is-active]="selected().group === 'Protista'"
-          >
+          <g class="tree-node tree-node--group" [class.is-active]="selected().group === 'Protista'">
             <circle cx="460" cy="115" r="5" />
             <text x="476" y="120">Protista</text>
             <text class="node-note" x="476" y="137">grupo parafilético</text>
           </g>
 
-          <g
-            class="tree-node tree-node--group"
-            [class.is-active]="selected().group === 'Fungi'"
-          >
+          <g class="tree-node tree-node--group" [class.is-active]="selected().group === 'Fungi'">
             <circle cx="460" cy="150" r="5" />
             <text x="476" y="155">Fungi</text>
           </g>
 
-          <g
-            class="tree-node tree-node--group"
-            [class.is-active]="selected().group === 'Plantae'"
-          >
+          <g class="tree-node tree-node--group" [class.is-active]="selected().group === 'Plantae'">
             <circle cx="460" cy="190" r="5" />
             <text x="476" y="195">Plantae</text>
           </g>
 
-          <g
-            class="tree-node tree-node--group"
-            [class.is-active]="selected().group === 'Animalia'"
-          >
+          <g class="tree-node tree-node--group" [class.is-active]="selected().group === 'Animalia'">
             <circle cx="460" cy="230" r="5" />
             <text x="476" y="235">Animalia</text>
           </g>
@@ -169,6 +157,16 @@
         <span class="example-badge">{{ selected().domain }} · {{ selected().group }}</span>
       </div>
 
+      <p class="example-source">
+        @if (selected().source) {
+          <strong>Fonte:</strong> {{ selected().source }}
+        } @else {
+          <strong>Exemplo didático:</strong> classificação baseada na literatura taxonômica usual,
+          sem fonte primária específica. Consulte bases atualizadas antes de usar o nome em uma
+          pesquisa.
+        }
+      </p>
+
       <ol class="rank-path" aria-label="Hierarquia taxonômica do exemplo selecionado">
         @for (rank of selected().ranks; track rank.rank; let last = $last) {
           <li class="rank-card">
@@ -204,14 +202,15 @@
       <p>
         A classificação tradicional agrupa seres por características compartilhadas, mas nem todos
         os grupos antigos são monofiléticos. “Protista”, por exemplo, reúne organismos de linhagens
-        diferentes. A filogenia busca reconstruir a história evolutiva; a taxonomia organiza e nomeia.
+        diferentes. A filogenia busca reconstruir a história evolutiva; a taxonomia organiza e
+        nomeia.
       </p>
     </aside>
 
     <div class="lab-next">
       <p>Quer rever as organelas?</p>
       <a class="btn btn--paper" routerLink="/biologia/celula">
-        Voltar à célula 3D <span aria-hidden="true">→</span>
+        Voltar à célula 3D e 2D <span aria-hidden="true">→</span>
       </a>
     </div>
   </div>

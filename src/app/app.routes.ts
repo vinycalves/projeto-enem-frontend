@@ -106,7 +106,7 @@ export const routes: Routes = [
   },
   {
     path: 'biologia/celula',
-    title: 'Célula 3D · ENEM Aberto',
+    title: 'Célula 3D e 2D · ENEM Aberto',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/biology/cell-lab/cell-lab').then((module) => module.CellLab),

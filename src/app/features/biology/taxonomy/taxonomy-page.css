@@ -199,6 +199,20 @@
   text-transform: uppercase;
 }
 
+.example-source {
+  margin: -0.35rem 0 1rem;
+  padding: 0.55rem 0.65rem;
+  border-left: 2px solid var(--line-strong);
+  background: var(--paper-deep);
+  color: var(--ink-faint);
+  font-size: 0.68rem;
+  line-height: 1.55;
+}
+
+.example-source strong {
+  color: var(--ink-soft);
+}
+
 .rank-path {
   display: grid;
   grid-template-columns: repeat(8, minmax(8.5rem, 1fr));

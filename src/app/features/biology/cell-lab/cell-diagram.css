@@ -1,0 +1,132 @@
+:host {
+  display: flex;
+  flex: 1;
+  min-height: 27rem;
+  min-width: 0;
+}
+
+.cell-diagram {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.65rem;
+  min-width: 0;
+  padding: 0.75rem 0.9rem 1rem;
+  background:
+    radial-gradient(circle at 48% 46%, rgba(127, 183, 201, 0.16), transparent 38%),
+    radial-gradient(circle at 50% 52%, rgba(159, 227, 194, 0.08), transparent 64%), #10251f;
+}
+
+.cell-diagram-svg {
+  display: block;
+  width: 100%;
+  max-height: calc(100% - 2.4rem);
+  margin: auto;
+  overflow: visible;
+  user-select: none;
+}
+
+.diagram-organelle {
+  cursor: pointer;
+  outline: none;
+  transition:
+    opacity 160ms ease,
+    filter 160ms ease;
+}
+
+.diagram-organelle:hover {
+  filter: brightness(1.14);
+}
+
+.diagram-organelle.is-dimmed {
+  opacity: 0.16;
+}
+
+.diagram-organelle.is-dimmed:hover,
+.diagram-organelle.is-dimmed:focus {
+  opacity: 0.65;
+}
+
+.diagram-organelle.is-selected {
+  filter: drop-shadow(0 0 4px rgba(159, 227, 194, 0.7));
+}
+
+.diagram-organelle:focus,
+.diagram-organelle:focus-visible {
+  outline: none;
+}
+
+.diagram-organelle:focus .diagram-marker circle,
+.diagram-organelle:focus-visible .diagram-marker circle,
+.diagram-organelle.is-selected .diagram-marker circle {
+  stroke: #fffdf6;
+  stroke-width: 4;
+}
+
+.diagram-marker {
+  pointer-events: none;
+}
+
+.diagram-marker text {
+  fill: #fffdf6;
+  stroke: #081b19;
+  stroke-width: 3px;
+  paint-order: stroke;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.diagram-label {
+  fill: #edf6f0;
+  stroke: #081b19;
+  stroke-width: 4px;
+  paint-order: stroke;
+  stroke-linejoin: round;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+.diagram-organelle:hover .diagram-label,
+.diagram-organelle:focus .diagram-label,
+.diagram-organelle:focus-visible .diagram-label,
+.diagram-organelle.is-selected .diagram-label {
+  opacity: 1;
+}
+
+.diagram-hint {
+  margin: 0;
+  color: #9eb9aa;
+  font-size: 0.66rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.diagram-hint kbd {
+  padding: 0 0.25rem;
+  border: 1px solid rgba(237, 246, 240, 0.25);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #d7e8df;
+  font-family: monospace;
+  font-size: 0.62rem;
+}
+
+@media (max-width: 680px) {
+  .cell-diagram {
+    padding: 0.5rem 0.55rem 0.8rem;
+  }
+
+  .diagram-label {
+    font-size: 11px;
+  }
+
+  .diagram-hint {
+    text-align: left;
+  }
+}
