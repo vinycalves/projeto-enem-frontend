@@ -1,12 +1,51 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  lucideAtom,
+  lucideBookText,
+  lucideBrain,
+  lucideCpu,
+  lucideDna,
+  lucideDumbbell,
+  lucideFeather,
+  lucideFlaskConical,
+  lucideGlobe2,
+  lucideLandmark,
+  lucideLanguages,
+  lucideLibraryBig,
+  lucidePalette,
+  lucidePenLine,
+  lucideSigma,
+  lucideUsers,
+} from '@ng-icons/lucide';
 import { GUIDE_AREAS, GUIDE_META, GuideArea } from './guide-meta';
 
 type AreaFilter = GuideArea | 'todas';
 
 @Component({
   selector: 'app-guide-library',
-  imports: [RouterLink],
+  imports: [RouterLink, NgIcon],
+  providers: [
+    provideIcons({
+      lucideAtom,
+      lucideBookText,
+      lucideBrain,
+      lucideCpu,
+      lucideDna,
+      lucideDumbbell,
+      lucideFeather,
+      lucideFlaskConical,
+      lucideGlobe2,
+      lucideLandmark,
+      lucideLanguages,
+      lucideLibraryBig,
+      lucidePalette,
+      lucidePenLine,
+      lucideSigma,
+      lucideUsers,
+    }),
+  ],
   templateUrl: './guide-library.html',
   styleUrl: './guide-library.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

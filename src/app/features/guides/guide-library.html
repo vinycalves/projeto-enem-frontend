@@ -57,7 +57,9 @@
         @for (guide of filtered(); track guide.slug) {
           <article class="library-card" [class.is-index]="guide.slug === 'indice'">
             <div class="library-card-top">
-              <span class="guide-mark" aria-hidden="true">{{ guide.mark }}</span>
+              <span class="guide-mark" aria-hidden="true">
+                <ng-icon [name]="guide.icon" size="1.2rem" />
+              </span>
               <span class="guide-area">{{ guide.areaLabel }}</span>
             </div>
             <h2><a [routerLink]="['/guias', guide.slug]">{{ guide.shortTitle }}</a></h2>

@@ -21,15 +21,11 @@
       [attr.aria-label]="menuOpen() ? 'Fechar menu' : 'Abrir menu'"
       (click)="toggleMenu()"
     >
-      @if (menuOpen()) {
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M6 6l12 12M18 6L6 18" />
-        </svg>
-      } @else {
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M4 7h16M4 12h16M4 17h16" />
-        </svg>
-      }
+      <ng-icon
+        [name]="menuOpen() ? 'lucideX' : 'lucideMenu'"
+        size="1.35rem"
+        aria-hidden="true"
+      />
     </button>
 
     <div class="nav-wrap" id="primary-nav" [class.is-open]="menuOpen()">
@@ -39,24 +35,41 @@
           routerLinkActive="is-active"
           [routerLinkActiveOptions]="{ exact: true }"
           (click)="closeMenu()"
-          >Início</a
         >
-        <a routerLink="/provas" routerLinkActive="is-active" (click)="closeMenu()">Provas</a>
+          <ng-icon name="lucideHouse" size="0.95rem" aria-hidden="true" />
+          Início
+        </a>
+        <a routerLink="/provas" routerLinkActive="is-active" (click)="closeMenu()">
+          <ng-icon name="lucideFileCheck2" size="0.95rem" aria-hidden="true" />
+          Provas
+        </a>
 
-        <div class="nav-dropdown">
+        <div
+          class="nav-dropdown"
+          [class.is-open]="studyMenuOpen()"
+          (mouseenter)="openStudyMenu()"
+          (mouseleave)="scheduleStudyMenuClose()"
+          (focusin)="openStudyMenu()"
+          (focusout)="scheduleStudyMenuClose()"
+        >
           <a
             routerLink="/estudar"
             routerLinkActive="is-active"
             aria-haspopup="true"
+            [attr.aria-expanded]="studyMenuOpen()"
             (click)="closeMenu()"
           >
+            <ng-icon name="lucideBookOpen" size="0.95rem" aria-hidden="true" />
             Estudos
-            <svg class="menu-caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-              <path d="M2 4l4 4 4-4" />
-            </svg>
+            <ng-icon class="menu-caret" name="lucideChevronDown" size="0.7rem" aria-hidden="true" />
           </a>
 
-          <div class="study-menu" aria-label="Matérias de estudo">
+          <div
+            class="study-menu"
+            aria-label="Matérias de estudo"
+            (mouseenter)="cancelStudyMenuClose()"
+            (mouseleave)="scheduleStudyMenuClose()"
+          >
             <div class="study-groups">
               @for (group of studyGroups; track group.area) {
                 <section class="study-group" [attr.aria-labelledby]="'study-group-' + group.area">
@@ -69,7 +82,9 @@
                       [routerLink]="['/guias', guide.slug]"
                       (click)="closeMenu()"
                     >
-                      <span class="study-item-mark" aria-hidden="true">{{ guide.mark }}</span>
+                      <span class="study-item-mark" aria-hidden="true">
+                        <ng-icon [name]="guide.icon" size="0.85rem" />
+                      </span>
                       <span>{{ guide.shortTitle }}</span>
                     </a>
                   }

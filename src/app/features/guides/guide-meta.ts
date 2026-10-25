@@ -9,7 +9,7 @@ export interface GuideMeta {
   areaLabel: string;
   priority: string;
   description: string;
-  mark: string;
+  icon: string;
   interactiveRoute?: string;
 }
 
@@ -33,7 +33,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Visão geral',
     priority: 'Estrutura, fontes e método',
     description: 'Como a prova está organizada, prioridades, interdisciplinaridade e método de estudo.',
-    mark: '∑',
+    icon: 'lucideLibraryBig',
   },
   {
     slug: 'matematica',
@@ -44,7 +44,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Matemática',
     priority: 'Proporção, porcentagem, gráficos, geometria e estatística',
     description: 'Números, proporção, finanças, álgebra, funções, geometria, estatística e probabilidade.',
-    mark: 'π',
+    icon: 'lucideSigma',
     interactiveRoute: '/matematica/laboratorio',
   },
   {
@@ -56,7 +56,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Ciências da Natureza',
     priority: 'Ecologia, fisiologia, genética e evolução',
     description: 'Ecologia, citologia, genética, evolução, fisiologia e saúde.',
-    mark: 'DNA',
+    icon: 'lucideDna',
   },
   {
     slug: 'quimica',
@@ -67,7 +67,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Ciências da Natureza',
     priority: 'Estequiometria, soluções, energia, eletroquímica, orgânica e ambiente',
     description: 'Matéria, ligações, cálculos, soluções, termoquímica, equilíbrio, eletroquímica e orgânica.',
-    mark: '⚗',
+    icon: 'lucideFlaskConical',
     interactiveRoute: '/quimica/laboratorio',
   },
   {
@@ -79,7 +79,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Ciências da Natureza',
     priority: 'Energia, eletricidade, mecânica, ondas e calor',
     description: 'Mecânica, energia, eletricidade, ondas, óptica e termologia.',
-    mark: 'Φ',
+    icon: 'lucideAtom',
   },
   {
     slug: 'historia',
@@ -90,7 +90,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Ciências Humanas',
     priority: 'Brasil, escravidão, cidadania, República e revoluções',
     description: 'Brasil colonial e republicano, escravidão, cidadania, revoluções e mundo contemporâneo.',
-    mark: 'H',
+    icon: 'lucideLandmark',
   },
   {
     slug: 'geografia',
@@ -101,7 +101,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Ciências Humanas',
     priority: 'Ambiente, população, urbanização, economia, geopolítica e cartografia',
     description: 'Cartografia, clima, população, urbanização, economia, geopolítica e ambiente.',
-    mark: 'G',
+    icon: 'lucideGlobe2',
   },
   {
     slug: 'filosofia',
@@ -112,7 +112,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Ciências Humanas',
     priority: 'Ética, política, conhecimento e autores clássicos',
     description: 'Ética, política, epistemologia, estética e autores clássicos.',
-    mark: 'φ',
+    icon: 'lucideBrain',
   },
   {
     slug: 'sociologia',
@@ -123,7 +123,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Ciências Humanas',
     priority: 'Cultura, trabalho, desigualdade, Estado e movimentos sociais',
     description: 'Cultura, trabalho, desigualdade, Estado, cidadania e movimentos sociais.',
-    mark: 'S',
+    icon: 'lucideUsers',
   },
   {
     slug: 'portugues',
@@ -134,7 +134,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Linguagens',
     priority: 'Interpretação, gêneros, argumentação, coesão e variação',
     description: 'Leitura, gêneros, argumentação, coesão, variação linguística e literatura conectada.',
-    mark: 'P',
+    icon: 'lucideBookText',
   },
   {
     slug: 'literatura',
@@ -145,7 +145,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Linguagens',
     priority: 'Leitura de textos, Modernismo e forma/contexto',
     description: 'Movimentos literários, leitura de textos, Modernismo e relações entre forma e contexto.',
-    mark: 'L',
+    icon: 'lucideFeather',
   },
   {
     slug: 'lingua-estrangeira',
@@ -156,7 +156,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Linguagens',
     priority: 'Interpretação, propósito, inferência e multimodalidade',
     description: 'Inglês ou espanhol: leitura, propósito, inferência, vocabulário e multimodalidade.',
-    mark: 'EN',
+    icon: 'lucideLanguages',
   },
   {
     slug: 'artes',
@@ -167,7 +167,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Linguagens',
     priority: 'Leitura de obras, arte brasileira e moderna/contemporânea',
     description: 'Arte brasileira, vanguardas, modernismo, contemporaneidade e leitura de obras.',
-    mark: 'A',
+    icon: 'lucidePalette',
   },
   {
     slug: 'educacao-fisica',
@@ -178,7 +178,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Linguagens',
     priority: 'Corpo, cultura, esporte, saúde e inclusão',
     description: 'Corpo, cultura corporal, esporte, saúde, lazer e inclusão.',
-    mark: 'EF',
+    icon: 'lucideDumbbell',
   },
   {
     slug: 'tic',
@@ -189,7 +189,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Linguagens',
     priority: 'Mídia digital, informação, privacidade e cidadania',
     description: 'Mídia digital, informação, privacidade, redes e cidadania.',
-    mark: 'TIC',
+    icon: 'lucideCpu',
   },
   {
     slug: 'redacao',
@@ -200,7 +200,7 @@ export const GUIDE_META: GuideMeta[] = [
     areaLabel: 'Redação',
     priority: 'Cinco competências, argumentação e intervenção',
     description: 'Competências, estrutura dissertativo-argumentativa, repertório e proposta de intervenção.',
-    mark: 'R',
+    icon: 'lucidePenLine',
   },
 ];
 
