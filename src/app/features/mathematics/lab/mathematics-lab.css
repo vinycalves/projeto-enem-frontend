@@ -212,6 +212,117 @@
   background: var(--paper-deep);
 }
 
+app-desmos-plot,
+app-geometry-solid-view {
+  display: block;
+}
+
+.geometry-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: end;
+}
+
+.geometry-toggle {
+  display: inline-flex;
+  width: max-content;
+  border: 1px solid var(--line-strong);
+}
+
+.geometry-toggle button {
+  padding: 0.45rem 0.6rem;
+  border: 0;
+  background: var(--paper);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.geometry-toggle button + button {
+  border-left: 1px solid var(--line-strong);
+}
+
+.geometry-toggle button:hover,
+.geometry-toggle button.is-active {
+  background: var(--forest);
+  color: #fffdf6;
+}
+
+.geometry-shape-field {
+  min-width: 12rem;
+}
+
+.geometry-visual {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  border: 1px solid var(--line);
+  background: var(--paper-deep);
+}
+
+.geometry-visual--solid {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.geometry-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 20rem;
+}
+
+.geometry-shape {
+  fill: rgba(31, 92, 69, 0.12);
+  stroke: var(--forest);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.geometry-guide {
+  stroke: var(--terracotta-deep);
+  stroke-width: 1.1;
+  stroke-dasharray: 4 4;
+}
+
+.geometry-dimension {
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+}
+
+.geometry-arrow-head {
+  fill: var(--ink-soft);
+}
+
+.geometry-dimension-label,
+.geometry-note-label {
+  fill: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.geometry-note-label {
+  fill: var(--ink-faint);
+  font-size: 9px;
+}
+
+.geometry-legend {
+  margin: 0;
+  color: var(--ink-faint);
+  font-size: 0.66rem;
+}
+
+.geometry-empty {
+  display: grid;
+  place-items: center;
+  min-height: 12rem;
+  text-align: center;
+}
+
 .function-plot svg {
   display: block;
   width: 100%;
@@ -269,6 +380,10 @@
   .field-grid,
   .result-grid,
   .result-grid--two {
+    grid-template-columns: 1fr;
+  }
+
+  .geometry-toolbar {
     grid-template-columns: 1fr;
   }
 }

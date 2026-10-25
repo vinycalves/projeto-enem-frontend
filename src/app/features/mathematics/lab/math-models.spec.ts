@@ -32,9 +32,30 @@ describe('proportion and geometry', () => {
       area: 12,
       perimeter: 14,
     });
+    expect(calculateGeometry('triangle', { base: 4, height: 3 })?.area).toBe(6);
+    expect(calculateGeometry('trapezoid', { base: 6, top: 2, height: 3 })?.area).toBe(12);
     expect(calculateGeometry('circle', { radius: 2 })?.area).toBeCloseTo(4 * Math.PI, 8);
+    expect(calculateGeometry('circle', { radius: 2 })?.perimeter).toBeCloseTo(4 * Math.PI, 8);
     expect(calculateGeometry('cylinder', { radius: 2, height: 5 })?.volume).toBeCloseTo(20 * Math.PI, 8);
+    expect(calculateGeometry('cylinder', { radius: 2, height: 5 })?.surface).toBeCloseTo(
+      28 * Math.PI,
+      8,
+    );
     expect(calculateGeometry('cone', { radius: 2, height: 6 })?.volume).toBeCloseTo(8 * Math.PI, 8);
+    expect(calculateGeometry('sphere', { radius: 3 })?.volume).toBeCloseTo(36 * Math.PI, 8);
+    expect(calculateGeometry('sphere', { radius: 3 })?.surface).toBeCloseTo(36 * Math.PI, 8);
+    expect(
+      calculateGeometry('rectangularPrism', { base: 3, depth: 4, height: 2 }),
+    ).toEqual({ volume: 24, surface: 52 });
+  });
+
+  it('rejects missing or non-positive measures', () => {
+    expect(calculateGeometry('rectangle', { base: 0, height: 3 })).toBeNull();
+    expect(calculateGeometry('triangle', { base: Number.NaN, height: 3 })).toBeNull();
+    expect(calculateGeometry('circle', {})).toBeNull();
+    expect(
+      calculateGeometry('rectangularPrism', { base: 3, depth: 2, height: -1 }),
+    ).toBeNull();
   });
 });
 

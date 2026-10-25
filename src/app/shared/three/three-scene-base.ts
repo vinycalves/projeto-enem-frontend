@@ -112,9 +112,16 @@ export abstract class ThreeSceneBase {
     this.controls?.dispose();
     this.controls = undefined;
     this.clearContent();
-    this.renderer?.dispose();
-    if (this.renderer?.domElement.parentElement) {
-      this.renderer.domElement.remove();
+    if (this.renderer) {
+      try {
+        this.renderer.forceContextLoss();
+      } catch {
+        // O contexto pode já ter sido perdido pelo navegador.
+      }
+      this.renderer.dispose();
+      if (this.renderer.domElement.parentElement) {
+        this.renderer.domElement.remove();
+      }
     }
     this.renderer = undefined;
     this.host = undefined;

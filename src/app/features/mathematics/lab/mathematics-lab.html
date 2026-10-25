@@ -11,7 +11,7 @@
         </p>
       </div>
       <div class="math-lab-actions">
-        <span class="math-chip">2D · cálculo</span>
+        <span class="math-chip">2D · 3D · cálculo</span>
         <a class="btn btn--outline btn--small" routerLink="/matematica">Voltar ao guia</a>
       </div>
     </header>
@@ -117,29 +117,84 @@
             <div><p class="eyebrow">Geometria</p><h2>Área, perímetro e volume</h2></div>
             <code>unidades consistentes</code>
           </div>
-          <label class="field"><span>Figura ou sólido</span><select [value]="shape()" (change)="setShape($any($event.target).value)">
-            <option value="rectangle">Retângulo</option>
-            <option value="triangle">Triângulo</option>
-            <option value="circle">Círculo</option>
-            <option value="trapezoid">Trapézio</option>
-            <option value="cylinder">Cilindro</option>
-            <option value="cone">Cone</option>
-            <option value="sphere">Esfera</option>
-          </select></label>
+
+          <div class="geometry-toolbar">
+            <div class="geometry-toggle" role="group" aria-label="Dimensão da visualização">
+              <button
+                type="button"
+                [class.is-active]="geometryView() === '2d'"
+                [attr.aria-pressed]="geometryView() === '2d'"
+                (click)="setGeometryView('2d')"
+              >2D · figuras planas</button>
+              <button
+                type="button"
+                [class.is-active]="geometryView() === '3d'"
+                [attr.aria-pressed]="geometryView() === '3d'"
+                (click)="setGeometryView('3d')"
+              >3D · sólidos</button>
+            </div>
+            <label class="field geometry-shape-field"><span>Figura ou sólido</span><select (change)="setShape($any($event.target).value)">
+              @for (option of geometryShapes(); track $index) {
+                <option [value]="option" [selected]="option === shape()">{{ shapeLabel(option) }}</option>
+              }
+            </select></label>
+          </div>
+
           <div class="field-grid">
             @if (geometryFields().base) {
-              <label class="field"><span>Base</span><input type="number" min="0" step="any" [value]="geometryBase() ?? ''" (input)="setNumber('geometryBase', $event)" /></label>
+              <label class="field"><span>{{ geometryFieldLabels().base }}</span><input type="number" min="0" step="any" [value]="geometryBase() ?? ''" (input)="setNumber('geometryBase', $event)" /></label>
             }
             @if (geometryFields().top) {
-              <label class="field"><span>Base menor</span><input type="number" min="0" step="any" [value]="geometryTop() ?? ''" (input)="setNumber('geometryTop', $event)" /></label>
+              <label class="field"><span>{{ geometryFieldLabels().top }}</span><input type="number" min="0" step="any" [value]="geometryTop() ?? ''" (input)="setNumber('geometryTop', $event)" /></label>
             }
-            @if (geometryFields().height) {
-              <label class="field"><span>Altura</span><input type="number" min="0" step="any" [value]="geometryHeight() ?? ''" (input)="setNumber('geometryHeight', $event)" /></label>
+            @if (geometryFields().depth) {
+              <label class="field"><span>{{ geometryFieldLabels().depth }}</span><input type="number" min="0" step="any" [value]="geometryDepth() ?? ''" (input)="setNumber('geometryDepth', $event)" /></label>
             }
             @if (geometryFields().radius) {
-              <label class="field"><span>Raio</span><input type="number" min="0" step="any" [value]="geometryRadius() ?? ''" (input)="setNumber('geometryRadius', $event)" /></label>
+              <label class="field"><span>{{ geometryFieldLabels().radius }}</span><input type="number" min="0" step="any" [value]="geometryRadius() ?? ''" (input)="setNumber('geometryRadius', $event)" /></label>
+            }
+            @if (geometryFields().height) {
+              <label class="field"><span>{{ geometryFieldLabels().height }}</span><input type="number" min="0" step="any" [value]="geometryHeight() ?? ''" (input)="setNumber('geometryHeight', $event)" /></label>
             }
           </div>
+
+          @if (geometryView() === '2d') {
+            <div class="geometry-visual">
+              @if (geometryDiagram(); as diagram) {
+                <svg class="geometry-diagram" [attr.viewBox]="diagram.viewBox" role="img" [attr.aria-label]="diagram.description">
+                  <title>{{ diagram.description }}</title>
+                  <defs>
+                    <marker id="geometry-dimension-arrow" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                      <path class="geometry-arrow-head" d="M0,0 L6,3 L0,6 Z" />
+                    </marker>
+                  </defs>
+                  <path class="geometry-shape" [attr.d]="diagram.outlinePath" />
+                  @for (guide of diagram.guides; track $index) {
+                    <line class="geometry-guide" [attr.x1]="guide.x1" [attr.y1]="guide.y1" [attr.x2]="guide.x2" [attr.y2]="guide.y2" />
+                  }
+                  @for (dimension of diagram.dimensions; track $index) {
+                    <line class="geometry-dimension" [attr.x1]="dimension.x1" [attr.y1]="dimension.y1" [attr.x2]="dimension.x2" [attr.y2]="dimension.y2" marker-start="url(#geometry-dimension-arrow)" marker-end="url(#geometry-dimension-arrow)" />
+                    <text class="geometry-dimension-label" [attr.x]="dimension.labelX" [attr.y]="dimension.labelY" [attr.text-anchor]="dimension.labelAnchor">{{ dimension.label }}</text>
+                  }
+                  @for (label of diagram.labels; track $index) {
+                    <text class="geometry-note-label" [attr.x]="label.x" [attr.y]="label.y" [attr.text-anchor]="label.anchor ?? 'middle'">{{ label.text }}</text>
+                  }
+                </svg>
+                <p class="geometry-legend">{{ geometryLegend() }}</p>
+              } @else {
+                <p class="math-hint geometry-empty">Preencha as medidas positivas para desenhar a figura.</p>
+              }
+            </div>
+          } @else {
+            <div class="geometry-visual geometry-visual--solid">
+              @if (solidRenderParams(); as solid) {
+                <app-geometry-solid-view [params]="solid" />
+              } @else {
+                <p class="math-hint geometry-empty">Preencha as medidas positivas para montar o sólido em 3D.</p>
+              }
+            </div>
+          }
+
           @if (geometryResult(); as result) {
             <div class="result-grid">
               @if (result.area !== undefined) {
@@ -158,7 +213,7 @@
           } @else {
             <p class="math-hint">Preencha as medidas positivas da figura selecionada.</p>
           }
-          <p class="math-hint">As unidades de área e volume são quadradas e cúbicas; não misture cm com m.</p>
+          <p class="math-hint">A visualização ajusta a proporção das medidas ao espaço disponível; medidas muito desproporcionais recebem um tamanho mínimo para continuar legíveis. As unidades de área e volume são quadradas e cúbicas; não misture cm com m.</p>
         </section>
       }
 
@@ -233,27 +288,47 @@
             }
           </div>
           <p class="function-description">{{ functionDescription() }}</p>
-          <div class="function-plot" aria-label="Gráfico da função">
-            <svg viewBox="0 0 640 320" role="img">
-              <title>{{ functionDescription() }}</title>
-              <line class="math-axis" x1="60" y1="280" x2="580" y2="280" />
-              <line class="math-axis" x1="60" y1="40" x2="60" y2="280" />
-              @for (tick of [0, 1, 2, 3, 4, 5, 6, 7, 8]; track tick) {
-                <line class="math-grid-line" [attr.x1]="60 + tick * 65" y1="40" [attr.x2]="60 + tick * 65" y2="280" />
+          @if (desmosConfigured && !desmosFailed() && functionSample(); as sample) {
+            <app-desmos-plot
+              [kind]="functionKind()"
+              [a]="functionA() ?? 0"
+              [b]="functionB() ?? 0"
+              [c]="functionC() ?? 0"
+              [sample]="sample"
+              (failed)="markDesmosFailed()"
+            />
+            <p class="math-hint">Gráfico interativo fornecido pelo Desmos. Arraste para explorar; a janela inicial é x de −10 a 10.</p>
+          } @else {
+            <div class="function-plot" aria-label="Gráfico da função">
+              <svg viewBox="0 0 640 320" role="img">
+                <title>{{ functionDescription() }}</title>
+                <line class="math-axis" x1="60" y1="280" x2="580" y2="280" />
+                <line class="math-axis" x1="60" y1="40" x2="60" y2="280" />
+                @for (tick of [0, 1, 2, 3, 4, 5, 6, 7, 8]; track tick) {
+                  <line class="math-grid-line" [attr.x1]="60 + tick * 65" y1="40" [attr.x2]="60 + tick * 65" y2="280" />
+                }
+                <path class="math-function-path" [attr.d]="functionPath()" />
+              </svg>
+            </div>
+            <p class="math-hint">
+              @if (desmosConfigured && desmosFailed()) {
+                Não foi possível carregar o gráfico interativo; exibindo o gráfico local.
+              } @else {
+                Gráfico local em SVG, sem serviços externos.
               }
-              <path class="math-function-path" [attr.d]="functionPath()" />
-            </svg>
-          </div>
-          <p class="math-hint">A janela do gráfico é x de −10 a 10; o eixo y se ajusta à função. Para interpretar um contexto, confira domínio e unidades.</p>
+              A janela é x de −10 a 10; o eixo y se ajusta à função. Para interpretar um
+              contexto, confira domínio e unidades.
+            </p>
+          }
         </section>
       }
     }
 
     <section class="math-footnote">
-      <strong>Escopo desta versão:</strong> porcentagem e juros, regra de três, geometria plana/espacial,
-      estatística descritiva, probabilidade/contagem e visualização de funções. Cálculos de
-      trigonometria, geometria analítica, PA/PG, matrizes e sistemas continuam no guia como estudo
-      dirigido e podem ganhar ferramentas próprias na próxima fase.
+      <strong>Escopo desta versão:</strong> porcentagem e juros, regra de três, geometria plana/espacial com
+      diagramas 2D e sólidos em 3D, estatística descritiva, probabilidade/contagem e visualização de
+      funções. Cálculos de trigonometria, geometria analítica, PA/PG, matrizes e sistemas continuam no
+      guia como estudo dirigido e podem ganhar ferramentas próprias na próxima fase.
     </section>
   </div>
 </div>
