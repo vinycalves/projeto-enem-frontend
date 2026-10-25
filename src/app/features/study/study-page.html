@@ -3,10 +3,6 @@
     <header class="page-head">
       <p class="eyebrow">Mapa do currículo</p>
       <h1>Estudar</h1>
-      <p class="lede">
-        Percorra as áreas do conhecimento, escolha uma disciplina e aproxime-se dos conceitos. Cada
-        conceito reúne sua explicação e as questões para praticar.
-      </p>
     </header>
 
     @if (areasLoading()) {
@@ -49,112 +45,88 @@
           </div>
           <p class="area-count">
             <strong>{{ area.subjects.length }}</strong>
-            <span>disciplinas<br />para explorar</span>
+            <span>guias de<br />disciplina</span>
           </p>
         </section>
 
         @if (subjects().length === 0) {
           <app-empty-state
             heading="Nenhuma disciplina nesta área"
-            message="Ainda não há disciplinas publicadas para esta área."
+            message="Ainda não há guias publicados para esta área."
           />
         } @else {
           <section class="subjects-section" aria-labelledby="subjects-title">
             <div class="section-head">
               <div>
-                <p class="eyebrow">Escolha uma frente</p>
+                <p class="eyebrow">Conteúdo completo</p>
                 <h2 id="subjects-title">Disciplinas</h2>
               </div>
-              <p>Selecione uma disciplina para ver os conceitos disponíveis.</p>
+              <p>Abra o guia da matéria. A prática acontece nas provas oficiais do ENEM.</p>
             </div>
 
             <div class="subject-grid">
               @for (subject of subjects(); track subject.id) {
                 <a
                   class="subject-card"
-                  routerLink="/estudar"
-                  [queryParams]="queryForSubject(subject)"
-                  [style.--area-accent]="subjectAccent(area)"
-                  [class.is-selected]="selectedSubject()?.id === subject.id"
-                  [attr.aria-current]="selectedSubject()?.id === subject.id ? 'true' : null"
+                  [routerLink]="['/guias', guideSlug(subject)]"
+                  [style.--area-accent]="areaAccent(area)"
                 >
                   <span class="subject-topline">
                     <span class="subject-code">{{ subject.code }}</span>
-                    @if (selectedSubject()?.id === subject.id) {
-                      <span class="badge badge--forest">Selecionada</span>
-                    }
+                    <span class="badge badge--forest">Guia completo</span>
                   </span>
                   <h3>{{ subject.name }}</h3>
                   <span class="subject-description">{{ subject.description }}</span>
                   <span class="subject-footer">
-                    <span>{{ conceptCountLabel(subject.concept_count) }}</span>
-                    <span class="subject-open" aria-hidden="true">Ver conceitos →</span>
+                    <span>Abrir conteúdo</span>
+                    <span class="subject-open" aria-hidden="true">Ler guia →</span>
                   </span>
                 </a>
               }
             </div>
           </section>
         }
-      }
 
-      @if (selectedSubject(); as subject) {
-        <section class="concepts-section" aria-labelledby="concepts-title">
+        <section class="official-exams" aria-labelledby="official-exams-title">
           <div class="section-head">
             <div>
-              <p class="eyebrow">{{ selectedArea()?.name }} · {{ subject.code }}</p>
-              <h2 id="concepts-title">Conceitos de {{ subject.name }}</h2>
+              <p class="eyebrow">Banco oficial</p>
+              <h2 id="official-exams-title">Pratique com provas do ENEM</h2>
             </div>
-            <p>{{ conceptCountLabel(subject.concept_count) }} nesta disciplina.</p>
+            <a class="section-link" routerLink="/provas">Ver todas as provas</a>
           </div>
+          <p class="official-note">
+            Esta área usa exclusivamente questões oficiais do ENEM. Não há questões autorais nem
+            exercícios criados para a plataforma.
+          </p>
 
-          @if (conceptsLoading()) {
-            <app-loading label="Reunindo os conceitos…" />
-          } @else if (conceptsError()) {
+          @if (examsLoading()) {
+            <app-loading label="Carregando provas oficiais…" />
+          } @else if (examsError()) {
             <div class="alert alert--error state-error" role="alert">
-              <span>{{ conceptsError() }}</span>
-              <button class="btn btn--outline btn--small" type="button" (click)="retryConcepts()">
+              <span>{{ examsError() }}</span>
+              <button class="btn btn--outline btn--small" type="button" (click)="loadExams()">
                 Tentar novamente
               </button>
             </div>
-          } @else if (concepts().length === 0) {
+          } @else if (areaExams().length === 0) {
             <app-empty-state
-              heading="Nenhum conceito publicado"
-              message="Esta disciplina ainda não tem conceitos disponíveis. Explore outra frente."
+              heading="Nenhuma prova importada nesta área"
+              message="Rode o importador do backend para carregar as provas oficiais do ENEM."
             />
           } @else {
-            <ol class="concept-list">
-              @for (concept of concepts(); track concept.id; let index = $index) {
-                <li>
-                  <a class="concept-row" [routerLink]="['/conceito', concept.id]">
-                    <span class="concept-number" aria-hidden="true">{{
-                      (index + 1).toString().padStart(2, '0')
-                    }}</span>
-                    <span class="concept-content">
-                      <span class="concept-heading">
-                        <h3 class="concept-name">{{ concept.name }}</h3>
-                        <span [class]="difficultyClass(concept.difficulty)">
-                          {{ difficulty(concept.difficulty) }}
-                        </span>
-                      </span>
-                      <span class="concept-summary">{{ concept.summary }}</span>
-                      <span class="concept-meta">{{
-                        questionCountLabel(concept.question_count)
-                      }}</span>
-                    </span>
-                    <span class="concept-arrow" aria-hidden="true">→</span>
-                  </a>
-                </li>
+            <div class="study-exam-grid">
+              @for (exam of areaExams(); track exam.id) {
+                <a class="study-exam-card" [routerLink]="['/provas', exam.id]">
+                  <span class="study-exam-year">{{ exam.year }}</span>
+                  <span class="study-exam-title">{{ exam.title }}</span>
+                  <span class="study-exam-meta">{{ questionCountLabel(exam.question_count) }}</span>
+                  <span class="study-exam-open">Abrir prova <span aria-hidden="true">→</span></span>
+                </a>
               }
-            </ol>
+            </div>
           }
         </section>
-      } @else {
-        <div class="concept-prompt">
-          <app-empty-state
-            heading="Escolha uma disciplina"
-            message="Os conceitos e as questões aparecem aqui depois que você selecionar uma disciplina acima."
-          />
-        </div>
       }
     }
   </div>

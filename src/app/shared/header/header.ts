@@ -3,6 +3,13 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { finalize } from 'rxjs';
 import { getApiErrorMessage } from '../../core/api-error';
 import { AuthService } from '../../core/auth.service';
+import { GUIDE_META, GuideArea } from '../../features/guides/guide-meta';
+
+interface StudyMenuGroup {
+  label: string;
+  area: GuideArea;
+  items: typeof GUIDE_META;
+}
 
 @Component({
   selector: 'app-header',
@@ -18,6 +25,19 @@ export class Header {
   protected readonly menuOpen = signal(false);
   protected readonly signingOut = signal(false);
   protected readonly logoutError = signal<string | null>(null);
+
+  private readonly menuAreas: Array<{ label: string; area: GuideArea }> = [
+    { label: 'Matemática', area: 'matematica' },
+    { label: 'Ciências da Natureza', area: 'natureza' },
+    { label: 'Ciências Humanas', area: 'humanas' },
+    { label: 'Linguagens', area: 'linguagens' },
+    { label: 'Redação', area: 'redacao' },
+  ];
+
+  protected readonly studyGroups: StudyMenuGroup[] = this.menuAreas.map((group) => ({
+    ...group,
+    items: GUIDE_META.filter((guide) => guide.area === group.area),
+  }));
 
   protected toggleMenu(): void {
     this.menuOpen.update((open) => !open);

@@ -115,10 +115,6 @@ export class HomePage implements OnInit {
     return color && /^(#[0-9a-f]{3,8}|[a-z]+)$/i.test(color) ? color : 'var(--forest)';
   }
 
-  protected areaConceptCount(area: Area): number {
-    return area.subjects.reduce((total, subject) => total + (subject.concept_count || 0), 0);
-  }
-
   protected accuracyLabel(): string {
     return formatAccuracy(this.stats()?.stats.accuracy);
   }

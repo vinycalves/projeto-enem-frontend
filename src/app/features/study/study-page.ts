@@ -9,13 +9,29 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Subscription, finalize } from 'rxjs';
+import { finalize } from 'rxjs';
 import { getApiErrorMessage } from '../../core/api-error';
 import { CurriculumService } from '../../core/curriculum.service';
-import { difficultyLabel, difficultyTone } from '../../core/labels';
-import { Area, ConceptListItem, Id, Subject } from '../../core/models';
+import { ExamService } from '../../core/exam.service';
+import { Area, Exam, Id, Subject } from '../../core/models';
 import { EmptyState } from '../../shared/empty-state/empty-state';
 import { Loading } from '../../shared/loading/loading';
+
+const GUIDE_BY_SUBJECT: Record<string, string> = {
+  portugues: 'portugues',
+  ingles: 'lingua-estrangeira',
+  espanhol: 'lingua-estrangeira',
+  artes: 'artes',
+  'educacao-fisica': 'educacao-fisica',
+  historia: 'historia',
+  geografia: 'geografia',
+  filosofia: 'filosofia',
+  sociologia: 'sociologia',
+  biologia: 'biologia',
+  fisica: 'fisica',
+  quimica: 'quimica',
+  matematica: 'matematica',
+};
 
 @Component({
   selector: 'app-study-page',
@@ -26,40 +42,43 @@ import { Loading } from '../../shared/loading/loading';
 })
 export class StudyPage implements OnInit {
   private readonly curriculum = inject(CurriculumService);
+  private readonly examService = inject(ExamService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly areas = signal<Area[]>([]);
   protected readonly areasLoading = signal(true);
   protected readonly areasError = signal<string | null>(null);
-
   protected readonly selectedAreaId = signal<Id | null>(null);
-  protected readonly selectedSubjectId = signal<Id | null>(null);
 
-  protected readonly concepts = signal<ConceptListItem[]>([]);
-  protected readonly conceptsLoading = signal(false);
-  protected readonly conceptsError = signal<string | null>(null);
+  protected readonly exams = signal<Exam[]>([]);
+  protected readonly examsLoading = signal(true);
+  protected readonly examsError = signal<string | null>(null);
 
   protected readonly selectedArea = computed(
     () => this.areas().find((area) => area.id === this.selectedAreaId()) ?? null,
   );
   protected readonly subjects = computed(() => this.selectedArea()?.subjects ?? []);
-  protected readonly selectedSubject = computed(
-    () => this.subjects().find((subject) => subject.id === this.selectedSubjectId()) ?? null,
-  );
+  protected readonly areaExams = computed(() => {
+    const area = this.selectedArea();
+    if (!area) {
+      return [];
+    }
+    return this.exams()
+      .filter((exam) => exam.area_code === area.code)
+      .sort((a, b) => b.year - a.year);
+  });
 
   private areaParam: string | null = null;
-  private subjectParam: string | null = null;
-  private conceptsRequest: Subscription | null = null;
 
   ngOnInit(): void {
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       this.areaParam = params.get('area');
-      this.subjectParam = params.get('subject');
       this.applyQueryParams();
     });
 
     this.loadAreas();
+    this.loadExams();
   }
 
   protected loadAreas(): void {
@@ -83,38 +102,24 @@ export class StudyPage implements OnInit {
       });
   }
 
-  protected loadConcepts(subjectId: Id): void {
-    this.conceptsRequest?.unsubscribe();
-    this.conceptsLoading.set(true);
-    this.conceptsError.set(null);
-    this.concepts.set([]);
+  protected loadExams(): void {
+    this.examsLoading.set(true);
+    this.examsError.set(null);
 
-    this.conceptsRequest = this.curriculum
-      .getSubjectConcepts(subjectId)
-      .pipe(finalize(() => this.conceptsLoading.set(false)))
+    this.examService
+      .getExams()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.examsLoading.set(false)),
+      )
       .subscribe({
-        next: (response) => {
-          if (String(this.selectedSubjectId()) !== String(subjectId)) {
-            return;
-          }
-          this.concepts.set(response.concepts);
-        },
+        next: ({ exams }) => this.exams.set(exams),
         error: (error: unknown) => {
-          if (String(this.selectedSubjectId()) !== String(subjectId)) {
-            return;
-          }
-          this.conceptsError.set(
-            getApiErrorMessage(error, 'Não foi possível carregar os conceitos desta disciplina.'),
+          this.examsError.set(
+            getApiErrorMessage(error, 'Não foi possível carregar as provas oficiais.'),
           );
         },
       });
-  }
-
-  protected retryConcepts(): void {
-    const subjectId = this.selectedSubjectId();
-    if (subjectId !== null) {
-      this.loadConcepts(subjectId);
-    }
   }
 
   protected areaAccent(area: Area): string {
@@ -122,63 +127,27 @@ export class StudyPage implements OnInit {
     return color && /^(#[0-9a-f]{3,8}|[a-z]+)$/i.test(color) ? color : 'var(--forest)';
   }
 
-  protected subjectAccent(area: Area | null): string {
-    return area ? this.areaAccent(area) : 'var(--forest)';
-  }
-
   protected queryForArea(area: Area): { area: Id } {
     return { area: area.id };
   }
 
-  protected queryForSubject(subject: Subject): { area: Id | null; subject: Id } {
-    return { area: this.selectedAreaId(), subject: subject.id };
-  }
-
-  protected conceptCountLabel(count: number): string {
-    return count === 1 ? '1 conceito' : `${count} conceitos`;
+  protected guideSlug(subject: Subject): string {
+    return GUIDE_BY_SUBJECT[subject.code] ?? 'indice';
   }
 
   protected questionCountLabel(count: number): string {
-    return count === 1 ? '1 questão' : `${count} questões`;
-  }
-
-  protected difficulty(value: string): string {
-    return difficultyLabel(value);
-  }
-
-  protected difficultyClass(value: string): string {
-    return `difficulty difficulty--${difficultyTone(value)}`;
+    return count === 1 ? '1 questão oficial' : `${count} questões oficiais`;
   }
 
   private applyQueryParams(): void {
     if (this.areas().length === 0) {
       return;
     }
-
     const area =
       this.areas().find(
-        (candidate) => String(candidate.id) === this.areaParam || candidate.code === this.areaParam,
-      ) ?? this.areas()[0];
-
-    this.selectedAreaId.set(area.id);
-
-    const subject =
-      area.subjects.find(
         (candidate) =>
-          String(candidate.id) === this.subjectParam || candidate.code === this.subjectParam,
-      ) ?? null;
-
-    this.selectedSubjectId.set(subject?.id ?? null);
-
-    if (!subject) {
-      this.conceptsRequest?.unsubscribe();
-      this.conceptsRequest = null;
-      this.concepts.set([]);
-      this.conceptsError.set(null);
-      this.conceptsLoading.set(false);
-      return;
-    }
-
-    this.loadConcepts(subject.id);
+          String(candidate.id) === this.areaParam || candidate.code === this.areaParam,
+      ) ?? this.areas()[0];
+    this.selectedAreaId.set(area.id);
   }
 }

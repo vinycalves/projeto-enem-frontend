@@ -20,13 +20,6 @@ export const routes: Routes = [
     loadComponent: () => import('./features/study/study-page').then((module) => module.StudyPage),
   },
   {
-    path: 'conceito/:id',
-    title: 'Conceito · ENEM Aberto',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/concept/concept-page').then((module) => module.ConceptPage),
-  },
-  {
     path: 'visualizacoes',
     title: 'Visualizações · ENEM Aberto',
     canActivate: [authGuard],

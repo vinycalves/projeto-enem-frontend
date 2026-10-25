@@ -41,17 +41,48 @@
           (click)="closeMenu()"
           >Início</a
         >
-        <a routerLink="/estudar" routerLinkActive="is-active" (click)="closeMenu()">Estudar</a>
-        <a routerLink="/visualizacoes" routerLinkActive="is-active" (click)="closeMenu()"
-          >Visualizações</a
-        >
         <a routerLink="/provas" routerLinkActive="is-active" (click)="closeMenu()">Provas</a>
-        <a routerLink="/guias" routerLinkActive="is-active" (click)="closeMenu()">Guias</a>
-        <a routerLink="/biologia" routerLinkActive="is-active" (click)="closeMenu()">Biologia</a>
-        <a routerLink="/calendario" routerLinkActive="is-active" (click)="closeMenu()"
-          >Calendário</a
-        >
-        <a routerLink="/sobre" routerLinkActive="is-active" (click)="closeMenu()">Sobre</a>
+
+        <div class="nav-dropdown">
+          <a
+            routerLink="/estudar"
+            routerLinkActive="is-active"
+            aria-haspopup="true"
+            (click)="closeMenu()"
+          >
+            Estudos
+            <svg class="menu-caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+              <path d="M2 4l4 4 4-4" />
+            </svg>
+          </a>
+
+          <div class="study-menu" aria-label="Matérias de estudo">
+            <div class="study-groups">
+              @for (group of studyGroups; track group.area) {
+                <section class="study-group" [attr.aria-labelledby]="'study-group-' + group.area">
+                  <p class="study-group-label" [id]="'study-group-' + group.area">
+                    {{ group.label }}
+                  </p>
+                  @for (guide of group.items; track guide.slug) {
+                    <a
+                      class="study-item"
+                      [routerLink]="['/guias', guide.slug]"
+                      (click)="closeMenu()"
+                    >
+                      <span class="study-item-mark" aria-hidden="true">{{ guide.mark }}</span>
+                      <span>{{ guide.shortTitle }}</span>
+                    </a>
+                  }
+                </section>
+              }
+            </div>
+            <div class="study-menu-footer">
+              <a routerLink="/guias" (click)="closeMenu()">Todos os guias</a>
+              <a routerLink="/visualizacoes" (click)="closeMenu()">Visualizações</a>
+              <a routerLink="/calendario" (click)="closeMenu()">Calendário</a>
+            </div>
+          </div>
+        </div>
       </nav>
 
       <div class="session">

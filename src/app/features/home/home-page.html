@@ -5,10 +5,6 @@
         <p class="eyebrow">Seu caderno de campo</p>
         <p class="greeting">{{ greeting }}, {{ displayName() }}.</p>
         <h1 id="home-title">Um passo por vez até a prova.</h1>
-        <p class="lede">
-          Escolha uma área, retome um conceito e pratique com questões que abrem espaço para
-          discutir o raciocínio — não apenas marcar a resposta.
-        </p>
         <div class="hero-actions">
           <a class="btn btn--primary" routerLink="/estudar">
             Continuar estudando <span class="arrow" aria-hidden="true">→</span>
@@ -53,7 +49,6 @@
           <p class="eyebrow">Seu ritmo</p>
           <h2 id="stats-title">O que já foi percorrido</h2>
         </div>
-        <p>Números do seu histórico de tentativas. Sem ranking, sem pressa.</p>
       </div>
 
       @if (statsLoading()) {
@@ -95,10 +90,6 @@
       <div class="biology-spotlight-copy">
         <p class="eyebrow">Laboratório de Biologia</p>
         <h2 id="biology-spotlight-title">Células em 3D. A vida em mapa.</h2>
-        <p>
-          Gire uma célula animal e uma vegetal, selecione organelas e entenda a hierarquia que
-          organiza todos os seres vivos.
-        </p>
         <div class="biology-spotlight-actions">
           <a class="btn btn--primary" routerLink="/biologia/celula">
             Explorar célula 3D <span aria-hidden="true">→</span>
@@ -163,7 +154,7 @@
                   {{ area.subjects.length }}
                   {{ area.subjects.length === 1 ? 'disciplina' : 'disciplinas' }}
                   <span aria-hidden="true">·</span>
-                  {{ areaConceptCount(area) }} conceitos
+                  guias completos
                 </span>
               </a>
             }
